@@ -279,6 +279,11 @@ const kitAdjustments = {
     tip: "适合传感器、LED 灯带、舵机、按钮和显示屏组合",
     code: "Arduino 代码骨架"
   },
+  k10: {
+    label: "UNIHIKER K10",
+    code: "屏幕 UI + 内置传感器 + Python / MicroPython",
+    tip: "K10 自带屏幕、按键、温湿度传感器、陀螺仪、麦克风和扬声器，优先生成免接线、快速完成的互动项目"
+  },
   microbit: {
     label: "micro:bit",
     tip: "适合加速度、按钮、LED 点阵和快速入门编程",
@@ -613,7 +618,9 @@ async function generateProjects() {
         interest: activeInterest,
         kit,
         duration,
-        materials: "ESP32、Arduino、LED灯带、按钮、蜂鸣器、舵机、超声波传感器、OLED屏、纸板、杜邦线、面包板"
+        materials: kitSelect.value === "k10"
+  ? "UNIHIKER K10，内置屏幕、按键、温湿度传感器、陀螺仪、麦克风、扬声器；优先生成免接线、快速完成、能直接用屏幕和传感器展示效果的项目"
+  : "ESP32、Arduino、LED灯带、按钮、蜂鸣器、舵机、超声波传感器、OLED屏、纸板、杜邦线、面包板"
       })
     });
 
