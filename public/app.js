@@ -517,3 +517,183 @@ if (students.length) {
     });
   });
 }
+
+// ===== AI backend connection override =====
+
+const aiImageMap = {
+  "reaction-trainer": {
+    image: "assets/reaction-trainer.png",
+    anchor: "reaction-trainer",
+    caption: "真实场景风格的完成效果参考图，适合展示互动感和游戏感"
+  },
+  "character-energy-core": {
+    image: "assets/character-energy-core.png",
+    anchor: "character-energy-core",
+    caption: "真实场景风格的完成效果参考图，适合展示角色设定和能量反馈"
+  },
+  "distance-radar": {
+    image: "assets/distance-radar.png",
+    anchor: "distance-radar",
+    caption: "真实场景风格的完成效果参考图，适合展示数据映射和传感器反馈"
+  },
+  "rhythm-wall": {
+    image: "assets/rhythm-wall.png",
+    anchor: "rhythm-light-wall",
+    caption: "真实场景风格的完成效果参考图，适合展示声音互动和灯效反馈"
+  },
+  "pet-house": {
+    image: "assets/pet-house.png",
+    anchor: "pet-comfort-house",
+    caption: "真实场景风格的完成效果参考图，适合展示环境数据和故事感"
+  },
+  "pet-feeder": {
+    image: "assets/pet-feeder.png",
+    anchor: "pet-feeder",
+    caption: "真实场景风格的完成效果参考图，适合展示投喂机构和状态判断"
+  },
+  "basketball-scoreboard": {
+    image: "assets/basketball-scoreboard.png",
+    anchor: "basketball-scoreboard",
+    caption: "真实场景风格的完成效果参考图，适合展示计分与运动主题互动"
+  },
+  "livestream-dashboard": {
+    image: "assets/livestream-dashboard.png",
+    anchor: "livestream-dashboard",
+    caption: "真实场景风格的完成效果参考图，适合展示社交媒体热度和数据反馈"
+  },
+  "milk-tea-console": {
+    image: "assets/milk-tea-console.png",
+    anchor: "milk-tea-console",
+    caption: "真实场景风格的完成效果参考图，适合展示参数调节和生活化场景"
+  }
+};
+
+function safeText(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function getAIProjectMedia(imageKey) {
+  return aiImageMap[imageKey] || aiImageMap["reaction-trainer"];
+}
+
+async function generateProjects() {
+  if (!projectCards) return;
+
+  const concept = conceptInput.value.trim() || "当前知识点";
+  const subject = subjectSelect.value;
+  const level = levelSelect.options[levelSelect.selectedIndex].text;
+  const kit = kitSelect.options[kitSelect.selectedIndex].text;
+  const duration = durationSelect.value;
+
+  resultTitle.textContent = `${activeInterest}主题：${concept}硬件项目`;
+  matchTag.textContent = "AI 生成中";
+
+  projectCards.innerHTML = `
+    <article class="project-card">
+      <h3>正在生成项目方案</h3>
+      <p>AI 正在根据知识点、学生兴趣和硬件材料生成 3 个可完成的硬件项目</p>
+    </article>
+  `;
+
+  try {
+    const response = await fetch("/api/generate-projects", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        concept,
+        subject,
+        level,
+        interest: activeInterest,
+        kit,
+        duration,
+        materials: "ESP32、Arduino、LED灯带、按钮、蜂鸣器、舵机、超声波传感器、OLED屏、纸板、杜邦线、面包板"
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !Array.isArray(data.projects)) {
+      throw new Error(data.error || "AI 没有返回可用项目");
+    }
+
+    matchTag.textContent = `AI 已生成 ${data.projects.length} 个项目`;
+    projectCards.innerHTML = "";
+
+    data.projects.forEach((project, index) => {
+      const media = getAIProjectMedia(project.imageKey);
+      const card = document.createElement("article");
+      card.className = "project-card";
+      card.style.animationDelay = `${index * 70}ms`;
+
+      const materials = Array.isArray(project.materials) ? project.materials : [];
+      const steps = Array.isArray(project.steps) ? project.steps : [];
+
+      card.innerHTML = `
+        <div class="project-media">
+          <img src="${media.image}" alt="${safeText(project.title)} 最终效果参考图" />
+          <div class="project-media-note">
+            <strong>最终效果参考</strong>
+            <span>${media.caption}</span>
+          </div>
+        </div>
+
+        <div class="project-card-header">
+          <h3>${safeText(project.title || "未命名硬件项目")}</h3>
+          <span class="badge">${safeText(project.difficulty || "中等")}</span>
+        </div>
+
+        <p><strong>项目核心：</strong>${safeText(project.summary || "AI 已生成一个与知识点相关的硬件项目")}</p>
+
+        <div class="project-mini-meta">
+          <div><span>学科</span><strong>${safeText(subject)}</strong></div>
+          <div><span>套件</span><strong>${safeText(kit)}</strong></div>
+          <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
+          <div><span>时长</span><strong>${safeText(duration)}</strong></div>
+        </div>
+
+        <p><strong>材料清单：</strong></p>
+        <div class="mini-list">
+          ${materials.map(item => `<span>${safeText(item)}</span>`).join("")}
+        </div>
+
+        <div class="challenge-row">
+          <div><span>知识点落点</span><strong>${safeText(project.knowledgePoint || concept)}</strong></div>
+          <div><span>进阶挑战</span><strong>${safeText(project.challenge || "增加一个可调参数并观察结果变化")}</strong></div>
+          <div><span>图片匹配</span><strong>${safeText(project.imageKey || "reaction-trainer")}</strong></div>
+          <div><span>老师观察点</span><strong>能否解释输入、规则和输出之间的关系</strong></div>
+        </div>
+
+        <p><strong>建议流程：</strong></p>
+        <ol>
+          ${steps.map(step => `<li>${safeText(step)}</li>`).join("")}
+        </ol>
+
+        <div class="project-actions">
+          <a class="btn small primary" href="gallery.html#${media.anchor}">查看真实效果</a>
+          <a class="btn small ghost" href="students.html">匹配学生画像</a>
+          <a class="btn small ghost" href="rules.html">查看项目门槛</a>
+        </div>
+      `;
+
+      projectCards.appendChild(card);
+    });
+  } catch (error) {
+    console.error(error);
+    matchTag.textContent = "生成失败";
+
+    projectCards.innerHTML = `
+      <article class="project-card">
+        <h3>AI 生成暂时失败</h3>
+        <p><strong>错误信息：</strong>${safeText(error.message)}</p>
+        <p>可以先检查 AI_MODEL、AI_API_KEY、AI_BASE_URL 是否正确，或者稍后重新点击生成</p>
+      </article>
+    `;
+  }
+}
