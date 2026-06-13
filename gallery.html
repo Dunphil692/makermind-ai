@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>作品效果｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">MM</span>
+      <span>
+        <strong>MakerMind AI</strong>
+        <small>Hardware learning studio</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="rules.html">项目门槛</a>
+      <a href="generator.html">生成器</a>
+      <a class="active" href="gallery.html">作品效果</a>
+      <a href="students.html">学生画像</a>
+    </nav>
+  </header>
+
+  <main class="page-shell page-main">
+    <section class="page-hero compact left-hero">
+      <span class="eyebrow">Outcome gallery</span>
+      <h1>先让学生看到作品长什么样，再让他们想去做</h1>
+      <p>这次我把 9 个代表性项目的真实场景风格效果图直接放进了网站里。现在先用静态图片做展示，后面你们接入 API 以后，可以让系统按项目动态生成或匹配图片</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="generator.html">带着效果图去生成项目</a>
+        <a class="btn ghost" href="index.html">返回首页</a>
+      </div>
+    </section>
+
+    <section class="media-gallery">
+      <article class="gallery-card" id="reaction-trainer">
+        <img class="gallery-photo" src="assets/reaction-trainer.png" alt="反应训练舱真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Game / Math / Coding</span>
+          <h2>反应训练舱</h2>
+          <p>灯环、按钮和蜂鸣器做成一个可玩的反应装置，适合函数、随机和条件判断</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>函数、随机、条件判断</strong></div>
+            <div><span>亮点</span><strong>灯光反馈强，展示感好</strong></div>
+            <div><span>一小时版本</span><strong>基础玩法 + 计分逻辑</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="character-energy-core">
+        <img class="gallery-photo" src="assets/character-energy-core.png" alt="角色能量核心真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Anime / State / Interaction</span>
+          <h2>角色能量核心</h2>
+          <p>通过发光核心、按钮和角色设定，让学生把能量积累、状态切换和反馈做得更有代入感</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>状态机、阈值、输入输出</strong></div>
+            <div><span>亮点</span><strong>视觉冲击强，动漫兴趣入口好</strong></div>
+            <div><span>一小时版本</span><strong>按钮蓄能 + 灯效释放</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="distance-radar">
+        <img class="gallery-photo" src="assets/distance-radar.png" alt="距离感应雷达真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Sensor / Physics / Data</span>
+          <h2>距离感应雷达</h2>
+          <p>把超声波传感器读到的数据变成指针和灯光反馈，学生更容易理解输入与输出的关系</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>区间、映射、传感器读取</strong></div>
+            <div><span>亮点</span><strong>有仪表盘感，像真实设备</strong></div>
+            <div><span>一小时版本</span><strong>读取距离 + 指针显示</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="rhythm-light-wall">
+        <img class="gallery-photo" src="assets/rhythm-wall.png" alt="节奏采样灯墙真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Music / Data / Threshold</span>
+          <h2>节奏采样灯墙</h2>
+          <p>声音传感器和灯带联动，能很快做出舞台感，适合讲阈值、数据范围和模式切换</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>阈值、采样、模式切换</strong></div>
+            <div><span>亮点</span><strong>视觉冲击强，低兴趣学生也会被吸引</strong></div>
+            <div><span>一小时版本</span><strong>三档音量灯效</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="pet-comfort-house">
+        <img class="gallery-photo" src="assets/pet-house.png" alt="宠物舒适度小屋真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Pet / Environment / Scoring</span>
+          <h2>宠物舒适度小屋</h2>
+          <p>把环境数据转成舒适度评分和门控反馈，既有故事感，也能让学生讨论评分规则是否合理</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>加权、区间判断、传感器数据</strong></div>
+            <div><span>亮点</span><strong>外观友好，很适合展示和讲故事</strong></div>
+            <div><span>一小时版本</span><strong>读取温湿度 + 灯光反馈</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="pet-feeder">
+        <img class="gallery-photo" src="assets/pet-feeder.png" alt="自动投喂决策器真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Pet / Logic / Mechanism</span>
+          <h2>自动投喂决策器</h2>
+          <p>用按钮、状态灯和舵机挡板做出一个有真实动作反馈的投喂装置，很适合讲条件判断和限制规则</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>条件判断、计数、状态机</strong></div>
+            <div><span>亮点</span><strong>有机械动作，互动感强</strong></div>
+            <div><span>一小时版本</span><strong>投喂按钮 + 挡板开合</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="basketball-scoreboard">
+        <img class="gallery-photo" src="assets/basketball-scoreboard.png" alt="投篮数据训练台真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Sport / Score / Feedback</span>
+          <h2>投篮数据训练台</h2>
+          <p>把得分、命中率和运动主题结合起来，学生会更愿意去理解数据为什么变化</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>百分比、计分、数据更新</strong></div>
+            <div><span>亮点</span><strong>运动主题强，适合课堂试玩</strong></div>
+            <div><span>一小时版本</span><strong>计分台 + LED 提示</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="livestream-dashboard">
+        <img class="gallery-photo" src="assets/livestream-dashboard.png" alt="直播热度仪表盘真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Social / Data / Media</span>
+          <h2>直播热度仪表盘</h2>
+          <p>把点赞、评论和热度等级做成可实时变化的仪表盘，很适合短视频兴趣学生</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>累计、增长、阈值</strong></div>
+            <div><span>亮点</span><strong>社交媒体语境贴近学生</strong></div>
+            <div><span>一小时版本</span><strong>按键输入 + 热度显示</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="gallery-card" id="milk-tea-console">
+        <img class="gallery-photo" src="assets/milk-tea-console.png" alt="奶茶配方调参台真实场景效果图" />
+        <div class="gallery-copy">
+          <span>Food / Tuning / Daily life</span>
+          <h2>奶茶配方调参台</h2>
+          <p>用旋钮、指示灯和显示屏把甜度、冰量和规则设计变成一个生活化的互动项目</p>
+          <div class="gallery-metrics">
+            <div><span>适合知识点</span><strong>比例、映射、参数调节</strong></div>
+            <div><span>亮点</span><strong>生活场景强，容易激发讨论</strong></div>
+            <div><span>一小时版本</span><strong>双旋钮调节 + 配方显示</strong></div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="video-slot-panel">
+      <div class="section-title left video-title-inline">
+        <span>Video-ready</span>
+        <h2>页面结构已经给后续 API 和视频接入留好了位置</h2>
+        <p>你现在先用这 9 个项目做静态展示。后面如果接入 API，可以根据生成结果自动匹配图片、生成更多项目卡，或者换成真实课堂视频</p>
+      </div>
+      <div class="video-slot-grid">
+        <article class="video-slot">
+          <div class="video-thumb"><img src="assets/reaction-trainer.png" alt="反应训练舱视频封面占位" /></div>
+          <h3>可替换成项目演示视频</h3>
+          <p>后续可接入本地 mp4 或外部存储视频资源</p>
+        </article>
+        <article class="video-slot">
+          <div class="video-thumb"><img src="assets/livestream-dashboard.png" alt="直播热度仪表盘视频封面占位" /></div>
+          <h3>可替换成课堂实拍片段</h3>
+          <p>适合展示按钮触发、数据变化和学生互动过程</p>
+        </article>
+        <article class="video-slot">
+          <div class="video-thumb"><img src="assets/milk-tea-console.png" alt="奶茶配方调参台视频封面占位" /></div>
+          <h3>可替换成 API 自动返回的媒体位</h3>
+          <p>后期你们可以让系统把项目文本、图片和视频一起返回</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer page-shell">
+    <strong>MakerMind AI</strong>
+    <span>先被效果打动，再被原理说服</span>
+  </footer>
+</body>
+</html>

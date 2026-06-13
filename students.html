@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>学生画像｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">MM</span>
+      <span>
+        <strong>MakerMind AI</strong>
+        <small>Hardware learning studio</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="rules.html">项目门槛</a>
+      <a href="generator.html">生成器</a>
+      <a href="gallery.html">作品效果</a>
+      <a class="active" href="students.html">学生画像</a>
+    </nav>
+  </header>
+
+  <main class="page-shell page-main">
+    <section class="page-hero compact left-hero">
+      <span class="eyebrow">Student Profile</span>
+      <h1>老师先看到学生，再看到项目</h1>
+      <p>画像不是给学生贴标签，而是帮助老师选择合适的入口、难度、反馈方式和作品呈现</p>
+    </section>
+
+    <section class="dashboard-section">
+      <aside class="dashboard-card">
+        <span class="eyebrow">Class 7A</span>
+        <h2>学生画像示例</h2>
+        <div class="student-list">
+          <button class="student active" data-name="林一鸣" data-level="需要项目带着学" data-interests="游戏、运动、短视频" data-risk="容易跳过解释，只关注作品能不能玩">
+            <strong>林一鸣</strong>
+            <span>喜欢游戏和运动，愿意动手，理论解释偏弱</span>
+          </button>
+          <button class="student" data-name="陈小雨" data-level="理解快，需要挑战" data-interests="动漫、编程、解谜" data-risk="基础版太简单时会失去耐心">
+            <strong>陈小雨</strong>
+            <span>理解速度快，适合开放式优化任务</span>
+          </button>
+          <button class="student" data-name="周可" data-level="兴趣低，需要强反馈" data-interests="音乐、短视频、美食" data-risk="如果前 10 分钟没有效果，容易退出任务">
+            <strong>周可</strong>
+            <span>需要先看到灯光、声音或动作反馈</span>
+          </button>
+        </div>
+      </aside>
+
+      <article class="dashboard-card detail-card">
+        <span class="eyebrow">Selected student</span>
+        <h2 id="studentName">林一鸣</h2>
+        <div class="metric-grid">
+          <div>
+            <span>学习状态</span>
+            <strong id="studentLevel">需要项目带着学</strong>
+          </div>
+          <div>
+            <span>兴趣偏向</span>
+            <strong id="studentInterests">游戏、运动、短视频</strong>
+          </div>
+          <div class="full">
+            <span>可能卡点</span>
+            <strong id="studentRisk">容易跳过解释，只关注作品能不能玩</strong>
+          </div>
+        </div>
+        <div class="ai-box">
+          <span>AI 给老师的建议</span>
+          <p id="teacherSuggestion">推荐用反应训练舱或直播热度仪表盘作为入口，先让学生做出可玩的反馈，再要求他解释一次参数修改怎样影响分数、速度或灯效</p>
+        </div>
+        <div class="profile-actions">
+          <a class="btn primary" href="generator.html">用这个画像生成项目</a>
+          <a class="btn ghost" href="gallery.html">先看作品效果页</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer page-shell">
+    <strong>MakerMind AI</strong>
+    <span>同一个知识点，可以有不同的学习路径</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
