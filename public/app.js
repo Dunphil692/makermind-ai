@@ -21,10 +21,9 @@ const imageLibrary = {
       "/assets/reference/reaction-trainer-04.png",
       "/assets/reaction-trainer.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示互动反应、计时挑战、按钮反馈和游戏得分"
+    title: "项目效果参考",
+    caption: "互动反应、计时挑战、按钮反馈和游戏得分"
   },
-
   "distance-radar": {
     images: [
       "/assets/reference/distance-radar-01.png",
@@ -33,10 +32,9 @@ const imageLibrary = {
       "/assets/reference/distance-radar-04.png",
       "/assets/distance-radar.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示距离测量、数据映射、传感器反馈和角度变化"
+    title: "项目效果参考",
+    caption: "距离测量、数据映射、传感器反馈和角度变化"
   },
-
   "rhythm-wall": {
     images: [
       "/assets/reference/rhythm-wall-01.png",
@@ -45,10 +43,9 @@ const imageLibrary = {
       "/assets/reference/rhythm-wall-04.png",
       "/assets/rhythm-wall.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示音乐节奏、声音互动、灯光变化和速度挑战"
+    title: "项目效果参考",
+    caption: "音乐节奏、声音互动、灯光变化和速度挑战"
   },
-
   "pet-house": {
     images: [
       "/assets/reference/pet-house-01.png",
@@ -56,10 +53,9 @@ const imageLibrary = {
       "/assets/reference/pet-house-03.png",
       "/assets/pet-house.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示宠物照护、环境监测、温湿度反馈和生活场景"
+    title: "项目效果参考",
+    caption: "宠物照护、环境监测、温湿度反馈和生活场景"
   },
-
   "pet-feeder": {
     images: [
       "/assets/reference/pet-feeder-01.png",
@@ -67,10 +63,9 @@ const imageLibrary = {
       "/assets/reference/pet-feeder-03.png",
       "/assets/pet-feeder.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示自动投喂、定时控制、余量检测和小管家系统"
+    title: "项目效果参考",
+    caption: "自动投喂、定时控制、余量检测和小管家系统"
   },
-
   "basketball-scoreboard": {
     images: [
       "/assets/reference/basketball-scoreboard-01.png",
@@ -78,10 +73,9 @@ const imageLibrary = {
       "/assets/reference/basketball-scoreboard-03.png",
       "/assets/basketball-scoreboard.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示运动计分、比赛规则、倒计时和数据统计"
+    title: "项目效果参考",
+    caption: "运动计分、比赛规则、倒计时和数据统计"
   },
-
   "livestream-dashboard": {
     images: [
       "/assets/reference/livestream-dashboard-01.png",
@@ -89,10 +83,9 @@ const imageLibrary = {
       "/assets/reference/livestream-dashboard-03.png",
       "/assets/livestream-dashboard.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示直播热度、实时数据、趋势变化和可视化看板"
+    title: "项目效果参考",
+    caption: "直播热度、实时数据、趋势变化和可视化看板"
   },
-
   "milk-tea-console": {
     images: [
       "/assets/reference/milk-tea-console-01.png",
@@ -100,10 +93,9 @@ const imageLibrary = {
       "/assets/reference/milk-tea-console-03.png",
       "/assets/milk-tea-console.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示配方比例、参数调节、旋钮输入和比例变化"
+    title: "项目效果参考",
+    caption: "配方比例、参数调节、旋钮输入和比例变化"
   },
-
   "character-energy-core": {
     images: [
       "/assets/reference/character-energy-core-01.png",
@@ -111,8 +103,8 @@ const imageLibrary = {
       "/assets/reference/character-energy-core-03.png",
       "/assets/character-energy-core.png"
     ],
-    title: "最终效果参考",
-    caption: "适合展示角色成长、能量数值、等级变化和灯光反馈"
+    title: "项目效果参考",
+    caption: "角色成长、能量数值、等级变化和灯光反馈"
   }
 };
 
@@ -137,21 +129,6 @@ const kitLabels = {
   k10: "UNIHIKER K10"
 };
 
-const levelInfo = {
-  top: {
-    difficulty: "挑战"
-  },
-  normal: {
-    difficulty: "中等"
-  },
-  weak: {
-    difficulty: "简单"
-  },
-  lowInterest: {
-    difficulty: "简单"
-  }
-};
-
 function safeText(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -161,10 +138,7 @@ function safeText(value) {
 }
 
 function getSelectedText(selectElement) {
-  if (!selectElement) {
-    return "";
-  }
-
+  if (!selectElement) return "";
   return selectElement.options[selectElement.selectedIndex]?.text || selectElement.value || "";
 }
 
@@ -174,10 +148,6 @@ function getCurrentConcept() {
 
 function getCurrentSubject() {
   return subjectSelect?.value || "数学";
-}
-
-function getCurrentLevelValue() {
-  return levelSelect?.value || "normal";
 }
 
 function getCurrentDuration() {
@@ -199,29 +169,24 @@ function getCurrentMaterials() {
 }
 
 function updateResultHeaderOnly() {
-  if (!resultTitle || !matchTag) {
-    return;
-  }
+  if (!resultTitle || !matchTag) return;
 
-  const concept = getCurrentConcept();
-  resultTitle.textContent = `${activeInterest}主题：${concept}硬件项目`;
+  resultTitle.textContent = `${activeInterest}主题：${getCurrentConcept()}学习 instruction`;
   matchTag.textContent = "等待点击生成";
 }
 
 function renderWaitingState() {
-  if (!projectCards) {
-    return;
-  }
+  if (!projectCards) return;
 
   projectCards.innerHTML = `
-    <article class="project-card empty-card">
+    <article class="instruction-empty">
       <div class="project-card-header">
-        <h4>等待生成项目</h4>
+        <h4>等待生成 instruction</h4>
         <span class="badge">未调用 AI</span>
       </div>
       <p>
         现在切换兴趣、课堂时长、硬件套件都不会消耗 token。
-        只有点击“生成硬件项目”按钮，才会调用 AI。
+        只有点击“生成硬件项目”按钮，才会生成完整学习 instruction。
       </p>
       <div class="project-meta">
         <div><span>当前知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
@@ -234,24 +199,20 @@ function renderWaitingState() {
 }
 
 function renderLoadingState() {
-  if (!projectCards || !resultTitle || !matchTag) {
-    return;
-  }
+  if (!projectCards || !resultTitle || !matchTag) return;
 
-  const concept = getCurrentConcept();
-
-  resultTitle.textContent = `${activeInterest}主题：${concept}硬件项目`;
+  resultTitle.textContent = `${activeInterest}主题：${getCurrentConcept()}学习 instruction`;
   matchTag.textContent = "AI 生成中";
 
   projectCards.innerHTML = `
-    <article class="project-card loading-card">
+    <article class="instruction-empty">
       <div class="project-card-header">
-        <h4>正在生成硬件项目...</h4>
+        <h4>正在生成完整项目 instruction...</h4>
         <span class="badge">AI 思考中</span>
       </div>
-      <p>正在根据知识点、兴趣和可用套件生成 3 个课堂硬件项目。</p>
+      <p>正在生成项目概述、材料清单、制作步骤、知识讲解、融会贯通训练和常见问题。</p>
       <div class="project-meta">
-        <div><span>知识点</span><strong>${safeText(concept)}</strong></div>
+        <div><span>知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
         <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
         <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
         <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
@@ -261,101 +222,24 @@ function renderLoadingState() {
 }
 
 function renderErrorState(message) {
-  if (!projectCards || !matchTag) {
-    return;
-  }
+  if (!projectCards || !matchTag) return;
 
   matchTag.textContent = "生成失败";
 
   projectCards.innerHTML = `
-    <article class="project-card error-card">
+    <article class="instruction-empty error-card">
       <div class="project-card-header">
         <h4>AI 生成暂时失败</h4>
         <span class="badge">失败</span>
       </div>
       <p><strong>错误信息：</strong>${safeText(message)}</p>
-      <p>可以检查 AI_MODEL、AI_API_KEY、AI_BASE_URL 是否正确，或者稍后重新点击生成。</p>
+      <p>可以稍后重新点击生成，或检查 AI_MODEL、AI_API_KEY、AI_BASE_URL 是否正确。</p>
     </article>
   `;
 }
 
-function normalizeList(value, fallback = []) {
-  if (Array.isArray(value)) {
-    return value.map(item => String(item).trim()).filter(Boolean);
-  }
-
-  if (typeof value === "string" && value.trim()) {
-    return value
-      .split(/\n|；|;|。|、|,|，/)
-      .map(item => item.trim())
-      .filter(Boolean);
-  }
-
-  return fallback;
-}
-
-function normalizeProject(project, index) {
-  const concept = getCurrentConcept();
-  const level = levelInfo[getCurrentLevelValue()] || levelInfo.normal;
-
-  const imageKeys = [
-    "reaction-trainer",
-    "distance-radar",
-    "rhythm-wall",
-    "pet-house",
-    "pet-feeder",
-    "basketball-scoreboard",
-    "livestream-dashboard",
-    "milk-tea-console",
-    "character-energy-core"
-  ];
-
-  const imageKey = imageLibrary[project?.imageKey]
-    ? project.imageKey
-    : imageKeys[index % imageKeys.length];
-
-  return {
-    title: project?.title || `硬件项目 ${index + 1}`,
-    hook:
-      project?.hook ||
-      `把「${concept}」变成一个可以亲手挑战的${activeInterest}主题任务。`,
-    summary:
-      project?.summary ||
-      `围绕「${concept}」制作一个可互动的硬件项目，让学生通过操作理解知识点。`,
-    interactionFlow:
-      project?.interactionFlow ||
-      `学生动作或传感器输入 → 根据「${concept}」进行计算或判断 → 屏幕、灯光或声音反馈结果`,
-    materials: normalizeList(project?.materials, [
-      getCurrentKitLabel(),
-      ...getCurrentMaterials()
-        .split(/[、,，]/)
-        .map(item => item.trim())
-        .filter(Boolean)
-        .slice(0, 5)
-    ]),
-    steps: normalizeList(project?.steps, [
-      "准备器材并搭建基本结构",
-      "设置传感器或按钮输入",
-      "建立知识点和输入数据的对应关系",
-      "设置屏幕、灯光或声音反馈",
-      "测试并完成一次挑战"
-    ]),
-    knowledgePoint:
-      project?.knowledgePoint ||
-      `这个项目把真实输入转化为「${concept}」中的变量或规则，让学生通过硬件反馈观察知识点变化。`,
-    masteryTraining:
-      project?.masteryTraining ||
-      "改变一个参数或目标条件，观察结果如何变化，并尝试从目标结果反推输入条件。",
-    challenge:
-      project?.challenge ||
-      "可以增加计分、等级、速度变化或数据记录功能。",
-    difficulty: project?.difficulty || level.difficulty,
-    imageKey
-  };
-}
-
-function getStableImageIndex(project, imageCount) {
-  const source = `${project.imageKey}-${project.title}-${project.summary}`;
+function getStableImageIndex(instruction, imageCount) {
+  const source = `${instruction.imageKey}-${instruction.projectName}-${instruction.subtitle}`;
   let hash = 0;
 
   for (let i = 0; i < source.length; i += 1) {
@@ -365,11 +249,12 @@ function getStableImageIndex(project, imageCount) {
   return imageCount > 0 ? hash % imageCount : 0;
 }
 
-function getImageInfo(project) {
-  const libraryItem = imageLibrary[project.imageKey] || imageLibrary["reaction-trainer"];
+function getImageInfo(instruction) {
+  const key = instruction.imageKey || "reaction-trainer";
+  const libraryItem = imageLibrary[key] || imageLibrary["reaction-trainer"];
   const images = Array.isArray(libraryItem.images) ? libraryItem.images : [];
-  const imageIndex = getStableImageIndex(project, images.length);
-  const selectedImage = images[imageIndex] || "/assets/reaction-trainer.png";
+  const index = getStableImageIndex(instruction, images.length);
+  const selectedImage = images[index] || "/assets/reaction-trainer.png";
 
   return {
     image: selectedImage,
@@ -378,114 +263,7 @@ function getImageInfo(project) {
   };
 }
 
-function renderProjects(projects) {
-  if (!projectCards || !resultTitle || !matchTag) {
-    return;
-  }
-
-  const concept = getCurrentConcept();
-  const subject = getCurrentSubject();
-  const duration = getCurrentDuration();
-  const kit = getCurrentKitLabel();
-
-  resultTitle.textContent = `${activeInterest}主题：${concept}硬件项目`;
-  matchTag.textContent = `${projects.length} 个项目`;
-
-  projectCards.innerHTML = "";
-
-  projects.forEach((rawProject, index) => {
-    const project = normalizeProject(rawProject, index);
-    const imageInfo = getImageInfo(project);
-
-    const card = document.createElement("article");
-    card.className = "project-card";
-    card.style.animationDelay = `${index * 90}ms`;
-
-    const materialItems = project.materials
-      .slice(0, 8)
-      .map(item => `<li>${safeText(item)}</li>`)
-      .join("");
-
-    const stepItems = project.steps
-      .slice(0, 6)
-      .map(step => `<li>${safeText(step)}</li>`)
-      .join("");
-
-    card.innerHTML = `
-      <figure class="project-visual">
-        <img
-          src="${safeText(imageInfo.image)}"
-          alt="${safeText(project.title)}"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>${safeText(imageInfo.title)}</strong>
-          <span>${safeText(imageInfo.caption)}</span>
-        </figcaption>
-      </figure>
-
-      <div class="project-card-header">
-        <h4>${safeText(project.title)}</h4>
-        <span class="badge">${safeText(project.difficulty)}</span>
-      </div>
-
-      <p class="project-hook">
-        <strong>项目钩子：</strong>
-        ${safeText(project.hook)}
-      </p>
-
-      <p>
-        <strong>项目核心：</strong>
-        ${safeText(project.summary)}
-      </p>
-
-      <div class="project-meta">
-        <div><span>学科</span><strong>${safeText(subject)}</strong></div>
-        <div><span>套件</span><strong>${safeText(kit)}</strong></div>
-        <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
-        <div><span>时长</span><strong>${safeText(duration)}</strong></div>
-      </div>
-
-      <div class="project-section">
-        <h5>交互链路：</h5>
-        <p>${safeText(project.interactionFlow)}</p>
-      </div>
-
-      <div class="project-section">
-        <h5>知识点怎么活起来：</h5>
-        <p>${safeText(project.knowledgePoint)}</p>
-      </div>
-
-      <div class="project-section">
-        <h5>材料清单：</h5>
-        <ul class="material-list">
-          ${materialItems}
-        </ul>
-      </div>
-
-      <div class="project-section">
-        <h5>制作步骤：</h5>
-        <ol>
-          ${stepItems}
-        </ol>
-      </div>
-
-      <div class="project-section">
-        <h5>融会贯通训练：</h5>
-        <p>${safeText(project.masteryTraining)}</p>
-      </div>
-
-      <p>
-        <strong>进阶挑战：</strong>
-        ${safeText(project.challenge)}
-      </p>
-    `;
-
-    projectCards.appendChild(card);
-  });
-}
-
-async function requestProjects(payload) {
+async function requestInstruction(payload) {
   const response = await fetch("/api/generate-projects", {
     method: "POST",
     headers: {
@@ -500,24 +278,22 @@ async function requestProjects(payload) {
   try {
     data = JSON.parse(text);
   } catch (error) {
-    throw new Error(`项目接口返回的不是 JSON：${text.slice(0, 200)}`);
+    throw new Error(`接口返回的不是 JSON：${text.slice(0, 200)}`);
   }
 
   if (!response.ok) {
-    throw new Error(data.detail || data.error || "项目生成失败");
+    throw new Error(data.detail || data.error || "instruction 生成失败");
   }
 
-  if (!Array.isArray(data.projects)) {
-    throw new Error("AI 没有返回 projects 数组");
+  if (!data.instruction) {
+    throw new Error("AI 没有返回 instruction 对象");
   }
 
-  return data.projects;
+  return data.instruction;
 }
 
 async function generateProjects() {
-  if (isGenerating) {
-    return;
-  }
+  if (isGenerating) return;
 
   isGenerating = true;
 
@@ -542,8 +318,8 @@ async function generateProjects() {
       materials: getCurrentMaterials()
     };
 
-    const projects = await requestProjects(payload);
-    renderProjects(projects);
+    const instruction = await requestInstruction(payload);
+    renderInstruction(instruction);
   } catch (error) {
     console.error(error);
     renderErrorState(error.message || "Failed to fetch");
@@ -555,6 +331,473 @@ async function generateProjects() {
       submitButton.textContent = originalButtonText;
     }
   }
+}
+
+function renderInstruction(instruction) {
+  if (!projectCards || !resultTitle || !matchTag) return;
+
+  const imageInfo = getImageInfo(instruction);
+
+  resultTitle.textContent = instruction.projectName || `${getCurrentConcept()}学习 instruction`;
+  matchTag.textContent = "完整 instruction";
+
+  projectCards.innerHTML = `
+    <article class="instruction-doc">
+      <header class="instruction-hero">
+        <div>
+          <p class="instruction-kicker">STEAM 项目指导</p>
+          <h2>${safeText(instruction.projectName)}</h2>
+          <p>${safeText(instruction.subtitle)}</p>
+          <div class="instruction-meta">
+            <span>状态：${safeText(instruction.meta?.studentLevel)}</span>
+            <span>知识点：${safeText(instruction.meta?.knowledgePoint)}</span>
+            <span>时长：${safeText(instruction.meta?.timeRequired)}</span>
+            <span>硬件：${safeText(instruction.meta?.hardware)}</span>
+          </div>
+        </div>
+      </header>
+
+      <figure class="instruction-visual">
+        <img src="${safeText(imageInfo.image)}" alt="${safeText(instruction.projectName)}" loading="lazy">
+        <figcaption>
+          <strong>${safeText(imageInfo.title)}</strong>
+          <span>${safeText(imageInfo.caption)}</span>
+        </figcaption>
+      </figure>
+
+      <section class="instruction-section">
+        <h3>📖 项目概述</h3>
+        <div class="highlight-box">
+          <strong>核心目标：</strong>${safeText(instruction.overview?.coreGoal)}
+        </div>
+        <p><strong>项目简介：</strong>${safeText(instruction.overview?.projectIntro)}</p>
+        <p><strong>为什么学生会想玩：</strong>${safeText(instruction.overview?.whyFun)}</p>
+        ${renderList("为什么这个项目能帮助学习", instruction.overview?.learningReasons)}
+      </section>
+
+      <section class="instruction-section">
+        <h3>🎮 交互流程预览</h3>
+        <div class="flow-grid">
+          <div><span>触发</span><strong>${safeText(instruction.interactionFlow?.trigger)}</strong></div>
+          <div><span>计算</span><strong>${safeText(instruction.interactionFlow?.calculation)}</strong></div>
+          <div><span>等级</span><strong>${safeText(instruction.interactionFlow?.level)}</strong></div>
+        </div>
+        ${renderList("反馈方式", instruction.interactionFlow?.feedback)}
+        <div class="tips-box">${safeText(instruction.interactionFlow?.levelReason)}</div>
+      </section>
+
+      <section class="instruction-section">
+        <h3>🛠️ 材料清单</h3>
+        ${renderMaterialsTable(instruction.materials)}
+      </section>
+
+      <section class="instruction-section">
+        <h3>📋 制作步骤</h3>
+        ${renderSteps(instruction.steps)}
+      </section>
+
+      <section class="instruction-section">
+        <h3>📚 知识点讲解</h3>
+        ${renderKnowledge(instruction.knowledgeExplanation)}
+      </section>
+
+      <section class="instruction-section mastery-block">
+        <h3>🎯 融会贯通训练</h3>
+        ${renderMastery(instruction.masteryTraining)}
+      </section>
+
+      <section class="instruction-section">
+        <h3>💻 代码思路</h3>
+        <pre><code>${safeText(instruction.starterCode)}</code></pre>
+      </section>
+
+      <section class="instruction-section">
+        <h3>🚀 进阶方向</h3>
+        ${renderList("", instruction.extensions)}
+      </section>
+
+      <section class="instruction-section">
+        <h3>❓ 常见问题</h3>
+        ${renderFaq(instruction.faq)}
+      </section>
+    </article>
+  `;
+}
+
+function renderList(title, items) {
+  const list = Array.isArray(items) ? items : [];
+
+  if (!list.length) return "";
+
+  return `
+    ${title ? `<h4>${safeText(title)}</h4>` : ""}
+    <ul>
+      ${list.map(item => `<li>${safeText(item)}</li>`).join("")}
+    </ul>
+  `;
+}
+
+function renderMaterialsTable(materials) {
+  const list = Array.isArray(materials) ? materials : [];
+
+  if (!list.length) return "<p>暂无材料清单。</p>";
+
+  return `
+    <table class="instruction-table">
+      <thead>
+        <tr>
+          <th>材料</th>
+          <th>数量</th>
+          <th>用途</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map(item => `
+          <tr>
+            <td>${safeText(item.name)}</td>
+            <td>${safeText(item.quantity)}</td>
+            <td>${safeText(item.usage)}</td>
+            <td>${safeText(item.note)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderSteps(steps) {
+  const list = Array.isArray(steps) ? steps : [];
+
+  if (!list.length) return "<p>暂无制作步骤。</p>";
+
+  return list.map((step, index) => `
+    <details ${index === 0 ? "open" : ""}>
+      <summary>Step ${index + 1}: ${safeText(step.title)}（${safeText(step.duration)}）</summary>
+      <div class="detail-content">
+        <p>${safeText(step.content)}</p>
+        ${step.tips ? `<div class="tips-box">💡 ${safeText(step.tips)}</div>` : ""}
+        ${step.warning ? `<div class="warning-box">⚠️ ${safeText(step.warning)}</div>` : ""}
+      </div>
+    </details>
+  `).join("");
+}
+
+function renderKnowledge(knowledge) {
+  return `
+    <details open>
+      <summary>核心概念</summary>
+      <div class="detail-content">
+        <p>${safeText(knowledge?.coreConcept)}</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>关键公式 / 规则</summary>
+      <div class="detail-content">
+        <div class="formula-box">${safeText(knowledge?.keyFormula)}</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>在项目中的应用</summary>
+      <div class="detail-content">
+        <p>${safeText(knowledge?.inProject)}</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>深入理解与常见误区</summary>
+      <div class="detail-content">
+        <p><strong>深入理解：</strong>${safeText(knowledge?.deepUnderstanding)}</p>
+        <p><strong>常见误区：</strong>${safeText(knowledge?.commonMisunderstanding)}</p>
+      </div>
+    </details>
+  `;
+}
+
+function renderMastery(training) {
+  const items = [
+    ["基础练习", training?.basicPractice],
+    ["变化挑战", training?.variationChallenge],
+    ["逆向思维", training?.reverseThinking],
+    ["综合应用", training?.comprehensiveApplication],
+    ["举一反三", training?.transferQuestion]
+  ];
+
+  return items.map(([title, item], index) => `
+    <details ${index === 0 ? "open" : ""}>
+      <summary>${safeText(title)}</summary>
+      <div class="detail-content training-card">
+        <p><strong>任务：</strong>${safeText(item?.task)}</p>
+        <p><strong>提示：</strong>${safeText(item?.hint)}</p>
+        <p><strong>参考答案：</strong>${safeText(item?.answer)}</p>
+      </div>
+    </details>
+  `).join("");
+}
+
+function renderFaq(faq) {
+  const list = Array.isArray(faq) ? faq : [];
+
+  if (!list.length) return "<p>暂无常见问题。</p>";
+
+  return list.map((item, index) => `
+    <details>
+      <summary>Q${index + 1}: ${safeText(item.question)}</summary>
+      <div class="detail-content">
+        <p>${safeText(item.answer)}</p>
+      </div>
+    </details>
+  `).join("");
+}
+
+function injectInstructionStyles() {
+  if (document.getElementById("instruction-style")) return;
+
+  const style = document.createElement("style");
+  style.id = "instruction-style";
+  style.textContent = `
+    .instruction-doc {
+      background: #ffffff;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    }
+
+    .instruction-empty {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .instruction-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      padding: 34px;
+    }
+
+    .instruction-kicker {
+      margin: 0 0 10px;
+      opacity: 0.88;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .instruction-hero h2 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.06;
+    }
+
+    .instruction-hero p {
+      color: rgba(255,255,255,0.92);
+      font-size: 18px;
+    }
+
+    .instruction-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .instruction-meta span {
+      background: rgba(255,255,255,0.18);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .instruction-visual {
+      margin: 0;
+      background: #f8fafc;
+    }
+
+    .instruction-visual img {
+      width: 100%;
+      max-height: 360px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .instruction-visual figcaption {
+      padding: 14px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: #475569;
+      background: #f8fafc;
+    }
+
+    .instruction-section {
+      padding: 28px 32px;
+      border-top: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .instruction-section h3 {
+      color: #4f46e5;
+      font-size: 24px;
+      margin: 0 0 18px;
+    }
+
+    .instruction-section h4 {
+      margin: 18px 0 10px;
+      color: #0f172a;
+    }
+
+    .instruction-section p,
+    .instruction-section li {
+      color: #334155;
+      line-height: 1.75;
+    }
+
+    .highlight-box,
+    .tips-box,
+    .warning-box,
+    .formula-box {
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin: 14px 0;
+      line-height: 1.7;
+    }
+
+    .highlight-box {
+      background: #eef2ff;
+      border-left: 5px solid #6366f1;
+    }
+
+    .tips-box {
+      background: #ecfeff;
+      border-left: 5px solid #06b6d4;
+      color: #0f766e;
+    }
+
+    .warning-box {
+      background: #fff7ed;
+      border-left: 5px solid #f97316;
+      color: #9a3412;
+    }
+
+    .formula-box {
+      background: #f8fafc;
+      border: 2px dashed #6366f1;
+      font-family: "Courier New", monospace;
+      color: #4338ca;
+      font-weight: 800;
+      text-align: center;
+      white-space: pre-wrap;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .flow-grid div {
+      background: #f8fafc;
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .flow-grid span {
+      display: block;
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .flow-grid strong {
+      color: #0f172a;
+      line-height: 1.55;
+    }
+
+    .instruction-table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      font-size: 14px;
+    }
+
+    .instruction-table th,
+    .instruction-table td {
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .instruction-table th {
+      background: #6366f1;
+      color: #ffffff;
+    }
+
+    details {
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 12px 0;
+      background: #ffffff;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 16px 18px;
+      background: #f8fafc;
+      color: #4f46e5;
+      font-weight: 900;
+    }
+
+    .detail-content {
+      padding: 18px;
+    }
+
+    .mastery-block {
+      background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    }
+
+    .training-card {
+      background: #ffffff;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 18px;
+      overflow-x: auto;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    @media (max-width: 900px) {
+      .flow-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .instruction-section {
+        padding: 22px;
+      }
+
+      .instruction-table {
+        font-size: 12px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
 }
 
 chips.forEach(chip => {
@@ -576,9 +819,7 @@ if (form) {
 }
 
 [conceptInput, subjectSelect, levelSelect, kitSelect, durationSelect].forEach(control => {
-  if (!control) {
-    return;
-  }
+  if (!control) return;
 
   control.addEventListener("change", () => {
     updateResultHeaderOnly();
@@ -619,5 +860,6 @@ students.forEach(button => {
   });
 });
 
+injectInstructionStyles();
 updateResultHeaderOnly();
 renderWaitingState();
