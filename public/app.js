@@ -410,7 +410,6 @@ if (form) {
     conceptInput.timer = window.setTimeout(generateProjects, 240);
   });
 
-  generateProjects();
 }
 
 
