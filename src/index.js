@@ -212,6 +212,8 @@ milk-tea-console
 - 不要代码块。
 - 不要在 JSON 外写任何文字。
 - JSON 字符串内部不要出现没有转义的英文双引号。
+- 所有字符串必须是单行字符串，字符串内部禁止真实换行、Tab 等控制字符。
+- 如果需要多行内容，必须使用数组拆成多行，例如 starterCodeLines。
 `;
 }
 
@@ -330,6 +332,7 @@ ${baseDesignRules(input)}
 为了避免 JSON 出错，不要把代码写成一个大字符串。
 starterCodeLines 必须是字符串数组。
 每一行代码作为数组中的一个字符串。
+每个字符串必须是一行，不能包含真实换行。
 每个字符串内部不要再使用英文双引号 "。
 如果需要字符串，请使用中文描述或单引号。
 不要返回 starterCode 字符串，只返回 starterCodeLines 数组。
@@ -521,6 +524,7 @@ async function callTextModel(env, prompt, part) {
   }
 }
 
+
 function parseAIJson(rawText) {
   const cleaned = String(rawText || "")
     .replace(/^```json\s*/i, "")
@@ -528,20 +532,116 @@ function parseAIJson(rawText) {
     .replace(/```$/i, "")
     .trim();
 
-  try {
-    return JSON.parse(cleaned);
-  } catch (error) {
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}");
+  const candidates = [];
 
-    if (start !== -1 && end !== -1 && end > start) {
-      const maybeJson = cleaned.slice(start, end + 1);
-      return JSON.parse(maybeJson);
+  candidates.push(cleaned);
+
+  const extracted = extractJsonObject(cleaned);
+  if (extracted && extracted !== cleaned) {
+    candidates.push(extracted);
+  }
+
+  let lastError = null;
+
+  for (const candidate of candidates) {
+    const fixedCandidates = [
+      candidate,
+      removeTrailingCommas(candidate),
+      escapeControlCharactersInJsonStrings(candidate),
+      removeTrailingCommas(escapeControlCharactersInJsonStrings(candidate))
+    ];
+
+    for (const fixed of fixedCandidates) {
+      try {
+        return JSON.parse(fixed);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+  }
+
+  throw new Error(
+    `${lastError?.message || "AI returned non-JSON content"}。原始内容片段：${cleaned.slice(0, 1200)}`
+  );
+}
+
+function extractJsonObject(text) {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+
+  if (start !== -1 && end !== -1 && end > start) {
+    return text.slice(start, end + 1);
+  }
+
+  return text;
+}
+
+function removeTrailingCommas(text) {
+  return String(text || "").replace(/,\s*([}\]])/g, "$1");
+}
+
+function escapeControlCharactersInJsonStrings(text) {
+  let result = "";
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+
+    if (!inString) {
+      if (ch === '"') {
+        inString = true;
+      }
+
+      result += ch;
+      continue;
     }
 
-    throw new Error(`AI returned non-JSON content: ${cleaned.slice(0, 1200)}`);
+    if (escaped) {
+      result += ch;
+      escaped = false;
+      continue;
+    }
+
+    if (ch === "\\") {
+      result += ch;
+      escaped = true;
+      continue;
+    }
+
+    if (ch === '"') {
+      result += ch;
+      inString = false;
+      continue;
+    }
+
+    if (ch === "\n") {
+      result += "\\n";
+      continue;
+    }
+
+    if (ch === "\r") {
+      result += "\\r";
+      continue;
+    }
+
+    if (ch === "\t") {
+      result += "\\t";
+      continue;
+    }
+
+    const code = ch.charCodeAt(0);
+    if (code >= 0 && code < 32) {
+      result += "\\u" + code.toString(16).padStart(4, "0");
+      continue;
+    }
+
+    result += ch;
   }
+
+  return result;
 }
+
 
 function normalizePartData(part, data, input) {
   if (part === "overview") {
