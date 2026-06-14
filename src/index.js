@@ -384,7 +384,7 @@ async function callTextModel(env, prompt) {
     : `${base}/chat/completions`;
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 60000);
+  const timeout = setTimeout(() => controller.abort(), 180000);
 
   try {
     const response = await fetch(endpoint, {
@@ -408,7 +408,7 @@ async function callTextModel(env, prompt) {
           }
         ],
         temperature: 0.68,
-        max_tokens: 6000
+        max_tokens: 8000
       })
     });
 
