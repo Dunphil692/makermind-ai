@@ -263,13 +263,17 @@ function getImageInfo(instruction) {
   };
 }
 
-async function requestInstruction(payload) {
-  const response = await fetch("/api/generate-projects", {
+
+async function requestInstructionPart(payload, part) {
+  const response = await fetch("/api/generate-instruction-part", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({
+      ...payload,
+      part
+    })
   });
 
   const text = await response.text();
@@ -282,18 +286,68 @@ async function requestInstruction(payload) {
   }
 
   if (!response.ok) {
-    throw new Error(data.detail || data.error || "instruction 生成失败");
+    throw new Error(data.detail || data.error || `${part} 生成失败`);
   }
 
-  if (!data.instruction) {
-    throw new Error("AI 没有返回 instruction 对象");
+  if (!data.data) {
+    throw new Error(`AI 没有返回 ${part} 数据`);
   }
 
-  return data.instruction;
+  return data.data;
+}
+
+function renderGenerationProgress(step, total, title, description) {
+  if (!projectCards || !resultTitle || !matchTag) {
+    return;
+  }
+
+  resultTitle.textContent = `${activeInterest}主题：${getCurrentConcept()}学习 instruction`;
+  matchTag.textContent = `生成中 ${step}/${total}`;
+
+  projectCards.innerHTML = `
+    <article class="instruction-empty">
+      <div class="project-card-header">
+        <h4>${safeText(title)}</h4>
+        <span class="badge">${safeText(step)} / ${safeText(total)}</span>
+      </div>
+      <p>${safeText(description)}</p>
+      <div class="project-meta">
+        <div><span>知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
+        <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
+        <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
+        <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
+      </div>
+      <div class="tips-box">
+        内容正在分段生成。这样等待时间可能仍然较长，但比一次性生成稳定很多，请不要关闭页面。
+      </div>
+    </article>
+  `;
+}
+
+function mergeInstructionParts(overview, build, practice) {
+  return {
+    projectName: overview.projectName,
+    subtitle: overview.subtitle,
+    imageKey: overview.imageKey,
+    meta: overview.meta,
+    overview: overview.overview,
+    interactionFlow: overview.interactionFlow,
+    materials: overview.materials,
+
+    steps: build.steps,
+    knowledgeExplanation: build.knowledgeExplanation,
+    starterCode: build.starterCode,
+
+    masteryTraining: practice.masteryTraining,
+    extensions: practice.extensions,
+    faq: practice.faq
+  };
 }
 
 async function generateProjects() {
-  if (isGenerating) return;
+  if (isGenerating) {
+    return;
+  }
 
   isGenerating = true;
 
@@ -302,12 +356,10 @@ async function generateProjects() {
 
   if (submitButton) {
     submitButton.disabled = true;
-    submitButton.textContent = "正在生成...";
+    submitButton.textContent = "正在生成 1/3...";
   }
 
   try {
-    renderLoadingState();
-
     const payload = {
       concept: getCurrentConcept(),
       subject: getCurrentSubject(),
@@ -318,7 +370,42 @@ async function generateProjects() {
       materials: getCurrentMaterials()
     };
 
-    const instruction = await requestInstruction(payload);
+    renderGenerationProgress(
+      1,
+      3,
+      "正在生成 1/3：项目概述与交互设计",
+      "正在生成项目标题、学习目标、交互流程和材料清单。"
+    );
+
+    const overview = await requestInstructionPart(payload, "overview");
+
+    if (submitButton) {
+      submitButton.textContent = "正在生成 2/3...";
+    }
+
+    renderGenerationProgress(
+      2,
+      3,
+      "正在生成 2/3：制作步骤与知识讲解",
+      "正在生成详细制作步骤、知识点讲解和代码思路。"
+    );
+
+    const build = await requestInstructionPart(payload, "build");
+
+    if (submitButton) {
+      submitButton.textContent = "正在生成 3/3...";
+    }
+
+    renderGenerationProgress(
+      3,
+      3,
+      "正在生成 3/3：融会贯通训练与 FAQ",
+      "正在生成基础练习、变化挑战、逆向思维、进阶方向和常见问题。"
+    );
+
+    const practice = await requestInstructionPart(payload, "practice");
+
+    const instruction = mergeInstructionParts(overview, build, practice);
     renderInstruction(instruction);
   } catch (error) {
     console.error(error);
@@ -332,6 +419,8 @@ async function generateProjects() {
     }
   }
 }
+
+
 
 function renderInstruction(instruction) {
   if (!projectCards || !resultTitle || !matchTag) return;
