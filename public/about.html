@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>关于我们｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .about-hero {
+      padding-top: 48px;
+    }
+
+    .about-hero h1 {
+      max-width: 980px;
+      font-size: clamp(48px, 7vw, 92px);
+      line-height: 0.98;
+      letter-spacing: -0.06em;
+      margin: 16px 0 22px;
+    }
+
+    .about-hero p {
+      max-width: 780px;
+      font-size: 20px;
+      line-height: 1.8;
+      color: #64748b;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      margin-top: 34px;
+    }
+
+    .about-card {
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+    }
+
+    .about-card h2 {
+      font-size: 30px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #0f172a;
+    }
+
+    .about-card h3 {
+      font-size: 20px;
+      margin: 20px 0 10px;
+      color: #0f172a;
+    }
+
+    .about-card p,
+    .about-card li {
+      color: #475569;
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    .about-card ul,
+    .about-card ol {
+      padding-left: 20px;
+      margin-top: 12px;
+    }
+
+    .talking-points {
+      display: grid;
+      gap: 16px;
+    }
+
+    .talking-point {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .talking-point span {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .flow-line div {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .flow-line strong {
+      display: block;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .highlight-quote {
+      margin-top: 18px;
+      background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+      border-left: 6px solid #6366f1;
+      padding: 22px;
+      border-radius: 22px;
+      color: #312e81;
+      font-weight: 800;
+      line-height: 1.7;
+    }
+
+    .demo-script {
+      counter-reset: script;
+    }
+
+    .demo-script li {
+      margin-bottom: 14px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .tag-row span {
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .about-grid,
+      .flow-line {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">MM</span>
+      <span>
+        <strong>MakerMind AI</strong>
+        <small>Hardware learning studio</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="rules.html">项目门槛</a>
+      <a href="generator.html">生成器</a>
+      <a href="gallery.html">作品效果</a>
+      <a href="students.html">学生画像</a>
+      <a class="active" href="about.html">关于我们</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-shell about-hero">
+      <span class="eyebrow">About MakerMind AI</span>
+      <h1>我们不是只生成项目，而是生成一条能学会知识点的路径</h1>
+      <p>
+        MakerMind AI 面向老师和学生，把抽象知识点转化为可操作、可观察、可讲解的硬件学习 instruction。
+        我们希望学生不是为了完成一个作品而做项目，而是在做项目的过程中真正理解知识。
+      </p>
+
+      <div class="tag-row">
+        <span>AI + STEAM 教育</span>
+        <span>项目式学习</span>
+        <span>知识点驱动</span>
+        <span>硬件交互</span>
+        <span>融会贯通训练</span>
+      </div>
+    </section>
+
+    <section class="page-shell about-grid">
+      <article class="about-card">
+        <h2>我们想解决什么问题？</h2>
+        <p>
+          很多创客项目看起来很酷，但学生做完以后，可能只记得灯亮了、蜂鸣器响了，却没有真正理解背后的知识点。
+          另一边，传统练习题虽然能训练计算，但很难吸引学生主动参与。
+        </p>
+        <div class="highlight-quote">
+          我们的核心判断是：项目不应该只是“好玩”，它必须让学生把知识点看见、摸到、听到，并且能够解释出来。
+        </div>
+
+        <h3>所以我们不是做一个普通项目生成器</h3>
+        <ul>
+          <li>不是简单生成几个项目标题。</li>
+          <li>不是把知识点变成电子试卷。</li>
+          <li>不是让屏幕显示公式、按钮输入答案。</li>
+          <li>而是让传感器输入、知识计算和硬件反馈形成完整学习闭环。</li>
+        </ul>
+      </article>
+
+      <article class="about-card">
+        <h2>我们的产品怎么工作？</h2>
+        <div class="flow-line">
+          <div>
+            <strong>01 输入知识点</strong>
+            <p>老师输入一次函数、概率、电路、循环结构等学习目标。</p>
+          </div>
+          <div>
+            <strong>02 选择学生状态</strong>
+            <p>系统根据学生是基础薄弱、兴趣低，还是需要挑战来调整难度。</p>
+          </div>
+          <div>
+            <strong>03 结合兴趣和器材</strong>
+            <p>把游戏、宠物、音乐、运动等兴趣和 Arduino、ESP32、K10 等硬件结合。</p>
+          </div>
+          <div>
+            <strong>04 生成 instruction</strong>
+            <p>输出项目概述、材料、步骤、知识讲解、融会贯通训练和 FAQ。</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="page-shell about-grid">
+      <article class="about-card">
+        <h2>我们的核心设计原则</h2>
+        <div class="talking-points">
+          <div class="talking-point">
+            <span>1</span>
+            <h3>知识点是核心，不是装饰</h3>
+            <p>
+              每个项目都必须解释“这个硬件交互为什么能帮助学生理解这个知识点”。
+              项目不是为了炫酷，而是为了让学习发生。
+            </p>
+          </div>
+
+          <div class="talking-point">
+            <span>2</span>
+            <h3>传感器输入 → 知识计算 → 行动反馈</h3>
+            <p>
+              学生的动作、声音、距离、光照或按钮输入会变成变量；
+              系统根据知识点进行计算或判断；
+              最后通过屏幕、灯光、声音或实体动作反馈出来。
+            </p>
+          </div>
+
+          <div class="talking-point">
+            <span>3</span>
+            <h3>从项目走向融会贯通</h3>
+            <p>
+              instruction 里不仅有制作步骤，还会有基础练习、变化挑战、逆向思维、综合应用和举一反三。
+              这能帮助老师判断学生是否真的理解了知识。
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="about-card">
+        <h2>为什么这对老师有用？</h2>
+        <ul>
+          <li><strong>节省备课时间：</strong>老师不需要从零开始想项目、材料和步骤。</li>
+          <li><strong>降低项目风险：</strong>系统会考虑课堂时长、器材、安全边界和可完成性。</li>
+          <li><strong>更容易讲清楚：</strong>生成的 instruction 自带知识讲解和讲解逻辑。</li>
+          <li><strong>更方便展示：</strong>老师可以直接把页面作为课堂讲义或展示页面。</li>
+          <li><strong>更关注学习结果：</strong>不只看作品是否完成，还看学生是否能解释和迁移。</li>
+        </ul>
+
+        <h3>一句话总结</h3>
+        <div class="highlight-quote">
+          MakerMind AI 帮老师把“我要教什么”转化成“学生愿意做、做完能理解、还能继续追问”的硬件学习路径。
+        </div>
+      </article>
+    </section>
+
+    <section class="page-shell about-grid">
+      <article class="about-card">
+        <h2>黑客松讲解可以这样讲</h2>
+        <ol class="demo-script">
+          <li>
+            <strong>先讲问题：</strong>
+            现在很多项目式学习容易变成“只做作品”，但学习目标不够清楚。
+          </li>
+          <li>
+            <strong>再讲定位：</strong>
+            MakerMind AI 不是单纯的项目推荐器，而是学习型 instruction 生成器。
+          </li>
+          <li>
+            <strong>展示生成器：</strong>
+            输入知识点、学生状态、兴趣和硬件套件，让系统生成完整学习文档。
+          </li>
+          <li>
+            <strong>强调核心创新：</strong>
+            系统把传感器输入、知识点计算、硬件反馈和融会贯通训练组合在一起。
+          </li>
+          <li>
+            <strong>最后讲价值：</strong>
+            老师可以直接把生成页面作为课堂指导，学生也能通过项目理解知识。
+          </li>
+        </ol>
+      </article>
+
+      <article class="about-card">
+        <h2>当前版本状态</h2>
+        <ul>
+          <li>已经完成基础网页结构：首页、项目门槛、生成器、作品效果、学生画像。</li>
+          <li>已经完成 AI 文本生成接口接入。</li>
+          <li>已经从“三个项目卡片”升级为“完整学习 instruction”方向。</li>
+          <li>固定参考图已经替代实时图片生成，避免生成成本和等待时间。</li>
+          <li>下一步重点是把长 instruction 改成分段生成，提高稳定性。</li>
+        </ul>
+
+        <h3>我们接下来会优化什么？</h3>
+        <ul>
+          <li>分段生成：先生成项目概述，再生成知识讲解、步骤和练习。</li>
+          <li>导出功能：让老师可以下载 HTML instruction。</li>
+          <li>学生画像：根据不同学生自动调整解释方式和挑战难度。</li>
+          <li>课堂证据：增加“老师观察点”和“学生是否理解”的判断标准。</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer page-shell">
+    <strong>MakerMind AI</strong>
+    <span>把硬件项目变成真正的学习路径</span>
+  </footer>
+</body>
+</html>
