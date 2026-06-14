@@ -422,6 +422,14 @@ async function generateProjects() {
 
 
 
+
+function formatStarterCode(value) {
+  return String(value ?? "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function renderInstruction(instruction) {
   if (!projectCards || !resultTitle || !matchTag) return;
 
@@ -495,9 +503,30 @@ function renderInstruction(instruction) {
         ${renderMastery(instruction.masteryTraining)}
       </section>
 
-      <section class="instruction-section">
-        <h3>💻 代码思路</h3>
-        <pre><code>${safeText(instruction.starterCode)}</code></pre>
+      <section class="instruction-section code-thought-section">
+        <div class="code-section-title">
+          <div>
+            <h3>💻 代码思路</h3>
+            <p>核心逻辑：读取输入 → 建立知识点规则 → 输出硬件反馈</p>
+          </div>
+          <button class="copy-code-btn" type="button" data-copy-code aria-label="复制代码">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="9" y="7" width="10" height="12" rx="2"></rect>
+              <rect x="5" y="3" width="10" height="12" rx="2"></rect>
+            </svg>
+            <span>复制</span>
+          </button>
+        </div>
+
+        <div class="code-copy-card">
+          <div class="code-copy-header">
+            <span class="code-dot red"></span>
+            <span class="code-dot yellow"></span>
+            <span class="code-dot green"></span>
+            <strong>Starter Code / Pseudocode</strong>
+          </div>
+          <pre class="instruction-code"><code>${safeText(formatStarterCode(instruction.starterCode))}</code></pre>
+        </div>
       </section>
 
       <section class="instruction-section">
@@ -888,6 +917,57 @@ function injectInstructionStyles() {
 
   document.head.appendChild(style);
 }
+
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "-9999px";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+document.addEventListener("click", async event => {
+  const button = event.target.closest("[data-copy-code]");
+  if (!button) {
+    return;
+  }
+
+  const section = button.closest(".code-thought-section");
+  const code = section?.querySelector("code")?.textContent || "";
+
+  if (!code.trim()) {
+    return;
+  }
+
+  const label = button.querySelector("span");
+  const oldText = label?.textContent || "复制";
+
+  try {
+    await copyTextToClipboard(code);
+    if (label) label.textContent = "已复制";
+    button.classList.add("copied");
+
+    setTimeout(() => {
+      if (label) label.textContent = oldText;
+      button.classList.remove("copied");
+    }, 1400);
+  } catch (error) {
+    console.error(error);
+    if (label) label.textContent = "复制失败";
+  }
+});
+
 
 chips.forEach(chip => {
   chip.addEventListener("click", () => {

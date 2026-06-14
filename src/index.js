@@ -327,11 +327,13 @@ ${baseDesignRules(input)}
 - 如果是 Arduino / ESP32，可以给 Arduino 风格伪代码或简化代码。
 - 如果是 K10，可以给 MicroPython 风格伪代码或简化代码。
 - 代码思路必须体现：读取传感器输入 → 根据知识点计算/判断 → 输出屏幕/灯光/声音反馈。
+- 代码应该尽量像标准代码，而不是全部靠左的说明文字。
 
 非常重要：
 为了避免 JSON 出错，不要把代码写成一个大字符串。
 starterCodeLines 必须是字符串数组。
 每一行代码作为数组中的一个字符串。
+可以用两个空格或四个空格表示缩进，形成标准代码结构。
 每个字符串必须是一行，不能包含真实换行。
 每个字符串内部不要再使用英文双引号 "。
 如果需要字符串，请使用中文描述或单引号。
@@ -721,7 +723,7 @@ function normalizeOverviewPart(data, input) {
 
 function normalizeBuildPart(data, input) {
   const starterCode = Array.isArray(data.starterCodeLines)
-    ? data.starterCodeLines.map(line => String(line).trim()).filter(Boolean).join("\n")
+    ? data.starterCodeLines.map(line => String(line).replace(/\s+$/g, "")).filter(line => line.trim()).join("\n")
     : cleanString(
         data.starterCode,
         "# starter code\n# 读取传感器输入，计算知识点规则，并输出屏幕/灯光/声音反馈。"
