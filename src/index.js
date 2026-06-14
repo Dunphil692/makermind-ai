@@ -317,27 +317,27 @@ ${baseDesignRules(input)}
 2. 知识点讲解
 3. 项目中如何体现知识点
 4. 常见误区
-5. starterCodeLines 代码思路
+5. 两种语言的代码思路：C++ / Arduino 和 MicroPython / K10
 
 内容要求：
 - 这部分一定要体现“学习”，不能只是做项目。
 - 制作步骤要具体，适合老师照着讲。
 - 知识讲解要适合中小学生，不要太学术。
 - 代码只需要体现核心逻辑，不要写特别长。
-- 如果是 Arduino / ESP32，可以给 Arduino 风格伪代码或简化代码。
-- 如果是 K10，可以给 MicroPython 风格伪代码或简化代码。
-- 代码思路必须体现：读取传感器输入 → 根据知识点计算/判断 → 输出屏幕/灯光/声音反馈。
+- C++ 版本适合 Arduino / ESP32。
+- MicroPython 版本适合 UNIHIKER K10 / micro:bit / Python 风格硬件。
+- 两种代码都必须体现：读取传感器输入 → 根据知识点计算或判断 → 输出屏幕、灯光、声音反馈。
 - 代码应该尽量像标准代码，而不是全部靠左的说明文字。
 
 非常重要：
 为了避免 JSON 出错，不要把代码写成一个大字符串。
-starterCodeLines 必须是字符串数组。
+starterCodeCppLines 和 starterCodePythonLines 必须都是字符串数组。
 每一行代码作为数组中的一个字符串。
 可以用两个空格或四个空格表示缩进，形成标准代码结构。
 每个字符串必须是一行，不能包含真实换行。
 每个字符串内部不要再使用英文双引号 "。
 如果需要字符串，请使用中文描述或单引号。
-不要返回 starterCode 字符串，只返回 starterCodeLines 数组。
+不要返回 starterCode 字符串，只返回 starterCodeCppLines 和 starterCodePythonLines 数组。
 
 必须返回这个 JSON 结构：
 
@@ -359,12 +359,27 @@ starterCodeLines 必须是字符串数组。
       "deepUnderstanding": "",
       "commonMisunderstanding": ""
     },
-    "starterCodeLines": [
-      "初始化传感器和输出设备",
-      "读取传感器输入值",
-      "把输入值转换成知识点中的变量",
-      "根据知识点公式或规则计算结果",
-      "用屏幕、灯光或声音反馈结果"
+    "starterCodeCppLines": [
+      "#include <Servo.h>",
+      "Servo myServo;",
+      "const int trigPin = 5;",
+      "const int echoPin = 6;",
+      "void setup() {",
+      "  myServo.attach(9);",
+      "}",
+      "void loop() {",
+      "  float x = readSensor();",
+      "  float y = 1.5 * x + 10;",
+      "  outputFeedback(y);",
+      "}"
+    ],
+    "starterCodePythonLines": [
+      "k = 1.5",
+      "b = 10",
+      "while True:",
+      "  x = read_sensor()",
+      "  y = k * x + b",
+      "  show_feedback(y)"
     ]
   }
 }
@@ -381,9 +396,11 @@ starterCodeLines 必须是字符串数组。
 - inProject：解释项目如何体现知识点。
 - deepUnderstanding：帮助学生从现象理解本质。
 - commonMisunderstanding：指出学生容易误解的地方。
-- starterCodeLines：必须是数组，每一项是一行代码或伪代码，不要返回 starterCode 字符串。
+- starterCodeCppLines：C++ / Arduino 风格，每一项是一行代码。
+- starterCodePythonLines：MicroPython / K10 风格，每一项是一行代码。
 `;
 }
+
 
 function buildPracticePrompt(input) {
   return `
@@ -722,11 +739,20 @@ function normalizeOverviewPart(data, input) {
 }
 
 function normalizeBuildPart(data, input) {
-  const starterCode = Array.isArray(data.starterCodeLines)
-    ? data.starterCodeLines.map(line => String(line).replace(/\s+$/g, "")).filter(line => line.trim()).join("\n")
+  const starterCodeCpp = Array.isArray(data.starterCodeCppLines)
+    ? data.starterCodeCppLines.map(line => String(line).replace(/\s+$/g, "")).filter(line => line.trim()).join("\n")
+    : Array.isArray(data.starterCodeLines)
+      ? data.starterCodeLines.map(line => String(line).replace(/\s+$/g, "")).filter(line => line.trim()).join("\n")
+      : cleanString(
+          data.starterCodeCpp || data.starterCode,
+          "#include <Servo.h>\n\nServo myServo;\n\nvoid setup() {\n  myServo.attach(9);\n}\n\nvoid loop() {\n  float x = readSensor();\n  float y = 1.5 * x + 10;\n  outputFeedback(y);\n}"
+        );
+
+  const starterCodePython = Array.isArray(data.starterCodePythonLines)
+    ? data.starterCodePythonLines.map(line => String(line).replace(/\s+$/g, "")).filter(line => line.trim()).join("\n")
     : cleanString(
-        data.starterCode,
-        "# starter code\n# 读取传感器输入，计算知识点规则，并输出屏幕/灯光/声音反馈。"
+        data.starterCodePython,
+        "k = 1.5\nb = 10\n\nwhile True:\n  x = read_sensor()\n  y = k * x + b\n  show_feedback(y)"
       );
 
   return {
@@ -750,9 +776,12 @@ function normalizeBuildPart(data, input) {
         "不要只记公式，要理解输入、规则和输出之间的关系。"
       )
     },
-    starterCode
+    starterCode: starterCodeCpp,
+    starterCodeCpp,
+    starterCodePython
   };
 }
+
 
 function normalizePracticePart(data, input) {
   return {

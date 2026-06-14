@@ -337,6 +337,8 @@ function mergeInstructionParts(overview, build, practice) {
     steps: build.steps,
     knowledgeExplanation: build.knowledgeExplanation,
     starterCode: build.starterCode,
+    starterCodeCpp: build.starterCodeCpp || build.starterCode,
+    starterCodePython: build.starterCodePython,
 
     masteryTraining: practice.masteryTraining,
     extensions: practice.extensions,
@@ -502,30 +504,48 @@ function renderInstruction(instruction) {
         <h3>🎯 融会贯通训练</h3>
         ${renderMastery(instruction.masteryTraining)}
       </section>
-
       <section class="instruction-section code-thought-section">
         <div class="code-section-title">
           <div>
             <h3>💻 代码思路</h3>
-            <p>核心逻辑：读取输入 → 建立知识点规则 → 输出硬件反馈</p>
+            <p>同一个硬件逻辑提供两种写法：C++ / Arduino 与 MicroPython / K10。</p>
           </div>
-          <button class="copy-code-btn" type="button" data-copy-code aria-label="复制代码">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <rect x="9" y="7" width="10" height="12" rx="2"></rect>
-              <rect x="5" y="3" width="10" height="12" rx="2"></rect>
-            </svg>
-            <span>复制</span>
-          </button>
         </div>
 
-        <div class="code-copy-card">
-          <div class="code-copy-header">
-            <span class="code-dot red"></span>
-            <span class="code-dot yellow"></span>
-            <span class="code-dot green"></span>
-            <strong>Starter Code / Pseudocode</strong>
+        <div class="code-language-grid">
+          <div class="code-copy-card">
+            <div class="code-copy-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+              <strong>C++ / Arduino</strong>
+              <button class="copy-code-btn compact" type="button" data-copy-code aria-label="复制 C++ 代码">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="9" y="7" width="10" height="12" rx="2"></rect>
+                  <rect x="5" y="3" width="10" height="12" rx="2"></rect>
+                </svg>
+                <span>复制</span>
+              </button>
+            </div>
+            <pre class="instruction-code"><code>${safeText(formatStarterCode(instruction.starterCodeCpp || instruction.starterCode))}</code></pre>
           </div>
-          <pre class="instruction-code"><code>${safeText(formatStarterCode(instruction.starterCode))}</code></pre>
+
+          <div class="code-copy-card">
+            <div class="code-copy-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+              <strong>MicroPython / K10</strong>
+              <button class="copy-code-btn compact" type="button" data-copy-code aria-label="复制 MicroPython 代码">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="9" y="7" width="10" height="12" rx="2"></rect>
+                  <rect x="5" y="3" width="10" height="12" rx="2"></rect>
+                </svg>
+                <span>复制</span>
+              </button>
+            </div>
+            <pre class="instruction-code"><code>${safeText(formatStarterCode(instruction.starterCodePython || "k = 1.5\\nb = 10\\n\\nwhile True:\\n  x = read_sensor()\\n  y = k * x + b\\n  show_feedback(y)"))}</code></pre>
+          </div>
         </div>
       </section>
 
@@ -943,8 +963,8 @@ document.addEventListener("click", async event => {
     return;
   }
 
-  const section = button.closest(".code-thought-section");
-  const code = section?.querySelector("code")?.textContent || "";
+  const card = button.closest(".code-copy-card");
+  const code = card?.querySelector("code")?.textContent || "";
 
   if (!code.trim()) {
     return;

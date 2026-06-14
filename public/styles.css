@@ -1356,3 +1356,56 @@ select:focus {
   }
 }
 
+
+
+/* ===== Two-language starter code blocks ===== */
+
+.code-language-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.code-copy-header {
+  position: relative;
+}
+
+.code-copy-header .copy-code-btn.compact {
+  margin-left: auto;
+  padding: 7px 11px;
+  font-size: 13px;
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.code-copy-header .copy-code-btn.compact:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.code-copy-header .copy-code-btn.compact.copied {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.code-copy-header .copy-code-btn.compact svg {
+  width: 17px;
+  height: 17px;
+}
+
+.code-language-grid .instruction-code {
+  min-height: 360px;
+}
+
+@media (max-width: 1100px) {
+  .code-language-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .code-language-grid .instruction-code {
+    min-height: auto;
+  }
+}
+
