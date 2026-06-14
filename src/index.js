@@ -211,6 +211,7 @@ milk-tea-console
 - 不要 HTML。
 - 不要代码块。
 - 不要在 JSON 外写任何文字。
+- JSON 字符串内部不要出现没有转义的英文双引号。
 `;
 }
 
@@ -314,16 +315,24 @@ ${baseDesignRules(input)}
 2. 知识点讲解
 3. 项目中如何体现知识点
 4. 常见误区
-5. starterCode 或伪代码
+5. starterCodeLines 代码思路
 
 内容要求：
 - 这部分一定要体现“学习”，不能只是做项目。
 - 制作步骤要具体，适合老师照着讲。
 - 知识讲解要适合中小学生，不要太学术。
-- starterCode 可以稍长，但不要写到失控；重点是核心逻辑清晰。
+- 代码只需要体现核心逻辑，不要写特别长。
 - 如果是 Arduino / ESP32，可以给 Arduino 风格伪代码或简化代码。
 - 如果是 K10，可以给 MicroPython 风格伪代码或简化代码。
 - 代码思路必须体现：读取传感器输入 → 根据知识点计算/判断 → 输出屏幕/灯光/声音反馈。
+
+非常重要：
+为了避免 JSON 出错，不要把代码写成一个大字符串。
+starterCodeLines 必须是字符串数组。
+每一行代码作为数组中的一个字符串。
+每个字符串内部不要再使用英文双引号 "。
+如果需要字符串，请使用中文描述或单引号。
+不要返回 starterCode 字符串，只返回 starterCodeLines 数组。
 
 必须返回这个 JSON 结构：
 
@@ -345,7 +354,13 @@ ${baseDesignRules(input)}
       "deepUnderstanding": "",
       "commonMisunderstanding": ""
     },
-    "starterCode": ""
+    "starterCodeLines": [
+      "初始化传感器和输出设备",
+      "读取传感器输入值",
+      "把输入值转换成知识点中的变量",
+      "根据知识点公式或规则计算结果",
+      "用屏幕、灯光或声音反馈结果"
+    ]
   }
 }
 
@@ -361,7 +376,7 @@ ${baseDesignRules(input)}
 - inProject：解释项目如何体现知识点。
 - deepUnderstanding：帮助学生从现象理解本质。
 - commonMisunderstanding：指出学生容易误解的地方。
-- starterCode：字符串，可以包含换行，但必须合法放在 JSON 字符串里。
+- starterCodeLines：必须是数组，每一项是一行代码或伪代码，不要返回 starterCode 字符串。
 `;
 }
 
@@ -469,7 +484,7 @@ async function callTextModel(env, prompt, part) {
           {
             role: "system",
             content:
-              "你是一个擅长中小学 STEAM 教育、项目式学习、硬件创客课程和知识点讲解的 AI 助手。你必须只输出严格 JSON。"
+              "你是一个擅长中小学 STEAM 教育、项目式学习、硬件创客课程和知识点讲解的 AI 助手。你必须只输出严格 JSON，不输出 Markdown，不输出 HTML。"
           },
           {
             role: "user",
@@ -605,6 +620,13 @@ function normalizeOverviewPart(data, input) {
 }
 
 function normalizeBuildPart(data, input) {
+  const starterCode = Array.isArray(data.starterCodeLines)
+    ? data.starterCodeLines.map(line => String(line).trim()).filter(Boolean).join("\n")
+    : cleanString(
+        data.starterCode,
+        "# starter code\n# 读取传感器输入，计算知识点规则，并输出屏幕/灯光/声音反馈。"
+      );
+
   return {
     steps: normalizeSteps(data.steps, input),
     knowledgeExplanation: {
@@ -626,10 +648,7 @@ function normalizeBuildPart(data, input) {
         "不要只记公式，要理解输入、规则和输出之间的关系。"
       )
     },
-    starterCode: cleanString(
-      data.starterCode,
-      "# starter code\n# 读取传感器输入，计算知识点规则，并输出屏幕/灯光/声音反馈。"
-    )
+    starterCode
   };
 }
 
