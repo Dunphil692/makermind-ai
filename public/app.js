@@ -1,57 +1,3 @@
-
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function fetchWithRetry(url, options = {}, config = {}) {
-  const retries = config.retries ?? 1;
-  const delayMs = config.delayMs ?? 1200;
-
-  let lastError = null;
-
-  for (let attempt = 0; attempt <= retries; attempt += 1) {
-    try {
-      const response = await fetch(url, options);
-
-      if (response.ok) {
-        return response;
-      }
-
-      let message = `HTTP ${response.status}`;
-
-      try {
-        const errorData = await response.clone().json();
-        message = errorData?.error || errorData?.detail || message;
-      } catch {
-        try {
-          const errorText = await response.clone().text();
-          if (errorText) {
-            message = errorText.slice(0, 500);
-          }
-        } catch {}
-      }
-
-      lastError = new Error(message);
-
-      if (attempt < retries) {
-        console.warn(`请求失败，准备自动重试 ${attempt + 1}/${retries}:`, message);
-        await sleep(delayMs);
-        continue;
-      }
-    } catch (error) {
-      lastError = error;
-
-      if (attempt < retries) {
-        console.warn(`网络请求失败，准备自动重试 ${attempt + 1}/${retries}:`, error);
-        await sleep(delayMs);
-        continue;
-      }
-    }
-  }
-
-  throw lastError || new Error("请求失败，请稍后重试。");
-}
-
 const form = document.getElementById("projectForm");
 const conceptInput = document.getElementById("conceptInput");
 const subjectSelect = document.getElementById("subjectSelect");
@@ -319,7 +265,7 @@ function getImageInfo(instruction) {
 
 
 async function requestInstructionPart(payload, part) {
-  const response = await fetchWithRetry("/api/generate-instruction-part", {
+  const response = await fetch("/api/generate-instruction-part", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
