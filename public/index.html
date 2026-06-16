@@ -27,122 +27,283 @@
   </header>
 
   <main>
-    <section class="hero page-shell guide-hero">
-      <div class="guide-hero-copy">
-        <span class="eyebrow">AI + MAKER EDUCATION</span>
-        <h1>
-          让知识点变成<br />
-          一份能动手理解的 instruction
-        </h1>
+    <section class="clarity-hero page-shell">
+      <div class="clarity-hero-copy">
+        <span class="eyebrow">AI + Maker Education</span>
+        <h1>让学生在动手做项目中学会知识</h1>
         <p>
-          输入知识点、学生状态、兴趣偏好和可用硬件，MakerMind AI 会生成一份完整的 STEAM 学习项目文档：
-          项目概述、材料清单、制作步骤、知识讲解、融会贯通训练和常见问题。
+          MakerMind AI 会把一个知识点，变成学生感兴趣的动手学习项目：
+          有故事、有材料、有制作步骤、有知识讲解，也有最后的练习挑战。
         </p>
-
+        <p class="hero-sub-note">
+          学生不只是“做出一个东西”，而是在做的过程中理解一个知识点。
+        </p>
         <div class="hero-actions">
-          <a class="btn primary" href="generator.html">开始生成 instruction</a>
-          <a class="btn ghost" href="about.html">了解产品理念</a>
+          <a class="btn primary" href="gallery.html">查看项目案例</a>
+          <a class="btn ghost" href="generator.html">开始生成学习项目</a>
         </div>
       </div>
 
-      <div class="guide-hero-panel">
-        <div class="guide-panel-header">
+      <div class="clarity-demo-card">
+        <div class="demo-card-top">
           <span class="dot live"></span>
-          <span>Learning instruction preview</span>
+          <span>一个知识点，可以变成一个真实项目</span>
         </div>
 
-        <h2>从知识点到课堂作品</h2>
+        <div class="demo-compare-mini">
+          <div>
+            <small>知识点</small>
+            <strong>一次函数</strong>
+            <p>y = kx + b</p>
+          </div>
 
-        <div class="guide-flow">
-          <article>
-            <span>01</span>
-            <strong>知识点驱动</strong>
-            <p>先明确要学什么：一次函数、概率、电路、浮力、循环结构。</p>
-          </article>
+          <div>
+            <small>传统学习</small>
+            <strong>画图、代入、刷题</strong>
+            <p>会做题，但不一定知道知识有什么用。</p>
+          </div>
 
-          <article>
-            <span>02</span>
-            <strong>学生画像适配</strong>
-            <p>根据学生状态、兴趣和动手能力，调整项目入口和难度。</p>
-          </article>
-
-          <article>
-            <span>03</span>
-            <strong>硬件交互反馈</strong>
-            <p>用传感器输入、知识计算、灯光声音反馈形成学习闭环。</p>
-          </article>
-
-          <article>
-            <span>04</span>
-            <strong>融会贯通训练</strong>
-            <p>项目做完后继续练习：参数变化、逆向思维、综合应用。</p>
-          </article>
+          <div class="highlight">
+            <small>MakerMind 项目</small>
+            <strong>制作一个停车雷达</strong>
+            <p>距离是输入，灯光和蜂鸣器反馈是输出。</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="page-shell split-section">
+    <section class="page-shell clarity-problem-section">
       <div class="section-title left">
-        <span>Why this matters</span>
-        <h2>不是把学生塞进同一个项目，而是让项目适配学生</h2>
-        <p>同一个知识点，对不同学生应该有不同的入口、难度、反馈方式和最后作品形态</p>
+        <span>Problem</span>
+        <h2>学生不是不想学，而是缺少一个愿意学的入口</h2>
+        <p>我们想解决的不是“怎么让网页更酷”，而是“怎么让学生愿意开始学，并且真的学会”。</p>
       </div>
-      <div class="insight-grid">
-        <article class="insight-card">
-          <span>快理解型</span>
-          <h3>基础版很快完成，重点放到优化</h3>
-          <p>例如增加计分算法、自动调难度、记录数据，或者解释误差为什么会出现</p>
+
+      <div class="problem-grid">
+        <article>
+          <span>01</span>
+          <h3>知识太抽象</h3>
+          <p>公式、概念和生活场景之间没有连接，学生不知道为什么要学。</p>
         </article>
-        <article class="insight-card">
-          <span>兴趣驱动型</span>
-          <h3>先做出反馈，再倒推原理</h3>
-          <p>灯光、声音、动作和分数会让学生主动追问为什么会这样变化</p>
+
+        <article>
+          <span>02</span>
+          <h3>学习过程太被动</h3>
+          <p>学生先听讲、再记公式、再刷题，很难持续保持兴趣。</p>
         </article>
-        <article class="insight-card">
-          <span>基础薄弱型</span>
-          <h3>降低搭建焦虑，保留关键思考</h3>
-          <p>用模块化接线、半成品代码和调参任务，让学生把注意力放在核心概念上</p>
+
+        <article>
+          <span>03</span>
+          <h3>项目可能只剩“好玩”</h3>
+          <p>有些项目看起来很热闹，但学生做完作品后，并没有真正理解背后的知识。</p>
         </article>
       </div>
     </section>
 
-    <section class="page-shell showcase-section">
+    <section class="page-shell clarity-flow-section">
       <div class="section-title">
-        <span>Real-looking outcomes</span>
-        <h2>学生不是只看项目名，而是先被最终效果吸引</h2>
-        <p>这一版首页直接展示作品效果图，点击后可以进入作品效果页，看到更完整的参考信息</p>
+        <span>How it works</span>
+        <h2>把知识点变成一个可以动手完成的学习项目</h2>
+        <p>老师输入知识点、学生兴趣和可用材料，系统生成一份可以带着学生完成的动手学习方案。</p>
       </div>
-      <div class="showcase-grid photo-showcase">
+
+      <div class="learning-flow">
         <article>
-          <img class="showcase-photo" src="assets/reaction-trainer.png" alt="反应训练舱真实效果图" />
-          <h3>反应训练舱</h3>
-          <p>灯环、按钮和计分逻辑组合成一个可玩的反应游戏，适合函数、随机和条件判断</p>
-          <a href="gallery.html#reaction-trainer">查看真实效果</a>
+          <span>1</span>
+          <h3>输入知识点</h3>
+          <p>例如一次函数、概率、电路、浮力、循环结构。</p>
         </article>
+
         <article>
-          <img class="showcase-photo" src="assets/distance-radar.png" alt="距离感应雷达真实效果图" />
-          <h3>距离感应雷达</h3>
-          <p>超声波传感器加舵机指针，把数据映射变成能被学生看见的仪表反馈</p>
-          <a href="gallery.html#distance-radar">查看真实效果</a>
+          <span>2</span>
+          <h3>选择兴趣和材料</h3>
+          <p>例如游戏、音乐、运动、Arduino、ESP32、K10 或纸板结构。</p>
         </article>
+
         <article>
-          <img class="showcase-photo" src="assets/rhythm-wall.png" alt="节奏采样灯墙真实效果图" />
-          <h3>节奏采样灯墙</h3>
-          <p>声音传感器和灯带联动，能迅速做出舞台感，很适合做阈值和数据范围教学</p>
-          <a href="gallery.html#rhythm-light-wall">查看真实效果</a>
+          <span>3</span>
+          <h3>生成动手项目</h3>
+          <p>系统给出项目故事、材料清单、制作步骤、知识讲解和代码思路。</p>
+        </article>
+
+        <article>
+          <span>4</span>
+          <h3>边做边理解</h3>
+          <p>学生在调试作品、改变参数、观察反馈的过程中理解知识。</p>
+        </article>
+
+        <article>
+          <span>5</span>
+          <h3>最后验证学会</h3>
+          <p>通过迁移挑战和解释题，检查学生能不能把知识用到新场景。</p>
         </article>
       </div>
     </section>
 
-    <section class="page-shell cta-panel">
+    <section class="page-shell clarity-case-section">
+      <div class="section-title left">
+        <span>Example</span>
+        <h2>一次函数，可以变成一个停车挑战雷达</h2>
+        <p>把抽象公式放进真实反馈里，学生会更容易理解输入、输出、斜率和截距。</p>
+      </div>
+
+      <div class="case-compare">
+        <article class="case-card traditional">
+          <span class="case-label">传统学习方式</span>
+          <h3>学习 y = kx + b</h3>
+          <ul>
+            <li>画函数图像</li>
+            <li>代入数字计算</li>
+            <li>判断斜率和截距</li>
+            <li>完成练习题</li>
+          </ul>
+          <p>很多学生会做题，但不知道这个公式和真实世界有什么关系。</p>
+        </article>
+
+        <article class="case-card makermind">
+          <span class="case-label">MakerMind 方式</span>
+          <h3>制作一个停车雷达</h3>
+          <ul>
+            <li>超声波传感器读取距离 x</li>
+            <li>程序计算 y = kx + b</li>
+            <li>y 控制 LED 灯光、蜂鸣器或屏幕提示</li>
+            <li>学生修改 k 和 b，观察反馈变化</li>
+          </ul>
+          <p>学生会自然理解：x 是输入，y 是输出，k 控制变化速度，b 控制初始状态。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell clarity-output-section">
+      <div class="section-title">
+        <span>What you get</span>
+        <h2>你最后会得到一份完整的动手学习方案</h2>
+        <p>MakerMind AI 生成的不只是项目点子，而是一份可以直接拿来组织课堂或活动的学习方案。</p>
+      </div>
+
+      <div class="output-grid">
+        <article>
+          <span>📖</span>
+          <h3>项目故事</h3>
+          <p>让学生知道自己要做什么，为什么要做。</p>
+        </article>
+
+        <article>
+          <span>🧰</span>
+          <h3>材料清单</h3>
+          <p>告诉老师和学生需要准备哪些硬件和材料。</p>
+        </article>
+
+        <article>
+          <span>🛠️</span>
+          <h3>制作步骤</h3>
+          <p>把复杂项目拆成一步一步可以完成的任务。</p>
+        </article>
+
+        <article>
+          <span>🧠</span>
+          <h3>知识讲解</h3>
+          <p>解释这个项目里真正用到了什么知识。</p>
+        </article>
+
+        <article>
+          <span>💻</span>
+          <h3>代码思路</h3>
+          <p>提供 C++ / Arduino 或 MicroPython / K10 的代码方向。</p>
+        </article>
+
+        <article>
+          <span>🎯</span>
+          <h3>融会贯通训练</h3>
+          <p>让学生不只是完成作品，还要能解释、迁移和改造。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell clarity-examples-section">
+      <div class="section-title left">
+        <span>Cases</span>
+        <h2>不同知识点，都可以变成好玩的项目</h2>
+        <p>我们希望学生从“这个知识点要背下来”，变成“原来这个知识可以让我的作品动起来”。</p>
+      </div>
+
+      <div class="example-list">
+        <article>
+          <strong>一次函数</strong>
+          <span>→</span>
+          <p>停车雷达：用距离传感器和灯光反馈理解输入、输出、斜率和截距。</p>
+        </article>
+
+        <article>
+          <strong>概率</strong>
+          <span>→</span>
+          <p>投篮挑战器：通过命中次数、总次数和命中率理解概率和统计。</p>
+        </article>
+
+        <article>
+          <strong>电路</strong>
+          <span>→</span>
+          <p>反应训练按钮：通过按钮、LED 和蜂鸣器理解电路连接和信号控制。</p>
+        </article>
+
+        <article>
+          <strong>声音频率</strong>
+          <span>→</span>
+          <p>音乐灯光墙：通过声音输入和灯光变化理解频率、节奏和数据反馈。</p>
+        </article>
+
+        <article>
+          <strong>条件判断</strong>
+          <span>→</span>
+          <p>自动宠物喂食器：通过传感器数据和判断规则理解 if / else 逻辑。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell clarity-method-section">
+      <div class="section-title">
+        <span>Comparison</span>
+        <h2>同一个知识点，可以有两种学习方式</h2>
+      </div>
+
+      <div class="method-compare">
+        <article>
+          <h3>传统方式</h3>
+          <ul>
+            <li>老师先讲概念</li>
+            <li>学生记公式</li>
+            <li>通过刷题练习</li>
+            <li>容易觉得知识枯燥</li>
+            <li>做完题后很快忘记</li>
+          </ul>
+        </article>
+
+        <article class="better">
+          <h3>MakerMind 方式</h3>
+          <ul>
+            <li>学生先进入一个有趣任务</li>
+            <li>在制作过程中遇到真实问题</li>
+            <li>使用知识解决问题</li>
+            <li>通过作品看到知识的作用</li>
+            <li>最后用自己的话解释原理</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell clarity-final-cta">
       <div>
-        <span class="eyebrow">Teacher first</span>
-        <h2>先判断能不能做，再决定让学生做什么</h2>
-        <p>项目门槛、学生画像、作品效果和生成器被拆成不同页面，展示时更像一个真实产品</p>
+        <span class="eyebrow">MakerMind AI</span>
+        <h2>不是为了让学生多做一个项目，而是让他们真正理解一个知识点</h2>
+        <p>
+          我们希望把抽象知识变成学生愿意探索的任务，
+          把动手制作变成理解知识的过程，
+          把项目结果变成学生可以解释、改造和迁移的学习成果。
+        </p>
       </div>
       <div class="cta-actions">
-        <a class="btn primary" href="rules.html">进入项目门槛页</a>
-        <a class="btn ghost" href="students.html">查看学生画像页</a>
+        <a class="btn primary" href="generator.html">开始生成学习项目</a>
+        <a class="btn ghost" href="example-instruction.html">查看示例项目</a>
       </div>
     </section>
   </main>
