@@ -49,6 +49,34 @@ export default {
   }
 };
 
+
+async function generateParsedPartWithRetry(env, prompt, part) {
+  const maxAttempts = 2;
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    let rawText = "";
+
+    try {
+      rawText = await callTextModel(env, prompt, part);
+      return parseAIJson(rawText);
+    } catch (error) {
+      lastError = error;
+
+      console.warn(
+        `[${part}] AI JSON 生成或解析失败，第 ${attempt}/${maxAttempts} 次：`,
+        error?.message || error
+      );
+
+      if (attempt < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 900));
+      }
+    }
+  }
+
+  throw lastError || new Error(`${part} 生成失败，请稍后重试。`);
+}
+
 async function handleGenerateInstructionPart(request, env) {
   const startedAt = Date.now();
 
@@ -71,8 +99,7 @@ async function handleGenerateInstructionPart(request, env) {
 
     const part = normalizePartName(body.part || body.section || "overview");
     const prompt = buildPartPrompt(input, part);
-    const rawText = await callTextModel(env, prompt, part);
-    const parsed = parseAIJson(rawText);
+    const parsed = await generateParsedPartWithRetry(env, prompt, part);
 
     const partData = parsed[part] || parsed.data || parsed;
 
