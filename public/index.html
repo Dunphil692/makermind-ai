@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MakerMind AI｜硬件项目学习工作台</title>
+  <title>MakerMind AI｜兴趣驱动硬件项目学习平台</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
@@ -13,15 +13,15 @@
       <span class="brand-mark">MM</span>
       <span>
         <strong>MakerMind AI</strong>
-        <small>Hardware learning studio</small>
+        <small>兴趣驱动硬件项目学习平台</small>
       </span>
     </a>
     <nav class="nav-links">
       <a class="active" href="index.html">首页</a>
-      <a href="rules.html">项目门槛</a>
+      <a href="rules.html">学习痛点</a>
       <a href="generator.html">生成器</a>
-      <a href="gallery.html">作品效果</a>
-      <a href="students.html">学生画像</a>
+      <a href="gallery.html">项目案例</a>
+      <a href="students.html">用户分层</a>
       <a href="about.html">关于我们</a>
     </nav>
   </header>
@@ -29,265 +29,287 @@
   <main>
     <section class="clarity-hero page-shell">
       <div class="clarity-hero-copy">
-        <span class="eyebrow">AI + Maker Education</span>
-        <h1>让学生在动手做项目中学会知识</h1>
+        <span class="eyebrow">面向小学生与初中生的兴趣驱动型硬件项目学习平台</span>
+        <h1 class="hero-title">
+          <span class="hero-title-line">让知识变成</span>
+          <span class="hero-title-line">孩子愿意动手完成的项目</span>
+        </h1>
         <p>
-          MakerMind AI 会把一个知识点，变成学生感兴趣的动手学习项目：
-          有故事、有材料、有制作步骤、有知识讲解，也有最后的练习挑战。
+          MakerMind AI 会根据学生的兴趣方向、学习知识点和可用材料，
+          生成可以动手完成的硬件项目方案。学生可以围绕足球、篮球、音乐、交通、
+          科学实验等主题，在制作、观察、调试和展示中理解抽象知识。
         </p>
         <p class="hero-sub-note">
-          学生不只是“做出一个东西”，而是在做的过程中理解一个知识点。
+          我们关注的不是把知识简单包装成游戏，而是把知识点转化为真实项目，
+          让兴趣成为学习入口，让动手过程帮助学生真正理解知识。
         </p>
         <div class="hero-actions">
-          <a class="btn primary" href="gallery.html">查看项目案例</a>
-          <a class="btn ghost" href="generator.html">开始生成学习项目</a>
-        </div>
-      </div>
-
-      <div class="clarity-demo-card">
-        <div class="demo-card-top">
-          <span class="dot live"></span>
-          <span>一个知识点，可以变成一个真实项目</span>
-        </div>
-
-        <div class="demo-compare-mini">
-          <div>
-            <small>知识点</small>
-            <strong>一次函数</strong>
-            <p>y = kx + b</p>
-          </div>
-
-          <div>
-            <small>传统学习</small>
-            <strong>画图、代入、刷题</strong>
-            <p>会做题，但不一定知道知识有什么用。</p>
-          </div>
-
-          <div class="highlight">
-            <small>MakerMind 项目</small>
-            <strong>制作一个停车雷达</strong>
-            <p>距离是输入，灯光和蜂鸣器反馈是输出。</p>
-          </div>
+          <a class="btn primary" href="generator.html">开始生成项目</a>
+          <a class="btn ghost" href="gallery.html">查看项目案例</a>
         </div>
       </div>
     </section>
 
-    <section class="page-shell clarity-problem-section">
+    <section id="problem" class="page-shell clarity-problem-section">
       <div class="section-title left">
-        <span>Problem</span>
-        <h2>学生不是不想学，而是缺少一个愿意学的入口</h2>
-        <p>我们想解决的不是“怎么让网页更酷”，而是“怎么让学生愿意开始学，并且真的学会”。</p>
+        <span>学习痛点分析</span>
+        <h2>学生不是学不会，而是需要有趣的开始</h2>
+        <p>
+          很多小学生和初中生第一次接触新知识时，真正卡住的不是能力，
+          而是知识太抽象、反馈太少、和兴趣场景距离太远。
+          MakerMind AI 希望用硬件项目作为桥梁，让学生在动手制作中理解知识。
+        </p>
       </div>
 
       <div class="problem-grid">
         <article>
           <span>01</span>
-          <h3>知识太抽象</h3>
-          <p>公式、概念和生活场景之间没有连接，学生不知道为什么要学。</p>
+          <h3>新知识起步难</h3>
+          <p>
+            函数、方程、几何和科学原理第一次出现时往往比较抽象，
+            学生很难马上理解它们和真实生活、兴趣场景之间的联系。
+          </p>
         </article>
 
         <article>
           <span>02</span>
-          <h3>学习过程太被动</h3>
-          <p>学生先听讲、再记公式、再刷题，很难持续保持兴趣。</p>
+          <h3>学习参与感不足</h3>
+          <p>
+            传统学习常以听讲、记忆和刷题为主，学生缺少亲自操作、
+            观察反馈和修正方案的过程。
+          </p>
         </article>
 
         <article>
           <span>03</span>
-          <h3>项目可能只剩“好玩”</h3>
-          <p>有些项目看起来很热闹，但学生做完作品后，并没有真正理解背后的知识。</p>
+          <h3>兴趣没有被利用</h3>
+          <p>
+            有人喜欢足球，有人喜欢篮球、音乐或实验。学习设计如果忽视兴趣，
+            就很难让学生主动进入新知识。
+          </p>
+        </article>
+
+        <article>
+          <span>04</span>
+          <h3>缺少动手实践</h3>
+          <p>
+            只看图和做题很难形成真实理解。学生需要通过制作、测试和展示，
+            把抽象概念转化为可以解释的作品。
+          </p>
         </article>
       </div>
     </section>
 
-    <section class="page-shell clarity-flow-section">
-      <div class="section-title">
-        <span>How it works</span>
-        <h2>把知识点变成一个可以动手完成的学习项目</h2>
-        <p>老师输入知识点、学生兴趣和可用材料，系统生成一份可以带着学生完成的动手学习方案。</p>
+    <section id="flow" class="page-shell clarity-flow-section">
+      <div class="section-title left">
+        <span>生成流程</span>
+        <h2>
+          从一个知识点，<br>
+          到一套可以完成的硬件学习项目
+        </h2>
+        <p>
+          平台把“学什么、谁来学、喜欢什么、能用什么材料”放在一起考虑，
+          再生成适合学生完成的项目任务，让学习从抽象讲解进入真实制作。
+        </p>
       </div>
 
       <div class="learning-flow">
         <article>
-          <span>1</span>
-          <h3>输入知识点</h3>
-          <p>例如一次函数、概率、电路、浮力、循环结构。</p>
+          <span>01</span>
+          <h3>输入学习目标</h3>
+          <p>
+            输入知识点和学段，例如分数、面积、方程、一次函数、几何或科学原理。
+          </p>
         </article>
 
         <article>
-          <span>2</span>
-          <h3>选择兴趣和材料</h3>
-          <p>例如游戏、音乐、运动、Arduino、ESP32、K10 或纸板结构。</p>
+          <span>02</span>
+          <h3>匹配兴趣场景</h3>
+          <p>
+            选择学生喜欢的主题，例如足球、篮球、音乐、交通、实验或故事情境。
+          </p>
         </article>
 
         <article>
-          <span>3</span>
-          <h3>生成动手项目</h3>
-          <p>系统给出项目故事、材料清单、制作步骤、知识讲解和代码思路。</p>
+          <span>03</span>
+          <h3>生成项目方案</h3>
+          <p>
+            输出项目背景、材料清单、结构搭建、硬件连接和程序逻辑。
+          </p>
         </article>
 
         <article>
-          <span>4</span>
-          <h3>边做边理解</h3>
-          <p>学生在调试作品、改变参数、观察反馈的过程中理解知识。</p>
-        </article>
-
-        <article>
-          <span>5</span>
-          <h3>最后验证学会</h3>
-          <p>通过迁移挑战和解释题，检查学生能不能把知识用到新场景。</p>
+          <span>04</span>
+          <h3>制作验证理解</h3>
+          <p>
+            通过调试、改参数、解释现象和展示作品，检查学生是否真正理解知识。
+          </p>
         </article>
       </div>
     </section>
 
-    <section class="page-shell clarity-case-section">
+    <section id="case" class="page-shell clarity-case-section">
       <div class="section-title left">
         <span>Example</span>
-        <h2>一次函数，可以变成一个停车挑战雷达</h2>
-        <p>把抽象公式放进真实反馈里，学生会更容易理解输入、输出、斜率和截距。</p>
+        <h2>
+          一次函数，<br>
+          可以变成一场球星点球大战
+        </h2>
+        <p>
+          这个案例不是把题目换成足球，而是把一次函数放进一个有赛事、
+          有角色、有硬件反馈的具体场景里，让学生在设计规则时理解公式。
+        </p>
       </div>
 
       <div class="case-compare">
-        <article class="case-card traditional">
-          <span class="case-label">传统学习方式</span>
-          <h3>学习 y = kx + b</h3>
-          <ul>
-            <li>画函数图像</li>
-            <li>代入数字计算</li>
-            <li>判断斜率和截距</li>
-            <li>完成练习题</li>
-          </ul>
-          <p>很多学生会做题，但不知道这个公式和真实世界有什么关系。</p>
-        </article>
+        <div class="case-card traditional">
+          <span class="pill">传统学习方式</span>
+          <h3>学习一次函数 y = kx + b</h3>
 
-        <article class="case-card makermind">
-          <span class="case-label">MakerMind 方式</span>
-          <h3>制作一个停车雷达</h3>
+          <div class="scenario-box">
+            <strong>学习场景：</strong>
+            公式讲解、函数图像、数字代入、练习题
+          </div>
+
           <ul>
-            <li>超声波传感器读取距离 x</li>
-            <li>程序计算 y = kx + b</li>
-            <li>y 控制 LED 灯光、蜂鸣器或屏幕提示</li>
-            <li>学生修改 k 和 b，观察反馈变化</li>
+            <li>老师讲解公式含义</li>
+            <li>学生画一次函数图像</li>
+            <li>代入数字计算 y 的值</li>
+            <li>判断 k 和 b 的作用</li>
           </ul>
-          <p>学生会自然理解：x 是输入，y 是输出，k 控制变化速度，b 控制初始状态。</p>
-        </article>
+
+          <p>
+            学生可能会做题，但公式仍然停留在纸面上，
+            很难和自己真正感兴趣的内容产生联系。
+          </p>
+        </div>
+
+        <div class="case-card highlight">
+          <span class="pill primary">MakerMind 方式</span>
+          <h3>制作一个球星点球大战计分台</h3>
+
+          <div class="scenario-box">
+            <strong>学生兴趣：</strong>
+            世界杯、欧冠、梅西、C罗、诺伊尔、点球大战
+          </div>
+
+          <div class="scenario-box">
+            <strong>具体场景：</strong>
+            欧冠决赛最后一轮点球。学生选择自己喜欢的射门球星和守门员角色，
+            硬件系统根据射门力度自动计算得分，并用灯光、声音或屏幕反馈结果。
+          </div>
+
+          <ul>
+            <li>压力传感器或震动传感器读取射门力度 x</li>
+            <li>程序使用 y = kx + b 计算本次射门得分 y</li>
+            <li>LED 灯条显示“被扑出 / 进球 / 世界波”</li>
+            <li>蜂鸣器模拟进球、扑救或观众欢呼反馈</li>
+            <li>学生调整 k 和 b，设计不同球星与守门员的挑战规则</li>
+          </ul>
+
+          <p>
+            学生会自然理解：x 是输入，y 是输出，k 决定得分增长速度，
+            b 表示初始加成。公式不再只是纸上的符号，而是自己亲手设计的比赛规则。
+          </p>
+        </div>
       </div>
     </section>
 
-    <section class="page-shell clarity-output-section">
-      <div class="section-title">
-        <span>What you get</span>
-        <h2>你最后会得到一份完整的动手学习方案</h2>
-        <p>MakerMind AI 生成的不只是项目点子，而是一份可以直接拿来组织课堂或活动的学习方案。</p>
+    <section id="output" class="page-shell clarity-output-section">
+      <div class="section-title left">
+        <span>生成结果</span>
+        <h2>
+          生成的不只是项目点子，<br>
+          而是一套可执行的硬件学习方案
+        </h2>
+        <p>
+          MakerMind AI 会根据知识点、学生兴趣、具体场景和可用材料，
+          生成一套可以直接用于制作和教学的硬件项目方案。学生不是只看创意，
+          而是能按步骤做出作品，并在调试和展示中理解知识。
+        </p>
       </div>
 
       <div class="output-grid">
         <article>
-          <span>📖</span>
-          <h3>项目故事</h3>
-          <p>让学生知道自己要做什么，为什么要做。</p>
+          <span>01</span>
+          <h3>兴趣场景脚本</h3>
+          <p>
+            把学生喜欢的主题转化成具体任务，例如球星点球大战、
+            篮球投篮挑战、音乐节奏灯或科学实验装置。
+          </p>
         </article>
 
         <article>
-          <span>🧰</span>
-          <h3>材料清单</h3>
-          <p>告诉老师和学生需要准备哪些硬件和材料。</p>
+          <span>02</span>
+          <h3>硬件材料清单</h3>
+          <p>
+            根据项目难度生成传感器、LED、蜂鸣器、屏幕、开发板、
+            纸板结构或 3D 打印部件等材料建议。
+          </p>
         </article>
 
         <article>
-          <span>🛠️</span>
-          <h3>制作步骤</h3>
-          <p>把复杂项目拆成一步一步可以完成的任务。</p>
+          <span>03</span>
+          <h3>制作与调试步骤</h3>
+          <p>
+            拆解结构搭建、硬件连接、程序逻辑、参数调整、测试方法和调试提示，
+            降低学生完成项目的门槛。
+          </p>
         </article>
 
         <article>
-          <span>🧠</span>
-          <h3>知识讲解</h3>
-          <p>解释这个项目里真正用到了什么知识。</p>
-        </article>
-
-        <article>
-          <span>💻</span>
-          <h3>代码思路</h3>
-          <p>提供 C++ / Arduino 或 MicroPython / K10 的代码方向。</p>
-        </article>
-
-        <article>
-          <span>🎯</span>
-          <h3>融会贯通训练</h3>
-          <p>让学生不只是完成作品，还要能解释、迁移和改造。</p>
+          <span>04</span>
+          <h3>知识理解挑战</h3>
+          <p>
+            项目完成后，引导学生解释现象、调整参数、迁移场景，
+            检查他们是否真正理解背后的知识。
+          </p>
         </article>
       </div>
-    </section>
 
-    <section class="page-shell clarity-examples-section">
-      <div class="section-title left">
-        <span>Cases</span>
-        <h2>不同知识点，都可以变成好玩的项目</h2>
-        <p>我们希望学生从“这个知识点要背下来”，变成“原来这个知识可以让我的作品动起来”。</p>
-      </div>
+      <div class="interest-cases">
+        <div class="interest-case-title">
+          <span>更多兴趣案例</span>
+          <h3>同一个平台，可以生成不同主题的硬件学习项目</h3>
+        </div>
 
-      <div class="example-list">
-        <article>
-          <strong>一次函数</strong>
-          <span>→</span>
-          <p>停车雷达：用距离传感器和灯光反馈理解输入、输出、斜率和截距。</p>
-        </article>
+        <div class="interest-case-grid">
+          <article>
+            <strong>足球兴趣</strong>
+            <h4>球星点球大战计分台</h4>
+            <p>
+              将一次函数、输入输出关系和传感器反馈结合起来，
+              让学生在射门计分规则中理解 y = kx + b。
+            </p>
+          </article>
 
-        <article>
-          <strong>概率</strong>
-          <span>→</span>
-          <p>投篮挑战器：通过命中次数、总次数和命中率理解概率和统计。</p>
-        </article>
+          <article>
+            <strong>篮球兴趣</strong>
+            <h4>投篮角度提示器</h4>
+            <p>
+              通过角度传感器、LED 提示和命中率记录，
+              帮助学生理解角度、数据统计和实验调整。
+            </p>
+          </article>
 
-        <article>
-          <strong>电路</strong>
-          <span>→</span>
-          <p>反应训练按钮：通过按钮、LED 和蜂鸣器理解电路连接和信号控制。</p>
-        </article>
+          <article>
+            <strong>音乐兴趣</strong>
+            <h4>音乐节奏灯光台</h4>
+            <p>
+              通过声音传感器读取音量和节奏变化，
+              让学生理解声音强弱、数据变化和输出反馈。
+            </p>
+          </article>
 
-        <article>
-          <strong>声音频率</strong>
-          <span>→</span>
-          <p>音乐灯光墙：通过声音输入和灯光变化理解频率、节奏和数据反馈。</p>
-        </article>
-
-        <article>
-          <strong>条件判断</strong>
-          <span>→</span>
-          <p>自动宠物喂食器：通过传感器数据和判断规则理解 if / else 逻辑。</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="page-shell clarity-method-section">
-      <div class="section-title">
-        <span>Comparison</span>
-        <h2>同一个知识点，可以有两种学习方式</h2>
-      </div>
-
-      <div class="method-compare">
-        <article>
-          <h3>传统方式</h3>
-          <ul>
-            <li>老师先讲概念</li>
-            <li>学生记公式</li>
-            <li>通过刷题练习</li>
-            <li>容易觉得知识枯燥</li>
-            <li>做完题后很快忘记</li>
-          </ul>
-        </article>
-
-        <article class="better">
-          <h3>MakerMind 方式</h3>
-          <ul>
-            <li>学生先进入一个有趣任务</li>
-            <li>在制作过程中遇到真实问题</li>
-            <li>使用知识解决问题</li>
-            <li>通过作品看到知识的作用</li>
-            <li>最后用自己的话解释原理</li>
-          </ul>
-        </article>
+          <article>
+            <strong>科学实验兴趣</strong>
+            <h4>自动感应小夜灯</h4>
+            <p>
+              通过光敏传感器、LED 和控制逻辑，
+              帮助学生理解光照变化、电路控制和条件判断。
+            </p>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -310,7 +332,7 @@
 
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
-    <span>为老师生成更合适的硬件学习路径</span>
+    <span>为学生生成更有兴趣入口的硬件学习项目</span>
   </footer>
 </body>
 </html>
