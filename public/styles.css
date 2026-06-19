@@ -2129,3 +2129,205 @@ main {
     font-size: 38px;
   }
 }
+
+/* ===== Generator page polish ===== */
+
+.result-panel {
+  background:
+    radial-gradient(circle at top right, rgba(79, 70, 229, 0.08), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(0, 168, 132, 0.08), transparent 32%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.result-header h2 {
+  line-height: 1.18;
+  letter-spacing: -0.045em;
+}
+
+.instruction-empty,
+.demo-fallback-card {
+  padding: 34px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
+}
+
+.demo-fallback-card .project-card-header {
+  margin-bottom: 18px;
+}
+
+.demo-fallback-card h4 {
+  margin: 0;
+  font-size: 26px;
+  color: #0f172a;
+  letter-spacing: -0.035em;
+}
+
+.demo-fallback-card > p {
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.project-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.project-meta div {
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.project-meta span {
+  display: block;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.project-meta strong {
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.demo-output-block {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.demo-output-block h5 {
+  margin: 0 0 10px;
+  color: #4338ca;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.demo-output-block p,
+.demo-output-block li {
+  color: #475569;
+  line-height: 1.85;
+  font-size: 16px;
+}
+
+.demo-output-block ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+@media (max-width: 900px) {
+  .project-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .project-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Generator fallback result polish ===== */
+
+.demo-fallback-card {
+  padding: 34px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(79, 70, 229, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.96));
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
+}
+
+.demo-fallback-card .project-card-header {
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.demo-fallback-card h4 {
+  margin: 0;
+  font-size: 26px;
+  color: #0f172a;
+  letter-spacing: -0.035em;
+}
+
+.demo-fallback-card > p {
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.project-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.project-meta div {
+  padding: 15px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.project-meta span {
+  display: block;
+  margin-bottom: 6px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.project-meta strong {
+  color: #0f172a;
+  font-size: 15px;
+}
+
+.demo-output-block {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.demo-output-block h5 {
+  margin: 0 0 10px;
+  color: #4338ca;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.demo-output-block p,
+.demo-output-block li {
+  color: #475569;
+  line-height: 1.85;
+  font-size: 16px;
+}
+
+.demo-output-block ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+@media (max-width: 900px) {
+  .project-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .project-meta {
+    grid-template-columns: 1fr;
+  }
+}

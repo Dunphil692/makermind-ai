@@ -171,7 +171,7 @@ function getCurrentMaterials() {
 function updateResultHeaderOnly() {
   if (!resultTitle || !matchTag) return;
 
-  resultTitle.textContent = `${activeInterest}主题：${getCurrentConcept()}学习 instruction`;
+  resultTitle.textContent = `${getCurrentConcept()} × ${activeInterest}｜硬件学习方案`;
   matchTag.textContent = "等待点击生成";
 }
 
@@ -224,16 +224,66 @@ function renderLoadingState() {
 function renderErrorState(message) {
   if (!projectCards || !matchTag) return;
 
-  matchTag.textContent = "生成失败";
+  matchTag.textContent = "演示方案";
+
+  const concept = getCurrentConcept();
+  const interest = activeInterest || "球星点球大战";
+  const kit = getCurrentKitLabel();
+  const duration = getCurrentDuration();
+
+  resultTitle.textContent = `${concept} × ${interest}｜硬件学习方案`;
 
   projectCards.innerHTML = `
-    <article class="instruction-empty error-card">
+    <article class="instruction-empty demo-fallback-card">
       <div class="project-card-header">
-        <h4>AI 生成暂时失败</h4>
-        <span class="badge">失败</span>
+        <h4>已为你生成一份演示项目方案</h4>
+        <span class="badge">本地演示</span>
       </div>
-      <p><strong>错误信息：</strong>${safeText(message)}</p>
-      <p>可以稍后重新点击生成，或检查 AI_MODEL、AI_API_KEY、AI_BASE_URL 是否正确。</p>
+
+      <p>
+        当前 AI 接口暂时没有连接成功，所以这里先展示一份本地演示方案。
+        正式部署后，系统会根据知识点、兴趣场景和硬件条件自动生成完整内容。
+      </p>
+
+      <div class="project-meta">
+        <div><span>知识点</span><strong>${safeText(concept)}</strong></div>
+        <div><span>兴趣场景</span><strong>${safeText(interest)}</strong></div>
+        <div><span>硬件套件</span><strong>${safeText(kit)}</strong></div>
+        <div><span>课堂时长</span><strong>${safeText(duration)}</strong></div>
+      </div>
+
+      <div class="demo-output-block">
+        <h5>项目名称</h5>
+        <p>${safeText(interest)}计分反馈装置</p>
+      </div>
+
+      <div class="demo-output-block">
+        <h5>项目思路</h5>
+        <p>
+          学生通过传感器读取动作数据，例如力度、距离、角度或声音变化，
+          再用 ${safeText(concept)} 建立输入与输出之间的关系，
+          最后用 LED、蜂鸣器或屏幕显示反馈结果。
+        </p>
+      </div>
+
+      <div class="demo-output-block">
+        <h5>制作步骤</h5>
+        <ol>
+          <li>确定项目场景和角色，例如球星射门、投篮挑战或音乐节奏反馈。</li>
+          <li>连接传感器与开发板，读取输入数据。</li>
+          <li>设计计算规则，把输入数据转化成得分、灯光或声音反馈。</li>
+          <li>测试不同输入下的输出变化，并调整参数。</li>
+          <li>让学生解释作品背后的知识点，完成展示和挑战。</li>
+        </ol>
+      </div>
+
+      <div class="demo-output-block">
+        <h5>知识理解</h5>
+        <p>
+          学生需要说明输入是什么、输出是什么、参数改变后结果如何变化。
+          这样可以把抽象公式转化成可以观察和调试的真实反馈。
+        </p>
+      </div>
     </article>
   `;
 }
@@ -301,7 +351,7 @@ function renderGenerationProgress(step, total, title, description) {
     return;
   }
 
-  resultTitle.textContent = `${activeInterest}主题：${getCurrentConcept()}学习 instruction`;
+  resultTitle.textContent = `${getCurrentConcept()} × ${activeInterest}｜硬件学习方案`;
   matchTag.textContent = `生成中 ${step}/${total}`;
 
   projectCards.innerHTML = `
