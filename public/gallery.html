@@ -3,188 +3,321 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>作品效果｜MakerMind AI</title>
+  <title>MakerMind AI｜任务案例库</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
+
 <body>
   <header class="topbar">
     <a class="brand" href="index.html">
       <span class="brand-mark">MM</span>
       <span>
         <strong>MakerMind AI</strong>
-        <small>Hardware learning studio</small>
+        <small>Project-based lesson studio</small>
       </span>
     </a>
+
     <nav class="nav-links">
       <a href="index.html">首页</a>
-      <a href="rules.html">项目门槛</a>
-      <a href="generator.html">生成器</a>
-      <a class="active" href="gallery.html">作品效果</a>
-      <a href="students.html">学生画像</a>
+      <a href="rules.html">课堂痛点</a>
+      <a href="generator.html">任务生成器</a>
+      <a class="active" href="gallery.html">任务案例</a>
+      <a href="students.html">学生分层</a>
       <a href="about.html">关于我们</a>
     </nav>
   </header>
 
-  <main class="page-shell page-main">
-    <section class="page-hero compact left-hero">
-      <span class="eyebrow">Outcome gallery</span>
-      <h1>先让学生看到作品长什么样，再让他们想去做</h1>
-      <p>这次我把 9 个代表性项目的真实场景风格效果图直接放进了网站里。现在先用静态图片做展示，后面你们接入 API 以后，可以让系统按项目动态生成或匹配图片</p>
-      <div class="hero-actions">
-        <a class="btn primary" href="generator.html">带着效果图去生成 instruction</a>
-        <a class="btn ghost" href="index.html">返回首页</a>
+  <main class="page-main">
+    <section class="page-shell lesson-gallery-hero">
+      <span class="eyebrow">TASK CASE LIBRARY</span>
+      <h1>任务案例库</h1>
+      <p>
+        这里不是单纯展示作品图片，而是把每个项目整理成老师可以直接理解和复用的课堂任务案例。
+        每个案例都包含知识点、兴趣场景、学习形式、课堂时长和硬件拓展方向。
+      </p>
+    </section>
+
+    <section class="page-shell lesson-case-feature">
+      <div class="feature-copy">
+        <span>Featured Case</span>
+        <h2>一次函数 × 球星点球大战</h2>
+        <p>
+          通过点球挑战场景，把“输入 x、输出 y、参数 k 和 b”变成学生可以观察和调试的反馈规则。
+          老师可以先用网页滑杆模拟射门力度，再用纸面计分表记录数据，最后升级成压力传感器和 LED 得分反馈。
+        </p>
+
+        <div class="feature-tags">
+          <span>一次函数</span>
+          <span>小学高年级 / 初中低年级</span>
+          <span>15-60 分钟</span>
+          <span>可网页模拟 / 可硬件拓展</span>
+        </div>
+
+        <div class="feature-actions">
+          <a class="btn primary" href="generator.html">生成类似任务</a>
+          <a class="btn ghost" href="#case-grid">查看全部案例</a>
+        </div>
+      </div>
+
+      <div class="feature-image">
+        <img src="assets/soccer-penalty.png" alt="球星点球大战项目效果图" />
       </div>
     </section>
 
-    <section class="media-gallery">
-      <article class="gallery-card" id="reaction-trainer">
-        <div class="gallery-copy">
-          <span>Game / Math / Coding</span>
-          <h2>反应训练舱</h2>
-          <p>灯环、按钮和蜂鸣器做成一个可玩的反应装置，适合函数、随机和条件判断</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>函数、随机、条件判断</strong></div>
-            <div><span>亮点</span><strong>灯光反馈强，展示感好</strong></div>
-            <div><span>一小时版本</span><strong>基础玩法 + 计分逻辑</strong></div>
-          </div>
-        </div>
-      </article>
+    <section class="page-shell lesson-case-section" id="case-grid">
+      <div class="section-title left">
+        <span>案例列表</span>
+        <h2>
+          8 个可复用的互动项目课案例
+        </h2>
+        <p>
+          这些案例可以作为前端原型阶段的固定任务库。后续接入 API 后，
+          系统可以基于这些模板生成更多变化版本。
+        </p>
+      </div>
 
-      <article class="gallery-card" id="character-energy-core">
-        <div class="gallery-copy">
-          <span>Anime / State / Interaction</span>
-          <h2>角色能量核心</h2>
-          <p>通过发光核心、按钮和角色设定，让学生把能量积累、状态切换和反馈做得更有代入感</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>状态机、阈值、输入输出</strong></div>
-            <div><span>亮点</span><strong>视觉冲击强，动漫兴趣入口好</strong></div>
-            <div><span>一小时版本</span><strong>按钮蓄能 + 灯效释放</strong></div>
-          </div>
-        </div>
-      </article>
+      <div class="lesson-case-grid">
+        <article class="lesson-case-card">
+          <img src="assets/soccer-penalty.png" alt="球星点球大战项目效果图" />
 
-      <article class="gallery-card" id="distance-radar">
-        <div class="gallery-copy">
-          <span>Sensor / Physics / Data</span>
-          <h2>距离感应雷达</h2>
-          <p>把超声波传感器读到的数据变成指针和灯光反馈，学生更容易理解输入与输出的关系</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>区间、映射、传感器读取</strong></div>
-            <div><span>亮点</span><strong>有仪表盘感，像真实设备</strong></div>
-            <div><span>一小时版本</span><strong>读取距离 + 指针显示</strong></div>
-          </div>
-        </div>
-      </article>
+          <div class="lesson-case-body">
+            <span class="case-type">数学 × 足球</span>
+            <h3>球星点球大战</h3>
+            <p>
+              用滑杆或压力传感器表示射门力度 x，系统根据一次函数规则计算得分 y，
+              帮助学生理解输入、输出和参数变化。
+            </p>
 
-      <article class="gallery-card" id="rhythm-light-wall">
-        <div class="gallery-copy">
-          <span>Music / Data / Threshold</span>
-          <h2>节奏采样灯墙</h2>
-          <p>声音传感器和灯带联动，能很快做出舞台感，适合讲阈值、数据范围和模式切换</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>阈值、采样、模式切换</strong></div>
-            <div><span>亮点</span><strong>视觉冲击强，低兴趣学生也会被吸引</strong></div>
-            <div><span>一小时版本</span><strong>三档音量灯效</strong></div>
-          </div>
-        </div>
-      </article>
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>一次函数</strong></div>
+              <div><span>学习形式</span><strong>三层任务</strong></div>
+              <div><span>课堂时长</span><strong>15-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>压力传感器 + LED</strong></div>
+            </div>
 
-      <article class="gallery-card" id="pet-comfort-house">
-        <div class="gallery-copy">
-          <span>Pet / Environment / Scoring</span>
-          <h2>宠物舒适度小屋</h2>
-          <p>把环境数据转成舒适度评分和门控反馈，既有故事感，也能让学生讨论评分规则是否合理</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>加权、区间判断、传感器数据</strong></div>
-            <div><span>亮点</span><strong>外观友好，很适合展示和讲故事</strong></div>
-            <div><span>一小时版本</span><strong>读取温湿度 + 灯光反馈</strong></div>
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>网页滑杆模拟射门力度。</li>
+                <li>学生记录不同力度下的得分。</li>
+                <li>讨论 k 和 b 改变后比赛规则如何变化。</li>
+              </ol>
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
 
-      <article class="gallery-card" id="pet-feeder">
-        <div class="gallery-copy">
-          <span>Pet / Logic / Mechanism</span>
-          <h2>自动投喂决策器</h2>
-          <p>用按钮、状态灯和舵机挡板做出一个有真实动作反馈的投喂装置，很适合讲条件判断和限制规则</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>条件判断、计数、状态机</strong></div>
-            <div><span>亮点</span><strong>有机械动作，互动感强</strong></div>
-            <div><span>一小时版本</span><strong>投喂按钮 + 挡板开合</strong></div>
-          </div>
-        </div>
-      </article>
+        <article class="lesson-case-card">
+          <img src="assets/basketball-challenge.png" alt="篮球投篮挑战项目效果图" />
 
-      <article class="gallery-card" id="basketball-scoreboard">
-        <div class="gallery-copy">
-          <span>Sport / Score / Feedback</span>
-          <h2>投篮数据训练台</h2>
-          <p>把得分、命中率和运动主题结合起来，学生会更愿意去理解数据为什么变化</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>百分比、计分、数据更新</strong></div>
-            <div><span>亮点</span><strong>运动主题强，适合课堂试玩</strong></div>
-            <div><span>一小时版本</span><strong>计分台 + LED 提示</strong></div>
-          </div>
-        </div>
-      </article>
+          <div class="lesson-case-body">
+            <span class="case-type">数学 × 篮球</span>
+            <h3>篮球投篮挑战</h3>
+            <p>
+              通过投篮角度、距离和命中评分的变化，让学生理解数据记录、比例关系和实验调整。
+            </p>
 
-      <article class="gallery-card" id="livestream-dashboard">
-        <div class="gallery-copy">
-          <span>Social / Data / Media</span>
-          <h2>直播热度仪表盘</h2>
-          <p>把点赞、评论和热度等级做成可实时变化的仪表盘，很适合短视频兴趣学生</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>累计、增长、阈值</strong></div>
-            <div><span>亮点</span><strong>社交媒体语境贴近学生</strong></div>
-            <div><span>一小时版本</span><strong>按键输入 + 热度显示</strong></div>
-          </div>
-        </div>
-      </article>
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>数据统计 / 比例</strong></div>
+              <div><span>学习形式</span><strong>网页模拟 + 动手任务</strong></div>
+              <div><span>课堂时长</span><strong>30-45 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>距离检测 + 计分屏</strong></div>
+            </div>
 
-      <article class="gallery-card" id="milk-tea-console">
-        <div class="gallery-copy">
-          <span>Food / Tuning / Daily life</span>
-          <h2>奶茶配方调参台</h2>
-          <p>用旋钮、指示灯和显示屏把甜度、冰量和规则设计变成一个生活化的互动项目</p>
-          <div class="gallery-metrics">
-            <div><span>适合知识点</span><strong>比例、映射、参数调节</strong></div>
-            <div><span>亮点</span><strong>生活场景强，容易激发讨论</strong></div>
-            <div><span>一小时版本</span><strong>双旋钮调节 + 配方显示</strong></div>
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>模拟不同投篮角度。</li>
+                <li>记录命中评分和次数。</li>
+                <li>比较哪种角度更稳定。</li>
+              </ol>
+            </div>
           </div>
-        </div>
-      </article>
+        </article>
+
+        <article class="lesson-case-card">
+          <img src="assets/music-led-device.png" alt="音乐节奏灯项目效果图" />
+
+          <div class="lesson-case-body">
+            <span class="case-type">科学 × 音乐</span>
+            <h3>音乐节奏灯</h3>
+            <p>
+              用声音强度控制 LED 亮度和闪烁频率，让学生理解声音变化、数据输入和输出反馈。
+            </p>
+
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>声音与振动</strong></div>
+              <div><span>学习形式</span><strong>网页模拟 + 硬件拓展</strong></div>
+              <div><span>课堂时长</span><strong>30-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>声音传感器 + LED</strong></div>
+            </div>
+
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>观察声音强弱变化。</li>
+                <li>让灯光跟随节奏变化。</li>
+                <li>解释输入信号如何变成输出效果。</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="lesson-case-card">
+          <img src="assets/pet-feeder.png" alt="宠物自动喂食器项目效果图" />
+
+          <div class="lesson-case-body">
+            <span class="case-type">生活 × 自动控制</span>
+            <h3>宠物自动喂食器</h3>
+            <p>
+              把时间间隔、投喂次数和条件判断结合起来，让学生理解生活问题如何转化成自动化规则。
+            </p>
+
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>时间 / 条件判断</strong></div>
+              <div><span>学习形式</span><strong>低成本任务 + 硬件拓展</strong></div>
+              <div><span>课堂时长</span><strong>45-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>舵机 + 显示屏</strong></div>
+            </div>
+
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>设计不同投喂规则。</li>
+                <li>模拟时间间隔和投喂次数。</li>
+                <li>讨论自动控制系统如何避免错误。</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="lesson-case-card">
+          <img src="assets/racing-timer.png" alt="赛车计时挑战项目效果图" />
+
+          <div class="lesson-case-body">
+            <span class="case-type">数学 × 赛车</span>
+            <h3>赛车计时挑战</h3>
+            <p>
+              用赛车速度、通过时间和计时结果建立联系，让学生理解速度、时间和数据比较。
+            </p>
+
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>速度 / 时间 / 数据</strong></div>
+              <div><span>学习形式</span><strong>网页模拟 + 传感器拓展</strong></div>
+              <div><span>课堂时长</span><strong>30-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>红外传感器 + 计时器</strong></div>
+            </div>
+
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>比较不同速度下的完成时间。</li>
+                <li>记录多轮实验结果。</li>
+                <li>分析怎样让赛车成绩更稳定。</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="lesson-case-card">
+          <img src="assets/science-lab.png" alt="科学实验装置项目效果图" />
+
+          <div class="lesson-case-body">
+            <span class="case-type">科学 × 实验</span>
+            <h3>科学实验装置</h3>
+            <p>
+              通过变量控制、数据观察和图表反馈，让学生理解科学实验中的输入变量和观察结果。
+            </p>
+
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>实验变量 / 数据观察</strong></div>
+              <div><span>学习形式</span><strong>实验任务 + 数据记录</strong></div>
+              <div><span>课堂时长</span><strong>45-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>传感器 + 数据图表</strong></div>
+            </div>
+
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>选择一个实验变量。</li>
+                <li>记录变化后的观察结果。</li>
+                <li>用图表解释数据趋势。</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="lesson-case-card">
+          <img src="assets/campus-helper.png" alt="校园生活助手项目效果图" />
+
+          <div class="lesson-case-body">
+            <span class="case-type">校园 × 生活科技</span>
+            <h3>校园生活助手</h3>
+            <p>
+              用提醒、状态判断和环境数据反馈，帮助学生理解技术如何解决校园生活中的具体问题。
+            </p>
+
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>条件判断 / 数据反馈</strong></div>
+              <div><span>学习形式</span><strong>生活任务 + 展示项目</strong></div>
+              <div><span>课堂时长</span><strong>30-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>按钮 + 蜂鸣器 + 屏幕</strong></div>
+            </div>
+
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>找一个校园生活问题。</li>
+                <li>设计提醒规则。</li>
+                <li>用状态反馈解释判断逻辑。</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="lesson-case-card">
+          <img src="assets/environment-monitor.png" alt="环保监测项目效果图" />
+
+          <div class="lesson-case-body">
+            <span class="case-type">环保 × 数据监测</span>
+            <h3>环保监测项目</h3>
+            <p>
+              通过光照、温度、空气或环境指标变化，让学生理解数据采集、阈值判断和反馈提醒。
+            </p>
+
+            <div class="case-meta-grid">
+              <div><span>知识点</span><strong>数据监测 / 阈值判断</strong></div>
+              <div><span>学习形式</span><strong>网页模拟 + 监测装置</strong></div>
+              <div><span>课堂时长</span><strong>45-60 分钟</strong></div>
+              <div><span>硬件拓展</span><strong>环境传感器 + 显示屏</strong></div>
+            </div>
+
+            <div class="case-flow">
+              <strong>课堂用法</strong>
+              <ol>
+                <li>选择一个环境指标。</li>
+                <li>设置安全和警告阈值。</li>
+                <li>解释为什么系统会触发提醒。</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+      </div>
     </section>
 
-    <section class="video-slot-panel">
-      <div class="section-title left video-title-inline">
-        <span>Video-ready</span>
-        <h2>页面结构已经给后续 API 和视频接入留好了位置</h2>
-        <p>你现在先用这 9 个项目做静态展示。后面如果接入 API，可以根据生成结果自动匹配图片、生成更多项目卡，或者换成真实课堂视频</p>
-      </div>
-      <div class="video-slot-grid">
-        <article class="video-slot">
-          <div class="video-thumb"><img src="assets/reaction-trainer.png" alt="反应训练舱视频封面占位" /></div>
-          <h3>可替换成项目演示视频</h3>
-          <p>后续可接入本地 mp4 或外部存储视频资源</p>
-        </article>
-        <article class="video-slot">
-          <div class="video-thumb"><img src="assets/livestream-dashboard.png" alt="直播热度仪表盘视频封面占位" /></div>
-          <h3>可替换成课堂实拍片段</h3>
-          <p>适合展示按钮触发、数据变化和学生互动过程</p>
-        </article>
-        <article class="video-slot">
-          <div class="video-thumb"><img src="assets/milk-tea-console.png" alt="奶茶配方调参台视频封面占位" /></div>
-          <h3>可替换成 API 自动返回的媒体位</h3>
-          <p>后期你们可以让系统把项目文本、图片和视频一起返回</p>
-        </article>
-      </div>
+    <section class="page-shell lesson-gallery-cta">
+      <span class="eyebrow">NEXT STEP</span>
+      <h2>从案例库进入任务生成器</h2>
+      <p>
+        老师可以先从固定案例中选择方向，再进入任务生成器，根据年级、课堂时长和学习形式生成对应任务。
+      </p>
+      <a class="btn primary" href="generator.html">进入任务生成器</a>
     </section>
   </main>
 
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
-    <span>先被效果打动，再被原理说服</span>
+    <span>面向科创课堂与项目式学习的互动任务生成工作台</span>
   </footer>
 </body>
 </html>

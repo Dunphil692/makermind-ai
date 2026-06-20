@@ -3,110 +3,238 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>项目门槛｜MakerMind AI</title>
+  <title>MakerMind AI｜课堂痛点</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
+
 <body>
   <header class="topbar">
     <a class="brand" href="index.html">
       <span class="brand-mark">MM</span>
       <span>
         <strong>MakerMind AI</strong>
-        <small>Hardware learning studio</small>
+        <small>Project-based lesson studio</small>
       </span>
     </a>
+
     <nav class="nav-links">
       <a href="index.html">首页</a>
-      <a class="active" href="rules.html">项目门槛</a>
-      <a href="generator.html">生成器</a>
-      <a href="gallery.html">作品效果</a>
-      <a href="students.html">学生画像</a>
+      <a class="active" href="rules.html">课堂痛点</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="students.html">学生分层</a>
       <a href="about.html">关于我们</a>
     </nav>
   </header>
 
-  <main class="page-shell page-main">
-    <section class="page-hero compact">
-      <span class="eyebrow">Project Gate</span>
-      <h1>项目先过门槛，再进入推荐池</h1>
-      <p>这个页面用于解释 AI 为什么会把某些大型硬件项目拆小、降级或替换</p>
-      <div class="hero-actions center-actions">
-        <a class="btn primary" href="generator.html">通过门槛后去生成</a>
-        <a class="btn ghost" href="gallery.html">先看作品效果</a>
+  <main class="page-main">
+    <section class="page-shell pain-hero">
+      <span class="eyebrow">CLASSROOM PAIN POINTS</span>
+      <h1>
+        项目式学习难的不是理念，<br />
+        而是真正落地
+      </h1>
+      <p>
+        很多老师和机构都知道项目式学习、STEAM 活动和动手实践有价值，
+        但在真实课堂里，难点往往不是“要不要做”，而是如何把一个知识点快速设计成
+        学生能开始、老师能引导、课堂能完成、最后还能展示的任务。
+      </p>
+    </section>
+
+    <section class="page-shell pain-summary">
+      <div class="pain-summary-card">
+        <span>核心问题</span>
+        <h2>老师真正缺的不是创意，而是一套可执行的课堂任务结构</h2>
+        <p>
+          一个项目课如果只停留在“做一个有趣作品”，很容易变成热闹但不深入；
+          如果一开始就进入硬件、接线和代码，学生又容易卡住。MakerMind AI 要解决的，
+          是把知识点、兴趣场景、课堂时长和材料条件组织成一套可执行任务。
+        </p>
       </div>
     </section>
 
-    <section class="rule-board">
-      <article class="rule-tile pass">
-        <span>Time</span>
-        <h2>60 分钟能形成闭环</h2>
-        <ul>
-          <li>8 分钟看懂任务和安全提醒</li>
-          <li>15 分钟完成核心接线或拼装</li>
-          <li>20 分钟代码、调参或结构调试</li>
-          <li>12 分钟测试、改进和展示</li>
-          <li>5 分钟用自己的话解释知识点</li>
-        </ul>
-      </article>
-      <article class="rule-tile pass">
-        <span>Parts</span>
-        <h2>器材常见且替换容易</h2>
-        <ul>
-          <li>低压电源、杜邦线、面包板、纸板优先</li>
-          <li>按钮、LED、蜂鸣器、舵机、传感器优先</li>
-          <li>不依赖长时间 3D 打印和机械加工</li>
-          <li>坏一个零件也能快速换方案</li>
-        </ul>
-      </article>
-      <article class="rule-tile warn">
-        <span>Difficulty</span>
-        <h2>可以有挑战，但不能卡死</h2>
-        <ul>
-          <li>基础版必须能在 30 分钟内跑起来</li>
-          <li>进阶版通过功能扩展增加兴趣</li>
-          <li>每个项目保留一个值得讨论的关键变量</li>
-          <li>作品效果要足够吸引人，但不靠复杂加工堆难度</li>
-        </ul>
-      </article>
-      <article class="rule-tile stop">
-        <span>Safety</span>
-        <h2>高风险项目不直接推荐</h2>
-        <ul>
-          <li>高功率激光、220V 市电、明火默认排除</li>
-          <li>复杂机械加工和长时间切割默认排除</li>
-          <li>强依赖焊接、金工、木工的项目要降级</li>
-          <li>优先低压、可复用、能快速收纳的作品</li>
-        </ul>
-      </article>
+    <section class="page-shell pain-grid-section">
+      <div class="section-title left">
+        <span>真实课堂中的 4 个难点</span>
+        <h2>
+          从备课到展示，<br />
+          每一步都可能卡住
+        </h2>
+      </div>
+
+      <div class="pain-card-grid">
+        <article>
+          <span>01</span>
+          <h3>备课成本高</h3>
+          <p>
+            老师需要同时考虑知识点、学生兴趣、材料准备、课堂流程、调试问题和最终展示。
+            如果每节项目课都从零开始设计，时间成本非常高。
+          </p>
+        </article>
+
+        <article>
+          <span>02</span>
+          <h3>项目难度不好控制</h3>
+          <p>
+            项目太简单，学生只是玩一玩；项目太难，学生又会卡在接线、代码或调试上。
+            不同年级、不同基础的学生需要不同层次的任务。
+          </p>
+        </article>
+
+        <article>
+          <span>03</span>
+          <h3>学生起步容易失去耐心</h3>
+          <p>
+            如果一开始就要求学生理解复杂公式、硬件连接和代码逻辑，
+            很多学生会在进入知识点之前就失去兴趣。
+          </p>
+        </article>
+
+        <article>
+          <span>04</span>
+          <h3>作品展示缺少知识解释</h3>
+          <p>
+            很多作品最后只能停留在“能亮灯、能响、能动”的层面。
+            老师还需要引导学生讲清楚作品背后的输入、输出、规则和知识点。
+          </p>
+        </article>
+      </div>
     </section>
 
-    <section class="comparison-card">
-      <div>
-        <span class="eyebrow">How AI adjusts</span>
-        <h2>大型项目进入系统后，会先被拆解</h2>
-        <p>比如大型 CNC、激光雕刻、复杂机械臂这类作品，不会直接进入课堂推荐，而是被拆成更适合一小时内完成的小目标</p>
+    <section class="page-shell pain-compare-section">
+      <div class="section-title left">
+        <span>为什么普通 AI 生成不够</span>
+        <h2>
+          问题不是能不能生成文字，<br />
+          而是生成后能不能上课
+        </h2>
+        <p>
+          普通 AI 可以生成很多项目创意，但真实课堂需要的是稳定结构：
+          学生怎么开始、老师怎么引导、材料怎么准备、失败怎么处理、最后怎么展示。
+        </p>
       </div>
-      <div class="conversion-list">
+
+      <div class="pain-compare">
+        <article class="compare-card weak">
+          <span>普通生成方式</span>
+          <h3>生成一段项目说明</h3>
+          <ul>
+            <li>内容可能很丰富，但课堂结构不稳定</li>
+            <li>没有根据时长和材料控制难度</li>
+            <li>学生任务、教师引导和展示问题容易混在一起</li>
+            <li>看起来像一篇说明文，不一定能直接用于课堂</li>
+          </ul>
+        </article>
+
+        <article class="compare-card strong">
+          <span>MakerMind AI 方式</span>
+          <h3>生成一套课堂任务包</h3>
+          <ul>
+            <li>先生成网页互动模拟，让学生快速看到反馈</li>
+            <li>再生成低成本材料任务，方便普通课堂落地</li>
+            <li>最后提供硬件拓展方案，适合科创社团和展示</li>
+            <li>同时输出学生任务卡、教师引导卡和展示问题</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell pain-layer-section">
+      <div class="section-title left">
+        <span>解决思路</span>
+        <h2>
+          不是一上来就做硬件，<br />
+          而是分三层进入项目
+        </h2>
+      </div>
+
+      <div class="pain-layer-grid">
+        <article>
+          <span>Level 1</span>
+          <h3>网页互动模拟</h3>
+          <p>
+            用滑杆、按钮、分数变化和即时反馈，让学生先理解输入和输出关系。
+            这一层不需要材料，适合知识点导入。
+          </p>
+        </article>
+
+        <article>
+          <span>Level 2</span>
+          <h3>低成本动手任务</h3>
+          <p>
+            使用纸卡、计分表、骰子、手机计时器或简单材料，
+            让学生记录数据、比较结果、解释规则。
+          </p>
+        </article>
+
+        <article>
+          <span>Level 3</span>
+          <h3>硬件拓展项目</h3>
+          <p>
+            在有条件的情况下，把网页里的输入换成真实传感器，
+            把输出换成 LED、蜂鸣器、屏幕或机械结构。
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-shell pain-example-section">
+      <div class="section-title left">
+        <span>例子</span>
+        <h2>
+          同一个知识点，<br />
+          可以被拆成不同课堂层次
+        </h2>
+      </div>
+
+      <div class="pain-example-card">
         <div>
-          <strong>原始想法</strong>
-          <span>DIY 小型 CNC 激光雕刻机</span>
+          <span>一次函数 × 球星点球大战</span>
+          <h3>从公式讲解变成点球挑战任务</h3>
+          <p>
+            传统课堂里，学生学习的是 y = kx + b。MakerMind AI 会把它拆成：
+            网页滑杆模拟射门力度 x、纸面计分表记录不同输出 y、
+            硬件拓展中用压力传感器和 LED 反馈进球结果。
+          </p>
         </div>
-        <div>
-          <strong>系统判断</strong>
-          <span>器材复杂、组装链路长、安全要求高，不适合普通课堂的一小时闭环</span>
+
+        <div class="pain-example-steps">
+          <article>
+            <strong>网页模拟</strong>
+            <p>滑动射门力度，观察得分变化。</p>
+          </article>
+
+          <article>
+            <strong>动手任务</strong>
+            <p>记录不同力度下的得分，比较变化规律。</p>
+          </article>
+
+          <article>
+            <strong>硬件拓展</strong>
+            <p>用传感器读取输入，用灯光和声音反馈结果。</p>
+          </article>
         </div>
-        <div>
-          <strong>替代方向</strong>
-          <span>距离感应雷达、反应训练舱、声音灯墙、自动补光灯、宠物舒适度小屋</span>
-        </div>
+      </div>
+    </section>
+
+    <section class="page-shell pain-final-cta">
+      <span class="eyebrow">MakerMind AI</span>
+      <h2>把课堂痛点转化为可执行的任务结构</h2>
+      <p>
+        我们希望帮助老师和机构更快设计项目课，让学生先体验反馈，
+        再动手实践，最后能够讲清楚作品背后的知识。
+      </p>
+      <div class="cta-actions">
+        <a class="btn primary" href="generator.html">进入任务生成器</a>
+        <a class="btn ghost" href="gallery.html">查看任务案例</a>
       </div>
     </section>
   </main>
 
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
-    <span>先保证课堂可实施，再追求作品表现力</span>
+    <span>面向科创课堂与项目式学习的互动任务生成工作台</span>
   </footer>
 </body>
 </html>
