@@ -2887,3 +2887,38 @@ main {
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+/* ===== Generator image fallback ===== */
+
+.project-visual {
+  margin: 22px 0 24px;
+  border-radius: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f8fafc;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+  position: relative;
+}
+
+.project-visual img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.image-error-text {
+  display: none;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  text-align: center;
+  color: #64748b;
+  font-weight: 800;
+  line-height: 1.8;
+}
+
+.project-visual.image-error .image-error-text {
+  display: flex;
+}

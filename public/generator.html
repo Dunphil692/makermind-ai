@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MakerMind AI｜生成互动学习任务</title>
+  <title>MakerMind AI｜任务生成器</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
+
 <body>
   <header class="topbar">
     <a class="brand" href="index.html">
@@ -114,121 +115,10 @@
             <span id="matchTag">三层任务方案</span>
             <h2 id="resultTitle">一次函数 × 球星点球大战｜分层式互动学习任务</h2>
           </div>
-          <span class="tag">演示方案</span>
+          <span class="tag" id="updateTag">演示方案</span>
         </div>
 
-        <div class="project-cards" id="projectCards">
-          <article class="layered-task-card">
-            <div class="project-card-header">
-              <h4>已生成一份互动任务演示方案</h4>
-              <span class="badge">演示方案</span>
-            </div>
-
-            <p class="task-intro">
-              下面不是直接给学生一份长说明书，而是把同一个知识点拆成三个层次：
-              先用网页模拟让学生快速体验，再用低成本材料完成动手任务，
-              最后根据条件升级成硬件拓展项目。
-            </p>
-
-            <div class="project-meta">
-              <div><span>知识点</span><strong>一次函数</strong></div>
-              <div><span>兴趣场景</span><strong>球星点球大战</strong></div>
-              <div><span>学习形式</span><strong>三层任务都生成</strong></div>
-              <div><span>课堂时长</span><strong>15 分钟快速体验</strong></div>
-            </div>
-            <div class="project-visual">
-                <img src="${safeText(detail.image)}" alt="${safeText(activeInterest)}项目效果图" />
-            </div>
-
-            <div class="interactive-demo-box">
-              <div>
-                <span>网页互动模拟</span>
-                <h5>用滑杆模拟射门力度 x</h5>
-                <p>
-                  学生拖动滑杆，系统实时计算得分 y。这样他们可以先看到输入、输出和参数变化，
-                  再进入纸面任务或硬件拓展。
-                </p>
-              </div>
-
-              <div class="slider-demo">
-                <label>
-                  射门力度 x
-                  <input type="range" id="powerSlider" min="0" max="100" value="60" />
-                </label>
-
-                <div class="score-board">
-                  <span>实时得分 y</span>
-                  <strong id="scoreValue">72</strong>
-                  <small id="scoreLabel">精彩射门</small>
-                </div>
-              </div>
-            </div>
-
-            <div class="task-layer-grid">
-              <section class="task-layer level-one">
-                <span>Level 1</span>
-                <h5>网页互动模拟</h5>
-                <p>
-                  学生先通过网页滑杆或按钮模拟输入。在“球星点球大战”场景中，
-                  用滑杆表示输入 x，系统实时显示输出 y，让学生马上看到一次函数的变化规律。
-                </p>
-                <ul>
-                  <li>不需要硬件，1 分钟内可以开始体验</li>
-                  <li>通过滑杆、按钮、分数变化形成即时反馈</li>
-                  <li>适合作为新知识的第一入口</li>
-                </ul>
-              </section>
-
-              <section class="task-layer level-two">
-                <span>Level 2</span>
-                <h5>低成本动手任务</h5>
-                <p>
-                  在网页体验之后，学生使用纸卡、计分表、骰子、手机计时器或简单材料，
-                  把输入、输出和规则变化记录下来，形成一个不用复杂硬件也能完成的小任务。
-                </p>
-                <ul>
-                  <li>成本低，课堂更容易落地</li>
-                  <li>学生需要记录数据、比较结果、解释规律</li>
-                  <li>适合普通课堂或家庭学习</li>
-                </ul>
-              </section>
-
-              <section class="task-layer level-three">
-                <span>Level 3</span>
-                <h5>硬件拓展方案</h5>
-                <p>
-                  如果有 Arduino、ESP32、micro:bit 或传感器，可以把网页里的输入 x
-                  换成真实传感器输入，把输出 y 换成 LED、蜂鸣器或屏幕反馈。
-                </p>
-                <ul>
-                  <li>适合科创社团、展示活动或进阶课程</li>
-                  <li>让学生把虚拟规则连接到真实世界</li>
-                  <li>最终形成可以展示的作品</li>
-                </ul>
-              </section>
-            </div>
-
-            <div class="teacher-student-grid">
-              <section>
-                <h5>学生任务卡</h5>
-                <p>
-                  你的任务是完成一个“球星点球大战”挑战，观察输入变化如何影响输出结果，
-                  并尝试修改规则，让结果发生变化。
-                </p>
-              </section>
-
-              <section>
-                <h5>教师引导问题</h5>
-                <ol>
-                  <li>这个任务里的输入是什么？输出是什么？</li>
-                  <li>当输入变大时，输出如何变化？</li>
-                  <li>如果改变规则参数，结果会发生什么变化？</li>
-                  <li>这个现象和一次函数有什么关系？</li>
-                </ol>
-              </section>
-            </div>
-          </article>
-        </div>
+        <div class="project-cards" id="projectCards"></div>
       </section>
     </section>
   </main>
@@ -239,276 +129,296 @@
   </footer>
 
   <script>
-  const form = document.querySelector("#generatorForm");
-  const conceptSelect = document.querySelector("#concept");
-  const gradeSelect = document.querySelector("#grade");
-  const learningFormSelect = document.querySelector("#learningForm");
-  const durationSelect = document.querySelector("#duration");
-  const interestChips = document.querySelectorAll("#interestChips .chip");
-  const resultTitle = document.querySelector("#resultTitle");
-  const matchTag = document.querySelector("#matchTag");
-  const projectCards = document.querySelector("#projectCards");
+    const form = document.querySelector("#generatorForm");
+    const conceptSelect = document.querySelector("#concept");
+    const gradeSelect = document.querySelector("#grade");
+    const learningFormSelect = document.querySelector("#learningForm");
+    const durationSelect = document.querySelector("#duration");
+    const interestChips = document.querySelectorAll("#interestChips .chip");
+    const resultTitle = document.querySelector("#resultTitle");
+    const matchTag = document.querySelector("#matchTag");
+    const updateTag = document.querySelector("#updateTag");
+    const projectCards = document.querySelector("#projectCards");
 
-  let activeInterest = "球星点球大战";
+    let activeInterest = "球星点球大战";
+    let generateCount = 0;
 
-  function safeText(value) {
-    return String(value || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function getScenarioDetail(interest) {
-    const map = {
-      "球星点球大战": {
-        input: "射门力度 x",
-        output: "得分 y",
-        action: "拖动滑杆模拟射门力度",
-        project: "球星点球大战",
-        image: "assets/soccer-penalty.png",
-        feedback: "LED 显示“被扑出 / 进球 / 世界波”，蜂鸣器模拟欢呼声"
-      },
-      "篮球投篮挑战": {
-        input: "投篮角度 x",
-        output: "命中评分 y",
-        action: "拖动滑杆模拟投篮角度",
-        project: "篮球投篮挑战",
-        image: "assets/basketball-challenge.png",
-        feedback: "屏幕显示命中率，LED 提示最佳投篮区间"
-      },
-      "音乐节奏灯": {
-        input: "声音强度 x",
-        output: "灯光亮度 y",
-        action: "拖动滑杆模拟节奏强弱",
-        project: "音乐节奏灯",
-        image: "assets/music-led-device.png",
-        feedback: "LED 随声音强弱改变亮度和闪烁频率"
-      },
-      "宠物自动喂食器": {
-        input: "时间间隔 x",
-        output: "投喂次数 y",
-        action: "拖动滑杆模拟投喂间隔",
-        project: "宠物自动喂食器",
-        image: "assets/pet-feeder.png",
-        feedback: "屏幕显示投喂提醒，蜂鸣器提示喂食时间"
-      },
-      "赛车计时挑战": {
-        input: "赛车速度 x",
-        output: "完成时间 y",
-        action: "拖动滑杆模拟赛车速度",
-        project: "赛车计时挑战",
-        image: "assets/racing-timer.png",
-        feedback: "计时器显示成绩，LED 显示不同速度等级"
-      },
-      "科学实验装置": {
-        input: "实验变量 x",
-        output: "观察结果 y",
-        action: "拖动滑杆模拟变量变化",
-        project: "科学实验装置",
-        image: "assets/science-lab.png",
-        feedback: "图表显示数据变化，提示学生记录结果"
-      },
-      "校园生活助手": {
-        input: "环境数据 x",
-        output: "提醒等级 y",
-        action: "拖动滑杆模拟环境变化",
-        project: "校园生活助手",
-        image: "assets/campus-helper.png",
-        feedback: "屏幕显示提醒，LED 显示不同状态"
-      },
-      "环保监测项目": {
-        input: "环境指标 x",
-        output: "污染指数 y",
-        action: "拖动滑杆模拟环境指标",
-        project: "环保监测项目",
-        image: "assets/environment-monitor.png",
-        feedback: "图表显示监测结果，LED 显示安全 / 警告状态"
-      }
-    };
-
-    return map[interest] || map["球星点球大战"];
-  }
-
-  function calculateScore(power) {
-    const k = 0.9;
-    const b = 18;
-    return Math.round(k * power + b);
-  }
-
-  function getScoreLabel(score) {
-    if (score >= 90) return "世界波";
-    if (score >= 70) return "精彩反馈";
-    if (score >= 45) return "普通反馈";
-    return "需要调整";
-  }
-
-  function bindSliderDemo() {
-    const slider = document.querySelector("#powerSlider");
-    const scoreValue = document.querySelector("#scoreValue");
-    const scoreLabel = document.querySelector("#scoreLabel");
-
-    if (!slider || !scoreValue || !scoreLabel) return;
-
-    function updateScore() {
-      const score = calculateScore(Number(slider.value));
-      scoreValue.textContent = score;
-      scoreLabel.textContent = getScoreLabel(score);
+    function safeText(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    slider.addEventListener("input", updateScore);
-    updateScore();
-  }
+    function getScenarioDetail(interest) {
+      const map = {
+        "球星点球大战": {
+          input: "射门力度 x",
+          output: "得分 y",
+          action: "拖动滑杆模拟射门力度",
+          project: "球星点球大战",
+          image: "assets/soccer-penalty.png",
+          feedback: "LED 显示“被扑出 / 进球 / 世界波”，蜂鸣器模拟欢呼声"
+        },
+        "篮球投篮挑战": {
+          input: "投篮角度 x",
+          output: "命中评分 y",
+          action: "拖动滑杆模拟投篮角度",
+          project: "篮球投篮挑战",
+          image: "assets/basketball-challenge.png",
+          feedback: "屏幕显示命中率，LED 提示最佳投篮区间"
+        },
+        "音乐节奏灯": {
+          input: "声音强度 x",
+          output: "灯光亮度 y",
+          action: "拖动滑杆模拟节奏强弱",
+          project: "音乐节奏灯",
+          image: "assets/music-led-device.png",
+          feedback: "LED 随声音强弱改变亮度和闪烁频率"
+        },
+        "宠物自动喂食器": {
+          input: "时间间隔 x",
+          output: "投喂次数 y",
+          action: "拖动滑杆模拟投喂间隔",
+          project: "宠物自动喂食器",
+          image: "assets/pet-feeder.png",
+          feedback: "屏幕显示投喂提醒，蜂鸣器提示喂食时间"
+        },
+        "赛车计时挑战": {
+          input: "赛车速度 x",
+          output: "完成时间 y",
+          action: "拖动滑杆模拟赛车速度",
+          project: "赛车计时挑战",
+          image: "assets/racing-timer.png",
+          feedback: "计时器显示成绩，LED 显示不同速度等级"
+        },
+        "科学实验装置": {
+          input: "实验变量 x",
+          output: "观察结果 y",
+          action: "拖动滑杆模拟变量变化",
+          project: "科学实验装置",
+          image: "assets/science-lab.png",
+          feedback: "图表显示数据变化，提示学生记录结果"
+        },
+        "校园生活助手": {
+          input: "环境数据 x",
+          output: "提醒等级 y",
+          action: "拖动滑杆模拟环境变化",
+          project: "校园生活助手",
+          image: "assets/campus-helper.png",
+          feedback: "屏幕显示提醒，LED 显示不同状态"
+        },
+        "环保监测项目": {
+          input: "环境指标 x",
+          output: "污染指数 y",
+          action: "拖动滑杆模拟环境指标",
+          project: "环保监测项目",
+          image: "assets/environment-monitor.png",
+          feedback: "图表显示监测结果，LED 显示安全 / 警告状态"
+        }
+      };
 
-  function renderTask() {
-    const concept = conceptSelect.value;
-    const grade = gradeSelect.value;
-    const learningForm = learningFormSelect.value;
-    const duration = durationSelect.value;
-    const detail = getScenarioDetail(activeInterest);
+      return map[interest] || map["球星点球大战"];
+    }
 
-    matchTag.textContent = "三层任务方案";
-    resultTitle.textContent = `${concept} × ${activeInterest}｜分层式互动学习任务`;
+    function getScoreLabel(score) {
+      if (score >= 90) return "世界波";
+      if (score >= 70) return "精彩反馈";
+      if (score >= 45) return "普通反馈";
+      return "需要调整";
+    }
 
-    projectCards.innerHTML = `
-      <article class="layered-task-card">
-        <div class="project-card-header">
-          <h4>已生成一份互动任务演示方案</h4>
-          <span class="badge">演示方案</span>
-        </div>
+    function calculateScore(power) {
+      const k = 0.9;
+      const b = 18;
+      return Math.round(k * power + b);
+    }
 
-        <p class="task-intro">
-          这份方案面向${safeText(grade)}学生，不是直接给学生一份长说明书，
-          而是把“${safeText(concept)}”拆成三个层次：
-          先用网页模拟让学生快速体验，再用低成本材料完成动手任务，
-          最后根据条件升级成硬件拓展项目。
-        </p>
+    function bindSliderDemo() {
+      const slider = document.querySelector("#powerSlider");
+      const scoreValue = document.querySelector("#scoreValue");
+      const scoreLabel = document.querySelector("#scoreLabel");
 
-        <div class="project-meta">
-          <div><span>知识点</span><strong>${safeText(concept)}</strong></div>
-          <div><span>兴趣场景</span><strong>${safeText(activeInterest)}</strong></div>
-          <div><span>学习形式</span><strong>${safeText(learningForm)}</strong></div>
-          <div><span>课堂时长</span><strong>${safeText(duration)}</strong></div>
-        </div>
+      if (!slider || !scoreValue || !scoreLabel) return;
 
-        <div class="project-visual">
-          <img src="${safeText(detail.image)}" alt="${safeText(activeInterest)}项目效果图" />
-        </div>
+      function updateScore() {
+        const score = calculateScore(Number(slider.value));
+        scoreValue.textContent = score;
+        scoreLabel.textContent = getScoreLabel(score);
+      }
 
-        <div class="interactive-demo-box">
-          <div>
-            <span>网页互动模拟</span>
-            <h5>${safeText(detail.action)}</h5>
-            <p>
-              学生先通过滑杆模拟“${safeText(detail.input)}”，系统实时计算“${safeText(detail.output)}”。
-              这样可以先看到输入、输出和参数变化，再进入纸面任务或硬件拓展。
-            </p>
+      slider.addEventListener("input", updateScore);
+      updateScore();
+    }
+
+    function getCurrentTimeText() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, "0");
+      const m = String(now.getMinutes()).padStart(2, "0");
+      const s = String(now.getSeconds()).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    function renderTask() {
+      const concept = conceptSelect.value;
+      const grade = gradeSelect.value;
+      const learningForm = learningFormSelect.value;
+      const duration = durationSelect.value;
+      const detail = getScenarioDetail(activeInterest);
+
+      generateCount += 1;
+
+      matchTag.textContent = "三层任务方案";
+      resultTitle.textContent = `${concept} × ${activeInterest}｜分层式互动学习任务`;
+      updateTag.textContent = `已生成 ${generateCount} 次 · ${getCurrentTimeText()}`;
+
+      projectCards.innerHTML = `
+        <article class="layered-task-card">
+          <div class="project-card-header">
+            <h4>已生成一份互动任务演示方案</h4>
+            <span class="badge">演示方案</span>
           </div>
 
-          <div class="slider-demo">
-            <label>
-              ${safeText(detail.input)}
-              <input type="range" id="powerSlider" min="0" max="100" value="60" />
-            </label>
+          <p class="task-intro">
+            这份方案面向${safeText(grade)}学生，不是直接给学生一份长说明书，
+            而是把“${safeText(concept)}”拆成三个层次：
+            先用网页模拟让学生快速体验，再用低成本材料完成动手任务，
+            最后根据条件升级成硬件拓展项目。
+          </p>
 
-            <div class="score-board">
-              <span>${safeText(detail.output)}</span>
-              <strong id="scoreValue">72</strong>
-              <small id="scoreLabel">精彩反馈</small>
+          <div class="project-meta">
+            <div><span>知识点</span><strong>${safeText(concept)}</strong></div>
+            <div><span>兴趣场景</span><strong>${safeText(activeInterest)}</strong></div>
+            <div><span>学习形式</span><strong>${safeText(learningForm)}</strong></div>
+            <div><span>课堂时长</span><strong>${safeText(duration)}</strong></div>
+          </div>
+
+          <div class="project-visual">
+            <img
+              src="${safeText(detail.image)}"
+              alt="${safeText(activeInterest)}项目效果图"
+              onerror="this.parentElement.classList.add('image-error'); this.remove();"
+            />
+            <div class="image-error-text">
+              图片未加载成功，请检查 assets 文件夹里的图片文件名是否和代码一致。
             </div>
           </div>
-        </div>
 
-        <div class="task-layer-grid">
-          <section class="task-layer level-one">
-            <span>Level 1</span>
-            <h5>网页互动模拟</h5>
-            <p>
-              学生先通过网页滑杆或按钮模拟输入。在“${safeText(activeInterest)}”场景中，
-              用滑杆表示输入 x，系统实时显示输出 y，让学生马上看到 ${safeText(concept)} 的变化规律。
-            </p>
-            <ul>
-              <li>不需要硬件，1 分钟内可以开始体验</li>
-              <li>通过滑杆、按钮、分数变化形成即时反馈</li>
-              <li>适合作为新知识的第一入口</li>
-            </ul>
-          </section>
+          <div class="interactive-demo-box">
+            <div>
+              <span>网页互动模拟</span>
+              <h5>${safeText(detail.action)}</h5>
+              <p>
+                学生先通过滑杆模拟“${safeText(detail.input)}”，系统实时计算“${safeText(detail.output)}”。
+                这样可以先看到输入、输出和参数变化，再进入纸面任务或硬件拓展。
+              </p>
+            </div>
 
-          <section class="task-layer level-two">
-            <span>Level 2</span>
-            <h5>低成本动手任务</h5>
-            <p>
-              在网页体验之后，学生使用纸卡、计分表、骰子、手机计时器或简单材料，
-              把输入、输出和规则变化记录下来，形成一个不用复杂硬件也能完成的小任务。
-            </p>
-            <ul>
-              <li>成本低，课堂更容易落地</li>
-              <li>学生需要记录数据、比较结果、解释规律</li>
-              <li>适合普通课堂或家庭学习</li>
-            </ul>
-          </section>
+            <div class="slider-demo">
+              <label>
+                ${safeText(detail.input)}
+                <input type="range" id="powerSlider" min="0" max="100" value="60" />
+              </label>
 
-          <section class="task-layer level-three">
-            <span>Level 3</span>
-            <h5>硬件拓展方案</h5>
-            <p>
-              如果有 Arduino、ESP32、micro:bit 或传感器，可以把网页里的输入 x
-              换成真实传感器输入，把输出 y 换成 LED、蜂鸣器或屏幕反馈。
-            </p>
-            <ul>
-              <li>适合科创社团、展示活动或进阶课程</li>
-              <li>${safeText(detail.feedback)}</li>
-              <li>最终形成可以展示的作品</li>
-            </ul>
-          </section>
-        </div>
+              <div class="score-board">
+                <span>${safeText(detail.output)}</span>
+                <strong id="scoreValue">72</strong>
+                <small id="scoreLabel">精彩反馈</small>
+              </div>
+            </div>
+          </div>
 
-        <div class="teacher-student-grid">
-          <section>
-            <h5>学生任务卡</h5>
-            <p>
-              你的任务是完成一个“${safeText(activeInterest)}”挑战，观察“${safeText(detail.input)}”
-              如何影响“${safeText(detail.output)}”，并尝试修改规则，让结果发生变化。
-            </p>
-          </section>
+          <div class="task-layer-grid">
+            <section class="task-layer level-one">
+              <span>Level 1</span>
+              <h5>网页互动模拟</h5>
+              <p>
+                学生先通过网页滑杆或按钮模拟输入。在“${safeText(activeInterest)}”场景中，
+                用滑杆表示输入 x，系统实时显示输出 y，让学生马上看到 ${safeText(concept)} 的变化规律。
+              </p>
+              <ul>
+                <li>不需要硬件，1 分钟内可以开始体验</li>
+                <li>通过滑杆、按钮、分数变化形成即时反馈</li>
+                <li>适合作为新知识的第一入口</li>
+              </ul>
+            </section>
 
-          <section>
-            <h5>教师引导问题</h5>
-            <ol>
-              <li>这个任务里的输入是什么？输出是什么？</li>
-              <li>当输入变大时，输出如何变化？</li>
-              <li>如果改变规则参数，结果会发生什么变化？</li>
-              <li>这个现象和 ${safeText(concept)} 有什么关系？</li>
-            </ol>
-          </section>
-        </div>
-      </article>
-    `;
+            <section class="task-layer level-two">
+              <span>Level 2</span>
+              <h5>低成本动手任务</h5>
+              <p>
+                在网页体验之后，学生使用纸卡、计分表、骰子、手机计时器或简单材料，
+                把输入、输出和规则变化记录下来，形成一个不用复杂硬件也能完成的小任务。
+              </p>
+              <ul>
+                <li>成本低，课堂更容易落地</li>
+                <li>学生需要记录数据、比较结果、解释规律</li>
+                <li>适合普通课堂或家庭学习</li>
+              </ul>
+            </section>
 
-    bindSliderDemo();
-  }
+            <section class="task-layer level-three">
+              <span>Level 3</span>
+              <h5>硬件拓展方案</h5>
+              <p>
+                如果有 Arduino、ESP32、micro:bit 或传感器，可以把网页里的输入 x
+                换成真实传感器输入，把输出 y 换成 LED、蜂鸣器或屏幕反馈。
+              </p>
+              <ul>
+                <li>适合科创社团、展示活动或进阶课程</li>
+                <li>${safeText(detail.feedback)}</li>
+                <li>最终形成可以展示的作品</li>
+              </ul>
+            </section>
+          </div>
 
-  interestChips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-      interestChips.forEach((item) => item.classList.remove("active"));
-      chip.classList.add("active");
-      activeInterest = chip.dataset.interest;
+          <div class="teacher-student-grid">
+            <section>
+              <h5>学生任务卡</h5>
+              <p>
+                你的任务是完成一个“${safeText(activeInterest)}”挑战，观察“${safeText(detail.input)}”
+                如何影响“${safeText(detail.output)}”，并尝试修改规则，让结果发生变化。
+              </p>
+            </section>
+
+            <section>
+              <h5>教师引导问题</h5>
+              <ol>
+                <li>这个任务里的输入是什么？输出是什么？</li>
+                <li>当输入变大时，输出如何变化？</li>
+                <li>如果改变规则参数，结果会发生什么变化？</li>
+                <li>这个现象和 ${safeText(concept)} 有什么关系？</li>
+              </ol>
+            </section>
+          </div>
+        </article>
+      `;
+
+      bindSliderDemo();
+    }
+
+    interestChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        interestChips.forEach((item) => item.classList.remove("active"));
+        chip.classList.add("active");
+        activeInterest = chip.dataset.interest;
+        renderTask();
+      });
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
       renderTask();
     });
-  });
 
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
+    conceptSelect.addEventListener("change", renderTask);
+    gradeSelect.addEventListener("change", renderTask);
+    learningFormSelect.addEventListener("change", renderTask);
+    durationSelect.addEventListener("change", renderTask);
+
     renderTask();
-  });
-
-  conceptSelect.addEventListener("change", renderTask);
-  gradeSelect.addEventListener("change", renderTask);
-  learningFormSelect.addEventListener("change", renderTask);
-  durationSelect.addEventListener("change", renderTask);
-
-  renderTask();
-</script>  
+  </script>
 </body>
 </html>
