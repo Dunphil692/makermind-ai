@@ -3,171 +3,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MakerMind AI｜兴趣驱动硬件项目学习平台</title>
+  <title>MakerMind AI｜互动项目课生成工作台</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
+
 <body>
   <header class="topbar">
     <a class="brand" href="index.html">
       <span class="brand-mark">MM</span>
       <span>
         <strong>MakerMind AI</strong>
-        <small>兴趣驱动硬件项目学习平台</small>
+        <small>Project-based lesson studio</small>
       </span>
     </a>
+
     <nav class="nav-links">
       <a class="active" href="index.html">首页</a>
-      <a href="rules.html">学习痛点</a>
-      <a href="generator.html">生成器</a>
-      <a href="gallery.html">项目案例</a>
-      <a href="students.html">用户分层</a>
+      <a href="rules.html">课堂痛点</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="students.html">学生分层</a>
       <a href="about.html">关于我们</a>
     </nav>
   </header>
 
   <main>
+    <!-- 首页第一屏 -->
     <section class="clarity-hero page-shell">
       <div class="clarity-hero-copy">
-        <span class="eyebrow">面向小学生与初中生的兴趣驱动型硬件项目学习平台</span>
+        <span class="eyebrow">面向科创课堂与项目式学习场景的互动任务生成工作台</span>
+
         <h1 class="hero-title">
-          <span class="hero-title-line">让知识变成</span>
-          <span class="hero-title-line">孩子愿意动手完成的项目</span>
+          <span class="hero-title-line">把知识点变成</span>
+          <span class="hero-title-line">一节可执行的互动项目课</span>
         </h1>
+
         <p>
-          MakerMind AI 会根据学生的兴趣方向、学习知识点和可用材料，
-          生成可以动手完成的硬件项目方案。学生可以围绕足球、篮球、音乐、交通、
-          科学实验等主题，在制作、观察、调试和展示中理解抽象知识。
+          MakerMind AI 帮助老师、助教和课程设计者，根据知识点、学生兴趣、
+          课堂时长和材料条件，快速生成网页互动模拟、低成本动手任务和硬件拓展方案。
         </p>
+
         <p class="hero-sub-note">
-          我们关注的不是把知识简单包装成游戏，而是把知识点转化为真实项目，
-          让兴趣成为学习入口，让动手过程帮助学生真正理解知识。
+          我们不再把硬件作为唯一入口，而是先用网页互动降低学习门槛，
+          再通过材料任务和硬件拓展，把抽象知识变成可体验、可制作、可展示的学习过程。
         </p>
+
         <div class="hero-actions">
-          <a class="btn primary" href="generator.html">开始生成项目</a>
-          <a class="btn ghost" href="gallery.html">查看项目案例</a>
+          <a class="btn primary" href="generator.html">生成课堂任务</a>
+          <a class="btn ghost" href="gallery.html">查看任务案例</a>
         </div>
       </div>
     </section>
 
+    <!-- 课堂痛点 -->
     <section id="problem" class="page-shell clarity-problem-section">
       <div class="section-title left">
-        <span>学习痛点分析</span>
-        <h2>学生不是学不会，而是需要有趣的开始</h2>
+        <span>课堂痛点分析</span>
+        <h2>
+          项目式学习难的不是理念，<br>
+          而是真正落地
+        </h2>
         <p>
-          很多小学生和初中生第一次接触新知识时，真正卡住的不是能力，
-          而是知识太抽象、反馈太少、和兴趣场景距离太远。
-          MakerMind AI 希望用硬件项目作为桥梁，让学生在动手制作中理解知识。
+          很多老师和机构都知道项目式学习、动手实践和 STEAM 活动有价值，
+          但在真实课堂里，难点往往不是“要不要做”，而是怎么把一个知识点快速设计成
+          学生能开始、老师能引导、课堂能完成、最后还能展示的任务。
         </p>
       </div>
 
       <div class="problem-grid">
         <article>
           <span>01</span>
-          <h3>新知识起步难</h3>
+          <h3>备课成本高</h3>
           <p>
-            函数、方程、几何和科学原理第一次出现时往往比较抽象，
-            学生很难马上理解它们和真实生活、兴趣场景之间的联系。
+            老师需要同时考虑知识点、学生兴趣、材料准备、课堂流程和展示方式。
+            如果每节项目课都从零开始设计，时间成本很高。
           </p>
         </article>
 
         <article>
           <span>02</span>
-          <h3>学习参与感不足</h3>
+          <h3>项目难度不好控制</h3>
           <p>
-            传统学习常以听讲、记忆和刷题为主，学生缺少亲自操作、
-            观察反馈和修正方案的过程。
+            项目太简单，学生只是玩一玩；项目太难，又会卡在接线、代码或调试上。
+            不同年级、不同基础的学生需要不同层次的任务。
           </p>
         </article>
 
         <article>
           <span>03</span>
-          <h3>兴趣没有被利用</h3>
+          <h3>学生起步容易卡住</h3>
           <p>
-            有人喜欢足球，有人喜欢篮球、音乐或实验。学习设计如果忽视兴趣，
-            就很难让学生主动进入新知识。
+            如果一上来就是硬件、代码和复杂步骤，学生很容易失去耐心。
+            更合理的方式是先用网页互动或低成本材料，让学生快速看到反馈。
           </p>
         </article>
 
         <article>
           <span>04</span>
-          <h3>缺少动手实践</h3>
+          <h3>作品展示缺少结构</h3>
           <p>
-            只看图和做题很难形成真实理解。学生需要通过制作、测试和展示，
-            把抽象概念转化为可以解释的作品。
+            很多作品做出来以后，只能停留在“能亮灯、能响、能动”的层面。
+            老师还需要引导学生解释作品背后的知识点和规则变化。
           </p>
         </article>
       </div>
     </section>
 
+    <!-- 生成流程 -->
     <section id="flow" class="page-shell clarity-flow-section">
       <div class="section-title left">
         <span>生成流程</span>
         <h2>
           从一个知识点，<br>
-          到一套可以完成的硬件学习项目
+          生成一套可执行课堂任务
         </h2>
         <p>
-          平台把“学什么、谁来学、喜欢什么、能用什么材料”放在一起考虑，
-          再生成适合学生完成的项目任务，让学习从抽象讲解进入真实制作。
+          MakerMind AI 会根据课堂目标、学生兴趣、可用材料和时间限制，
+          把抽象知识转化为网页互动模拟、低成本动手任务和硬件拓展方案，
+          让老师更快完成项目课设计。
         </p>
       </div>
 
       <div class="learning-flow">
         <article>
           <span>01</span>
-          <h3>输入学习目标</h3>
+          <h3>输入知识点</h3>
           <p>
-            输入知识点和学段，例如分数、面积、方程、一次函数、几何或科学原理。
+            输入课堂要学习的内容，例如一次函数、分数与比例、面积、几何、数据统计或科学原理。
           </p>
         </article>
 
         <article>
           <span>02</span>
-          <h3>匹配兴趣场景</h3>
+          <h3>选择学生场景</h3>
           <p>
-            选择学生喜欢的主题，例如足球、篮球、音乐、交通、实验或故事情境。
+            根据学生兴趣选择点球大战、篮球投篮、音乐节奏灯、环保监测等具体任务场景。
           </p>
         </article>
 
         <article>
           <span>03</span>
-          <h3>生成项目方案</h3>
+          <h3>匹配任务层次</h3>
           <p>
-            输出项目背景、材料清单、结构搭建、硬件连接和程序逻辑。
+            根据课堂时长和材料条件，生成网页模拟、低成本材料任务或硬件拓展项目。
           </p>
         </article>
 
         <article>
           <span>04</span>
-          <h3>制作验证理解</h3>
+          <h3>输出课堂材料</h3>
           <p>
-            通过调试、改参数、解释现象和展示作品，检查学生是否真正理解知识。
+            系统输出学生任务卡、教师引导问题、材料清单、课堂流程和展示挑战。
           </p>
         </article>
       </div>
     </section>
 
-    <section id="case" class="page-shell clarity-case-section">
+    <!-- 案例对比 -->
+    <section class="page-shell clarity-case-section">
       <div class="section-title left">
         <span>Example</span>
         <h2>
           一次函数，<br>
-          可以变成一场球星点球大战
+          可以变成一场点球挑战课
         </h2>
         <p>
-          这个案例不是把题目换成足球，而是把一次函数放进一个有赛事、
-          有角色、有硬件反馈的具体场景里，让学生在设计规则时理解公式。
+          不同于直接讲公式，MakerMind AI 会先把知识点放进学生熟悉的任务场景，
+          再让老师选择网页模拟、低成本任务或硬件拓展三种形式。
         </p>
       </div>
 
       <div class="case-compare">
         <div class="case-card traditional">
-          <span class="pill">传统学习方式</span>
+          <span class="pill">传统教学方式</span>
           <h3>学习一次函数 y = kx + b</h3>
 
           <div class="scenario-box">
-            <strong>学习场景：</strong>
+            <strong>课堂形式：</strong>
             公式讲解、函数图像、数字代入、练习题
           </div>
 
@@ -180,159 +193,154 @@
 
           <p>
             学生可能会做题，但公式仍然停留在纸面上，
-            很难和自己真正感兴趣的内容产生联系。
+            很难马上理解它和真实反馈之间的关系。
           </p>
         </div>
 
         <div class="case-card highlight">
           <span class="pill primary">MakerMind 方式</span>
-          <h3>制作一个球星点球大战计分台</h3>
+          <h3>生成点球挑战互动任务</h3>
 
           <div class="scenario-box">
-            <strong>学生兴趣：</strong>
-            世界杯、欧冠、梅西、C罗、诺伊尔、点球大战
+            <strong>网页模拟：</strong>
+            用滑杆表示射门力度 x，页面实时计算得分 y，
+            学生马上看到输入和输出之间的关系。
           </div>
 
           <div class="scenario-box">
-            <strong>具体场景：</strong>
-            欧冠决赛最后一轮点球。学生选择自己喜欢的射门球星和守门员角色，
-            硬件系统根据射门力度自动计算得分，并用灯光、声音或屏幕反馈结果。
+            <strong>低成本任务：</strong>
+            用纸面计分表、骰子或按钮模拟射门数据，
+            学生记录输入、输出和规则变化。
           </div>
 
-          <ul>
-            <li>压力传感器或震动传感器读取射门力度 x</li>
-            <li>程序使用 y = kx + b 计算本次射门得分 y</li>
-            <li>LED 灯条显示“被扑出 / 进球 / 世界波”</li>
-            <li>蜂鸣器模拟进球、扑救或观众欢呼反馈</li>
-            <li>学生调整 k 和 b，设计不同球星与守门员的挑战规则</li>
-          </ul>
+          <div class="scenario-box">
+            <strong>硬件拓展：</strong>
+            用压力传感器读取射门力度，LED 和蜂鸣器反馈“被扑出 / 进球 / 世界波”。
+          </div>
 
           <p>
-            学生会自然理解：x 是输入，y 是输出，k 决定得分增长速度，
-            b 表示初始加成。公式不再只是纸上的符号，而是自己亲手设计的比赛规则。
+            这样一节课不再只是讲公式，而是让学生先体验变化，再记录数据，
+            最后解释 k、b、x、y 在任务中的真实含义。
           </p>
         </div>
       </div>
     </section>
 
+    <!-- 生成结果 -->
     <section id="output" class="page-shell clarity-output-section">
       <div class="section-title left">
         <span>生成结果</span>
         <h2>
-          生成的不只是项目点子，<br>
-          而是一套可执行的硬件学习方案
+          输出的不是普通教案，<br>
+          而是一套课堂可用的任务包
         </h2>
         <p>
-          MakerMind AI 会根据知识点、学生兴趣、具体场景和可用材料，
-          生成一套可以直接用于制作和教学的硬件项目方案。学生不是只看创意，
-          而是能按步骤做出作品，并在调试和展示中理解知识。
+          系统会把同一个知识点拆解成不同层次的学习任务，
+          同时生成教师指导、学生任务、材料准备和作品展示问题。
         </p>
       </div>
 
       <div class="output-grid">
         <article>
           <span>01</span>
-          <h3>兴趣场景脚本</h3>
+          <h3>学生任务卡</h3>
           <p>
-            把学生喜欢的主题转化成具体任务，例如球星点球大战、
-            篮球投篮挑战、音乐节奏灯或科学实验装置。
+            用学生能理解的语言说明挑战目标、操作步骤、成功标志和升级任务，
+            避免一开始就给学生一份复杂说明书。
           </p>
         </article>
 
         <article>
           <span>02</span>
-          <h3>硬件材料清单</h3>
+          <h3>教师引导卡</h3>
           <p>
-            根据项目难度生成传感器、LED、蜂鸣器、屏幕、开发板、
-            纸板结构或 3D 打印部件等材料建议。
+            给老师提供课堂提问、观察重点、知识点解释方式和学生卡住时的提示，
+            让项目活动更容易被组织起来。
           </p>
         </article>
 
         <article>
           <span>03</span>
-          <h3>制作与调试步骤</h3>
+          <h3>分层任务方案</h3>
           <p>
-            拆解结构搭建、硬件连接、程序逻辑、参数调整、测试方法和调试提示，
-            降低学生完成项目的门槛。
+            同一个知识点可以生成网页模拟、低成本动手任务和硬件拓展版本，
+            老师可以根据课堂条件选择不同层次。
           </p>
         </article>
 
         <article>
           <span>04</span>
-          <h3>知识理解挑战</h3>
+          <h3>作品展示问题</h3>
           <p>
-            项目完成后，引导学生解释现象、调整参数、迁移场景，
-            检查他们是否真正理解背后的知识。
+            引导学生说明作品里的输入、输出、规则变化和知识点对应关系，
+            让作品不只是“做出来”，还要“讲得清楚”。
           </p>
         </article>
       </div>
 
       <div class="interest-cases">
         <div class="interest-case-title">
-          <span>更多兴趣案例</span>
-          <h3>同一个平台，可以生成不同主题的硬件学习项目</h3>
+          <span>任务案例库</span>
+          <h3>同一个平台，可以沉淀不同主题的项目课</h3>
         </div>
 
         <div class="interest-case-grid">
           <article>
-            <strong>足球兴趣</strong>
-            <h4>球星点球大战计分台</h4>
+            <strong>数学 × 足球</strong>
+            <h4>点球力度计分台</h4>
             <p>
-              将一次函数、输入输出关系和传感器反馈结合起来，
-              让学生在射门计分规则中理解 y = kx + b。
+              用输入输出关系解释一次函数，让学生通过射门力度和得分反馈理解 y = kx + b。
             </p>
           </article>
 
           <article>
-            <strong>篮球兴趣</strong>
-            <h4>投篮角度提示器</h4>
+            <strong>数学 × 篮球</strong>
+            <h4>投篮角度挑战器</h4>
             <p>
-              通过角度传感器、LED 提示和命中率记录，
-              帮助学生理解角度、数据统计和实验调整。
+              通过角度变化、命中率记录和数据对比，让学生理解统计与实验调整。
             </p>
           </article>
 
           <article>
-            <strong>音乐兴趣</strong>
+            <strong>科学 × 音乐</strong>
             <h4>音乐节奏灯光台</h4>
             <p>
-              通过声音传感器读取音量和节奏变化，
-              让学生理解声音强弱、数据变化和输出反馈。
+              用声音强弱控制灯光反馈，帮助学生理解声音、数据变化和输出关系。
             </p>
           </article>
 
           <article>
-            <strong>科学实验兴趣</strong>
-            <h4>自动感应小夜灯</h4>
+            <strong>科学 × 环保</strong>
+            <h4>环境监测提醒器</h4>
             <p>
-              通过光敏传感器、LED 和控制逻辑，
-              帮助学生理解光照变化、电路控制和条件判断。
+              通过模拟光照、温度或环境数据变化，让学生理解条件判断和数据反馈。
             </p>
           </article>
         </div>
       </div>
     </section>
 
+    <!-- 最终 CTA -->
     <section class="page-shell clarity-final-cta">
       <div>
         <span class="eyebrow">MakerMind AI</span>
-        <h2>不是为了让学生多做一个项目，而是让他们真正理解一个知识点</h2>
+        <h2>让老师更快设计一节能体验、能动手、能展示的项目课</h2>
         <p>
-          我们希望把抽象知识变成学生愿意探索的任务，
-          把动手制作变成理解知识的过程，
-          把项目结果变成学生可以解释、改造和迁移的学习成果。
+          我们希望帮助老师把抽象知识转化为课堂任务，
+          让学生先通过互动反馈进入学习，再通过动手任务和项目展示解释知识。
         </p>
       </div>
+
       <div class="cta-actions">
-        <a class="btn primary" href="generator.html">开始生成学习项目</a>
-        <a class="btn ghost" href="example-instruction.html">查看示例项目</a>
+        <a class="btn primary" href="generator.html">生成课堂任务</a>
+        <a class="btn ghost" href="gallery.html">查看任务案例</a>
       </div>
     </section>
   </main>
 
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
-    <span>为学生生成更有兴趣入口的硬件学习项目</span>
+    <span>面向科创课堂与项目式学习的互动任务生成工作台</span>
   </footer>
 </body>
 </html>
