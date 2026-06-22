@@ -3557,3 +3557,468 @@ main {
   }
 }
 
+/* ===== Generator: instruction-doc (full AI output) ===== */
+
+.instruction-doc {
+  padding: 40px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
+}
+
+.instruction-hero {
+  margin-bottom: 28px;
+}
+
+.instruction-kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 4px 14px;
+  border-radius: 100px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.instruction-hero h2 {
+  margin: 0 0 8px;
+  font-size: 32px;
+  letter-spacing: -0.04em;
+  color: #0f172a;
+}
+
+.instruction-hero > div > p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.instruction-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.instruction-meta span {
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: #f1f5f9;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* ===== Instruction visual ===== */
+
+.instruction-visual {
+  margin-bottom: 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.instruction-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.instruction-visual figcaption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.instruction-visual figcaption strong {
+  color: #334155;
+}
+
+/* ===== Action bar ===== */
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ===== Instruction sections ===== */
+
+.instruction-section {
+  margin-bottom: 32px;
+}
+
+.instruction-section h3 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.instruction-section h4 {
+  margin: 16px 0 8px;
+  font-size: 17px;
+  color: #334155;
+}
+
+.instruction-section p {
+  line-height: 1.85;
+  color: #334155;
+}
+
+.instruction-section ul {
+  padding-left: 20px;
+}
+
+.instruction-section li {
+  margin-bottom: 6px;
+  line-height: 1.75;
+  color: #334155;
+}
+
+/* ===== Highlight / Tips / Warning boxes ===== */
+
+.highlight-box {
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(255, 191, 63, 0.06));
+  border: 1px solid rgba(255, 107, 53, 0.15);
+  margin-bottom: 16px;
+  line-height: 1.75;
+}
+
+.formula-box {
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: #f0f4ff;
+  border: 1px solid rgba(79, 108, 255, 0.15);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: #1e293b;
+}
+
+.tips-box {
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: rgba(0, 168, 132, 0.06);
+  border-left: 4px solid var(--green);
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.warning-box {
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: rgba(229, 86, 86, 0.06);
+  border-left: 4px solid var(--red);
+  color: #334155;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* ===== Flow grid ===== */
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.flow-grid div {
+  padding: 16px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.flow-grid span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flow-grid strong {
+  font-size: 15px;
+  color: #0f172a;
+}
+
+/* ===== Instruction table ===== */
+
+.instruction-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.instruction-table thead {
+  background: #f1f5f9;
+}
+
+.instruction-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.instruction-table td {
+  padding: 12px 16px;
+  font-size: 15px;
+  color: #334155;
+  border-top: 1px solid #e2e8f0;
+}
+
+.instruction-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* ===== Details / Accordion ===== */
+
+.detail-content {
+  padding: 16px 0 8px 0;
+}
+
+.detail-content p {
+  margin: 0 0 10px;
+}
+
+.training-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.training-card p {
+  margin-bottom: 10px;
+}
+
+details {
+  margin-bottom: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+details summary {
+  padding: 14px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  color: #0f172a;
+  border-radius: 14px;
+  transition: background 0.15s;
+}
+
+details summary:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+details[open] summary {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: 14px 14px 0 0;
+}
+
+/* ===== Generator actions row ===== */
+
+.generator-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ===== Modals ===== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-sm {
+  max-width: 440px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: -0.03em;
+  color: #0f172a;
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: background 0.15s;
+}
+
+.modal-close:hover {
+  background: #e2e8f0;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 32px 0;
+  font-size: 15px;
+}
+
+.modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-item:last-child {
+  border-bottom: none;
+}
+
+.modal-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-item-info strong {
+  display: block;
+  font-size: 15px;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.modal-item-info span {
+  display: block;
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.modal-item-info small {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.modal-item-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ===== Share link box ===== */
+
+.share-link-box {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.share-link-box input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 760px) {
+  .instruction-doc {
+    padding: 24px;
+  }
+
+  .instruction-hero h2 {
+    font-size: 24px;
+  }
+
+  .flow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .code-language-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 85vh;
+  }
+}
+

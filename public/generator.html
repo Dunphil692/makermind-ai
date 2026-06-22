@@ -33,8 +33,8 @@
       <span class="eyebrow">TASK GENERATOR</span>
       <h1>生成互动学习任务</h1>
       <p>
-        输入知识点、学生兴趣和学习条件，MakerMind AI 会生成一套分层式互动任务：
-        先用网页模拟快速体验，再用低成本材料动手实践，最后根据条件升级成硬件拓展项目。
+        输入知识点、学生兴趣和学习条件，MakerMind AI 会调用 DeepSeek 生成一套完整的 STEAM 项目指导方案，
+        包含项目概述、制作步骤、知识讲解、代码思路和融会贯通训练。
       </p>
     </section>
 
@@ -43,28 +43,47 @@
         <div class="form-section-title">
           <span>STEP 01</span>
           <h2>设置学习任务</h2>
-          <p>先选择知识点和兴趣场景，再决定这次课堂更适合哪一种学习形式。</p>
+          <p>选择或输入知识点，再选择兴趣场景和硬件条件。</p>
         </div>
 
         <label>
           知识点
-          <select id="concept">
-            <option value="一次函数">一次函数</option>
-            <option value="分数与比例">分数与比例</option>
-            <option value="面积与周长">面积与周长</option>
-            <option value="角度与几何">角度与几何</option>
-            <option value="数据统计">数据统计</option>
-            <option value="声音与振动">声音与振动</option>
-            <option value="光照与条件判断">光照与条件判断</option>
+          <input type="text" id="conceptInput" list="conceptSuggestions" placeholder="输入知识点，如：一次函数、勾股定理..." value="一次函数" />
+          <datalist id="conceptSuggestions">
+            <option value="一次函数"></option>
+            <option value="分数与比例"></option>
+            <option value="面积与周长"></option>
+            <option value="角度与几何"></option>
+            <option value="数据统计"></option>
+            <option value="声音与振动"></option>
+            <option value="光照与条件判断"></option>
+            <option value="勾股定理"></option>
+            <option value="二元一次方程"></option>
+            <option value="电路串联与并联"></option>
+            <option value="概率与随机"></option>
+            <option value="速度与路程"></option>
+            <option value="温度与热传递"></option>
+            <option value="力的合成与分解"></option>
+          </datalist>
+        </label>
+
+        <label>
+          学科方向
+          <select id="subjectSelect">
+            <option value="数学">数学</option>
+            <option value="科学">科学</option>
+            <option value="物理">物理</option>
+            <option value="信息技术">信息技术</option>
+            <option value="综合实践">综合实践</option>
           </select>
         </label>
 
         <label>
           学段
-          <select id="grade">
-            <option value="小学高年级">小学高年级</option>
-            <option value="初中低年级">初中低年级</option>
-            <option value="初中高年级">初中高年级</option>
+          <select id="levelSelect">
+            <option value="需要项目带着学">需要项目带着学</option>
+            <option value="理解快，需要挑战">理解快，需要挑战</option>
+            <option value="兴趣低，需要强反馈">兴趣低，需要强反馈</option>
           </select>
         </label>
 
@@ -72,7 +91,7 @@
           兴趣场景
           <div class="chips" id="interestChips">
             <button type="button" class="chip active" data-interest="球星点球大战">球星点球大战</button>
-            <button type="button" class="chip" data-interest="篮球投篮挑战">篮球投篮挑战</button>
+            <button type="button" class="chip" data-interest="篮球投篮挑战">篮球投篮</button>
             <button type="button" class="chip" data-interest="音乐节奏灯">音乐节奏灯</button>
             <button type="button" class="chip" data-interest="宠物自动喂食器">宠物喂食器</button>
             <button type="button" class="chip" data-interest="赛车计时挑战">赛车计时</button>
@@ -83,45 +102,111 @@
         </label>
 
         <label>
-          学习形式
-          <select id="learningForm">
-            <option value="三层任务都生成">三层任务都生成</option>
-            <option value="网页互动模拟">网页互动模拟</option>
-            <option value="低成本材料任务">低成本材料任务</option>
-            <option value="Arduino / ESP32 硬件拓展">Arduino / ESP32 硬件拓展</option>
+          硬件套件
+          <select id="kitSelect">
+            <option value="k10">UNIHIKER K10（推荐）</option>
+            <option value="arduino">Arduino / ESP32</option>
+            <option value="microbit">micro:bit</option>
+            <option value="paper">纸电路 / 无需编程</option>
+            <option value="mixed">纸板 + 电子模块</option>
           </select>
         </label>
 
         <label>
           课堂时长
-          <select id="duration">
+          <select id="durationSelect">
             <option value="15 分钟快速体验">15 分钟快速体验</option>
             <option value="30 分钟小任务">30 分钟小任务</option>
             <option value="45 分钟课堂活动">45 分钟课堂活动</option>
-            <option value="60 分钟项目课">60 分钟项目课</option>
+            <option value="60 分钟项目课" selected>60 分钟项目课</option>
           </select>
         </label>
 
-        <button class="btn primary wide" type="submit">生成互动学习任务</button>
+        <button class="btn primary wide" type="submit" id="generateBtn">生成 STEAM 项目方案</button>
+
+        <div class="generator-actions-row">
+          <button type="button" class="btn ghost small" id="historyBtn" style="flex:1">历史记录</button>
+          <button type="button" class="btn ghost small" id="savedBtn" style="flex:1">已收藏</button>
+        </div>
 
         <p class="generator-note">
-          当前页面先展示演示方案。正式接入 API 后，系统会根据具体输入生成更完整的教师版和学生版任务卡。
+          系统会分三段调用 AI 生成完整方案（概述 → 制作步骤 → 训练），总耗时约 30-60 秒。
         </p>
       </form>
 
       <section class="result-panel generator-result-panel">
         <div class="result-header">
           <div>
-            <span id="matchTag">三层任务方案</span>
-            <h2 id="resultTitle">一次函数 × 球星点球大战｜分层式互动学习任务</h2>
+            <span id="matchTag">等待生成</span>
+            <h2 id="resultTitle">选择参数后点击生成</h2>
           </div>
-          <span class="tag" id="updateTag">演示方案</span>
+          <span class="tag" id="updateTag">未调用 AI</span>
         </div>
 
-        <div class="project-cards" id="projectCards"></div>
+        <div class="project-cards" id="projectCards">
+          <article class="instruction-empty">
+            <div class="project-card-header">
+              <h4>等待生成 STEAM 项目方案</h4>
+              <span class="badge">未调用 AI</span>
+            </div>
+            <p>
+              在左侧选择知识点、兴趣场景和硬件条件，然后点击"生成 STEAM 项目方案"按钮。
+              系统会调用 DeepSeek AI 分三段生成完整的项目指导方案。
+            </p>
+            <div class="project-meta">
+              <div><span>当前知识点</span><strong>一次函数</strong></div>
+              <div><span>兴趣</span><strong>球星点球大战</strong></div>
+              <div><span>套件</span><strong>UNIHIKER K10</strong></div>
+              <div><span>时长</span><strong>60 分钟项目课</strong></div>
+            </div>
+          </article>
+        </div>
       </section>
     </section>
   </main>
+
+  <!-- 历史记录弹窗 -->
+  <div class="modal-overlay" id="historyModal" style="display:none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>生成历史记录</h3>
+        <button type="button" class="modal-close" id="historyClose">&times;</button>
+      </div>
+      <div class="modal-body" id="historyList">
+        <p class="modal-empty">暂无生成记录</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 收藏弹窗 -->
+  <div class="modal-overlay" id="savedModal" style="display:none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>已收藏方案</h3>
+        <button type="button" class="modal-close" id="savedClose">&times;</button>
+      </div>
+      <div class="modal-body" id="savedList">
+        <p class="modal-empty">暂无收藏方案</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享弹窗 -->
+  <div class="modal-overlay" id="shareModal" style="display:none">
+    <div class="modal-content modal-sm">
+      <div class="modal-header">
+        <h3>分享方案</h3>
+        <button type="button" class="modal-close" id="shareClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>复制下方链接分享给其他老师：</p>
+        <div class="share-link-box">
+          <input type="text" id="shareLink" readonly />
+          <button type="button" class="btn primary small" id="copyShareLink">复制</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
@@ -129,296 +214,764 @@
   </footer>
 
   <script>
+    /* ===== DOM refs ===== */
     const form = document.querySelector("#generatorForm");
-    const conceptSelect = document.querySelector("#concept");
-    const gradeSelect = document.querySelector("#grade");
-    const learningFormSelect = document.querySelector("#learningForm");
-    const durationSelect = document.querySelector("#duration");
+    const conceptInput = document.querySelector("#conceptInput");
+    const subjectSelect = document.querySelector("#subjectSelect");
+    const levelSelect = document.querySelector("#levelSelect");
+    const kitSelect = document.querySelector("#kitSelect");
+    const durationSelect = document.querySelector("#durationSelect");
     const interestChips = document.querySelectorAll("#interestChips .chip");
+    const generateBtn = document.querySelector("#generateBtn");
     const resultTitle = document.querySelector("#resultTitle");
     const matchTag = document.querySelector("#matchTag");
     const updateTag = document.querySelector("#updateTag");
     const projectCards = document.querySelector("#projectCards");
 
+    /* ===== State ===== */
     let activeInterest = "球星点球大战";
+    let isGenerating = false;
+    let currentInstruction = null;
     let generateCount = 0;
 
+    /* ===== Material maps (mirrors backend) ===== */
+    const kitMaterials = {
+      arduino: "ESP32、Arduino、LED灯带、按钮、蜂鸣器、舵机、超声波传感器、OLED屏、纸板、杜邦线、面包板",
+      microbit: "micro:bit 主板、LED灯、按钮、蜂鸣器、舵机、纸板、鳄鱼夹、扩展板、传感器模块",
+      paper: "铜箔胶带、纽扣电池、LED灯、纸板、彩纸、导电胶带、开关贴片、马克笔",
+      mixed: "纸板、亚克力片、LED灯带、按钮、蜂鸣器、舵机、传感器模块、杜邦线、热熔胶",
+      k10: "UNIHIKER K10，内置屏幕、按键、温湿度传感器、光敏传感器、加速度传感器、麦克风、扬声器、RGB LED；优先生成免接线、快速完成、适合课堂展示的硬件项目"
+    };
+
+    const kitLabels = {
+      arduino: "Arduino / ESP32 套件",
+      microbit: "micro:bit 套件",
+      paper: "纸电路 / 无需编程",
+      mixed: "纸板 + 电子模块",
+      k10: "UNIHIKER K10"
+    };
+
+    /* ===== Image library (mirrors app.js) ===== */
+    const imageLibrary = {
+      "reaction-trainer": { images: ["/assets/reaction-trainer.png"], title: "项目效果参考", caption: "互动反应、计时挑战" },
+      "distance-radar": { images: ["/assets/distance-radar.png"], title: "项目效果参考", caption: "距离测量、数据映射" },
+      "rhythm-wall": { images: ["/assets/rhythm-wall.png"], title: "项目效果参考", caption: "音乐节奏、声音互动" },
+      "pet-house": { images: ["/assets/pet-house.png"], title: "项目效果参考", caption: "宠物照护、环境监测" },
+      "pet-feeder": { images: ["/assets/pet-feeder.png"], title: "项目效果参考", caption: "自动投喂、定时控制" },
+      "basketball-scoreboard": { images: ["/assets/basketball-scoreboard.png"], title: "项目效果参考", caption: "运动计分、比赛规则" },
+      "livestream-dashboard": { images: ["/assets/livestream-dashboard.png"], title: "项目效果参考", caption: "直播热度、实时数据" },
+      "milk-tea-console": { images: ["/assets/milk-tea-console.png"], title: "项目效果参考", caption: "配方比例、参数调节" },
+      "character-energy-core": { images: ["/assets/character-energy-core.png"], title: "项目效果参考", caption: "角色成长、能量数值" }
+    };
+
+    /* ===== Helpers ===== */
     function safeText(value) {
-      return String(value || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
-    function getScenarioDetail(interest) {
-      const map = {
-        "球星点球大战": {
-          input: "射门力度 x",
-          output: "得分 y",
-          action: "拖动滑杆模拟射门力度",
-          project: "球星点球大战",
-          image: "assets/soccer-penalty.png",
-          feedback: "LED 显示“被扑出 / 进球 / 世界波”，蜂鸣器模拟欢呼声"
-        },
-        "篮球投篮挑战": {
-          input: "投篮角度 x",
-          output: "命中评分 y",
-          action: "拖动滑杆模拟投篮角度",
-          project: "篮球投篮挑战",
-          image: "assets/basketball-challenge.png",
-          feedback: "屏幕显示命中率，LED 提示最佳投篮区间"
-        },
-        "音乐节奏灯": {
-          input: "声音强度 x",
-          output: "灯光亮度 y",
-          action: "拖动滑杆模拟节奏强弱",
-          project: "音乐节奏灯",
-          image: "assets/music-led-device.png",
-          feedback: "LED 随声音强弱改变亮度和闪烁频率"
-        },
-        "宠物自动喂食器": {
-          input: "时间间隔 x",
-          output: "投喂次数 y",
-          action: "拖动滑杆模拟投喂间隔",
-          project: "宠物自动喂食器",
-          image: "assets/pet-feeder.png",
-          feedback: "屏幕显示投喂提醒，蜂鸣器提示喂食时间"
-        },
-        "赛车计时挑战": {
-          input: "赛车速度 x",
-          output: "完成时间 y",
-          action: "拖动滑杆模拟赛车速度",
-          project: "赛车计时挑战",
-          image: "assets/racing-timer.png",
-          feedback: "计时器显示成绩，LED 显示不同速度等级"
-        },
-        "科学实验装置": {
-          input: "实验变量 x",
-          output: "观察结果 y",
-          action: "拖动滑杆模拟变量变化",
-          project: "科学实验装置",
-          image: "assets/science-lab.png",
-          feedback: "图表显示数据变化，提示学生记录结果"
-        },
-        "校园生活助手": {
-          input: "环境数据 x",
-          output: "提醒等级 y",
-          action: "拖动滑杆模拟环境变化",
-          project: "校园生活助手",
-          image: "assets/campus-helper.png",
-          feedback: "屏幕显示提醒，LED 显示不同状态"
-        },
-        "环保监测项目": {
-          input: "环境指标 x",
-          output: "污染指数 y",
-          action: "拖动滑杆模拟环境指标",
-          project: "环保监测项目",
-          image: "assets/environment-monitor.png",
-          feedback: "图表显示监测结果，LED 显示安全 / 警告状态"
-        }
-      };
-
-      return map[interest] || map["球星点球大战"];
+    function getSelectedText(selectEl) {
+      if (!selectEl) return "";
+      return selectEl.options[selectEl.selectedIndex]?.text || selectEl.value || "";
     }
 
-    function getScoreLabel(score) {
-      if (score >= 90) return "世界波";
-      if (score >= 70) return "精彩反馈";
-      if (score >= 45) return "普通反馈";
-      return "需要调整";
-    }
-
-    function calculateScore(power) {
-      const k = 0.9;
-      const b = 18;
-      return Math.round(k * power + b);
-    }
-
-    function bindSliderDemo() {
-      const slider = document.querySelector("#powerSlider");
-      const scoreValue = document.querySelector("#scoreValue");
-      const scoreLabel = document.querySelector("#scoreLabel");
-
-      if (!slider || !scoreValue || !scoreLabel) return;
-
-      function updateScore() {
-        const score = calculateScore(Number(slider.value));
-        scoreValue.textContent = score;
-        scoreLabel.textContent = getScoreLabel(score);
-      }
-
-      slider.addEventListener("input", updateScore);
-      updateScore();
-    }
+    function getCurrentConcept() { return conceptInput?.value.trim() || "一次函数"; }
+    function getCurrentSubject() { return subjectSelect?.value || "数学"; }
+    function getCurrentLevel() { return getSelectedText(levelSelect); }
+    function getCurrentKitValue() { return kitSelect?.value || "k10"; }
+    function getCurrentKitLabel() { return kitLabels[getCurrentKitValue()] || getSelectedText(kitSelect) || "UNIHIKER K10"; }
+    function getCurrentMaterials() { return kitMaterials[getCurrentKitValue()] || kitMaterials.k10; }
+    function getCurrentDuration() { return durationSelect?.value || "60 分钟项目课"; }
 
     function getCurrentTimeText() {
       const now = new Date();
-      const h = String(now.getHours()).padStart(2, "0");
-      const m = String(now.getMinutes()).padStart(2, "0");
-      const s = String(now.getSeconds()).padStart(2, "0");
-      return `${h}:${m}:${s}`;
+      return `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}:${String(now.getSeconds()).padStart(2,"0")}`;
     }
 
-    function renderTask() {
-      const concept = conceptSelect.value;
-      const grade = gradeSelect.value;
-      const learningForm = learningFormSelect.value;
-      const duration = durationSelect.value;
-      const detail = getScenarioDetail(activeInterest);
+    function getImageInfo(instruction) {
+      const key = instruction.imageKey || "reaction-trainer";
+      const lib = imageLibrary[key] || imageLibrary["reaction-trainer"];
+      const images = Array.isArray(lib.images) ? lib.images : [];
+      return { image: images[0] || "/assets/reaction-trainer.png", title: lib.title, caption: lib.caption };
+    }
 
-      generateCount += 1;
+    /* ===== LocalStorage helpers ===== */
+    const HISTORY_KEY = "makermind_history";
+    const SAVED_KEY = "makermind_saved";
 
-      matchTag.textContent = "三层任务方案";
-      resultTitle.textContent = `${concept} × ${activeInterest}｜分层式互动学习任务`;
-      updateTag.textContent = `已生成 ${generateCount} 次 · ${getCurrentTimeText()}`;
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
+    }
+    function saveHistory(item) {
+      const list = getHistory();
+      list.unshift(item);
+      if (list.length > 20) list.length = 20;
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    }
+    function getSaved() {
+      try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; } catch { return []; }
+    }
+    function saveToFavorites(item) {
+      const list = getSaved();
+      if (!list.find(i => i.id === item.id)) {
+        list.unshift(item);
+        if (list.length > 30) list.length = 30;
+        localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+      }
+    }
+    function removeFromFavorites(id) {
+      const list = getSaved().filter(i => i.id !== id);
+      localStorage.setItem(SAVED_KEY, JSON.stringify(list));
+    }
+
+    /* ===== Render waiting state ===== */
+    function renderWaitingState() {
+      matchTag.textContent = "等待生成";
+      resultTitle.textContent = `${getCurrentConcept()} × ${activeInterest}｜STEAM 项目方案`;
+      updateTag.textContent = "未调用 AI";
 
       projectCards.innerHTML = `
-        <article class="layered-task-card">
+        <article class="instruction-empty">
           <div class="project-card-header">
-            <h4>已生成一份互动任务演示方案</h4>
-            <span class="badge">演示方案</span>
+            <h4>等待生成 STEAM 项目方案</h4>
+            <span class="badge">未调用 AI</span>
           </div>
-
-          <p class="task-intro">
-            这份方案面向${safeText(grade)}学生，不是直接给学生一份长说明书，
-            而是把“${safeText(concept)}”拆成三个层次：
-            先用网页模拟让学生快速体验，再用低成本材料完成动手任务，
-            最后根据条件升级成硬件拓展项目。
+          <p>
+            在左侧选择知识点、兴趣场景和硬件条件，然后点击"生成 STEAM 项目方案"按钮。
+            系统会调用 DeepSeek AI 分三段生成完整的项目指导方案。
           </p>
-
           <div class="project-meta">
-            <div><span>知识点</span><strong>${safeText(concept)}</strong></div>
-            <div><span>兴趣场景</span><strong>${safeText(activeInterest)}</strong></div>
-            <div><span>学习形式</span><strong>${safeText(learningForm)}</strong></div>
-            <div><span>课堂时长</span><strong>${safeText(duration)}</strong></div>
-          </div>
-
-          <div class="project-visual">
-            <img
-              src="${safeText(detail.image)}"
-              alt="${safeText(activeInterest)}项目效果图"
-              onerror="this.parentElement.classList.add('image-error'); this.remove();"
-            />
-            <div class="image-error-text">
-              图片未加载成功，请检查 assets 文件夹里的图片文件名是否和代码一致。
-            </div>
-          </div>
-
-          <div class="interactive-demo-box">
-            <div>
-              <span>网页互动模拟</span>
-              <h5>${safeText(detail.action)}</h5>
-              <p>
-                学生先通过滑杆模拟“${safeText(detail.input)}”，系统实时计算“${safeText(detail.output)}”。
-                这样可以先看到输入、输出和参数变化，再进入纸面任务或硬件拓展。
-              </p>
-            </div>
-
-            <div class="slider-demo">
-              <label>
-                ${safeText(detail.input)}
-                <input type="range" id="powerSlider" min="0" max="100" value="60" />
-              </label>
-
-              <div class="score-board">
-                <span>${safeText(detail.output)}</span>
-                <strong id="scoreValue">72</strong>
-                <small id="scoreLabel">精彩反馈</small>
-              </div>
-            </div>
-          </div>
-
-          <div class="task-layer-grid">
-            <section class="task-layer level-one">
-              <span>Level 1</span>
-              <h5>网页互动模拟</h5>
-              <p>
-                学生先通过网页滑杆或按钮模拟输入。在“${safeText(activeInterest)}”场景中，
-                用滑杆表示输入 x，系统实时显示输出 y，让学生马上看到 ${safeText(concept)} 的变化规律。
-              </p>
-              <ul>
-                <li>不需要硬件，1 分钟内可以开始体验</li>
-                <li>通过滑杆、按钮、分数变化形成即时反馈</li>
-                <li>适合作为新知识的第一入口</li>
-              </ul>
-            </section>
-
-            <section class="task-layer level-two">
-              <span>Level 2</span>
-              <h5>低成本动手任务</h5>
-              <p>
-                在网页体验之后，学生使用纸卡、计分表、骰子、手机计时器或简单材料，
-                把输入、输出和规则变化记录下来，形成一个不用复杂硬件也能完成的小任务。
-              </p>
-              <ul>
-                <li>成本低，课堂更容易落地</li>
-                <li>学生需要记录数据、比较结果、解释规律</li>
-                <li>适合普通课堂或家庭学习</li>
-              </ul>
-            </section>
-
-            <section class="task-layer level-three">
-              <span>Level 3</span>
-              <h5>硬件拓展方案</h5>
-              <p>
-                如果有 Arduino、ESP32、micro:bit 或传感器，可以把网页里的输入 x
-                换成真实传感器输入，把输出 y 换成 LED、蜂鸣器或屏幕反馈。
-              </p>
-              <ul>
-                <li>适合科创社团、展示活动或进阶课程</li>
-                <li>${safeText(detail.feedback)}</li>
-                <li>最终形成可以展示的作品</li>
-              </ul>
-            </section>
-          </div>
-
-          <div class="teacher-student-grid">
-            <section>
-              <h5>学生任务卡</h5>
-              <p>
-                你的任务是完成一个“${safeText(activeInterest)}”挑战，观察“${safeText(detail.input)}”
-                如何影响“${safeText(detail.output)}”，并尝试修改规则，让结果发生变化。
-              </p>
-            </section>
-
-            <section>
-              <h5>教师引导问题</h5>
-              <ol>
-                <li>这个任务里的输入是什么？输出是什么？</li>
-                <li>当输入变大时，输出如何变化？</li>
-                <li>如果改变规则参数，结果会发生什么变化？</li>
-                <li>这个现象和 ${safeText(concept)} 有什么关系？</li>
-              </ol>
-            </section>
+            <div><span>当前知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
+            <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
+            <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
+            <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
           </div>
         </article>
       `;
-
-      bindSliderDemo();
     }
 
-    interestChips.forEach((chip) => {
-      chip.addEventListener("click", () => {
-        interestChips.forEach((item) => item.classList.remove("active"));
-        chip.classList.add("active");
-        activeInterest = chip.dataset.interest;
-        renderTask();
+    /* ===== Render progress state ===== */
+    function renderProgress(step, total, title, desc) {
+      resultTitle.textContent = `${getCurrentConcept()} × ${activeInterest}｜STEAM 项目方案`;
+      matchTag.textContent = `AI 生成中 ${step}/${total}`;
+      updateTag.textContent = `生成中 ${getCurrentTimeText()}`;
+
+      projectCards.innerHTML = `
+        <article class="instruction-empty">
+          <div class="project-card-header">
+            <h4>${safeText(title)}</h4>
+            <span class="badge">${safeText(step)} / ${safeText(total)}</span>
+          </div>
+          <p>${safeText(desc)}</p>
+          <div class="project-meta">
+            <div><span>知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
+            <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
+            <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
+            <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
+          </div>
+          <div class="tips-box">内容正在分段生成，请勿关闭页面。预计总耗时 30-60 秒。</div>
+        </article>
+      `;
+    }
+
+    /* ===== Render error state ===== */
+    function renderError(message) {
+      matchTag.textContent = "生成失败";
+      updateTag.textContent = `失败 · ${getCurrentTimeText()}`;
+
+      projectCards.innerHTML = `
+        <article class="instruction-empty demo-fallback-card">
+          <div class="project-card-header">
+            <h4>AI 生成失败</h4>
+            <span class="badge">错误</span>
+          </div>
+          <p>${safeText(message)}</p>
+          <p style="margin-top:12px;color:#64748b;">请检查网络连接后重试，或联系管理员确认 API 配置。</p>
+        </article>
+      `;
+    }
+
+    /* ===== API call ===== */
+    async function requestPart(payload, part) {
+      const response = await fetch("/api/generate-instruction-part", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, part })
+      });
+      const text = await response.text();
+      let data;
+      try { data = JSON.parse(text); } catch { throw new Error(`接口返回非 JSON：${text.slice(0, 200)}`); }
+      if (!response.ok) throw new Error(data.detail || data.error || `${part} 生成失败`);
+      if (!data.data) throw new Error(`AI 未返回 ${part} 数据`);
+      return data.data;
+    }
+
+    /* ===== Merge parts ===== */
+    function mergeParts(overview, build, practice) {
+      return {
+        projectName: overview.projectName,
+        subtitle: overview.subtitle,
+        imageKey: overview.imageKey,
+        meta: overview.meta,
+        overview: overview.overview,
+        interactionFlow: overview.interactionFlow,
+        materials: overview.materials,
+        steps: build.steps,
+        knowledgeExplanation: build.knowledgeExplanation,
+        starterCodeCpp: build.starterCodeCpp || build.starterCode,
+        starterCodePython: build.starterCodePython,
+        masteryTraining: practice.masteryTraining,
+        extensions: practice.extensions,
+        faq: practice.faq
+      };
+    }
+
+    /* ===== Main generate ===== */
+    async function generate() {
+      if (isGenerating) return;
+      isGenerating = true;
+
+      const originalText = generateBtn.textContent;
+      generateBtn.disabled = true;
+
+      try {
+        const payload = {
+          concept: getCurrentConcept(),
+          subject: getCurrentSubject(),
+          level: getCurrentLevel(),
+          interest: activeInterest,
+          kit: getCurrentKitLabel(),
+          duration: getCurrentDuration(),
+          materials: getCurrentMaterials()
+        };
+
+        generateCount += 1;
+
+        // Step 1/3: overview
+        generateBtn.textContent = "正在生成 1/3...";
+        renderProgress(1, 3, "正在生成 1/3：项目概述与交互设计", "正在生成项目标题、学习目标、交互流程和材料清单。");
+        const overview = await requestPart(payload, "overview");
+
+        // Step 2/3: build
+        generateBtn.textContent = "正在生成 2/3...";
+        renderProgress(2, 3, "正在生成 2/3：制作步骤与知识讲解", "正在生成详细制作步骤、知识点讲解和代码思路。");
+        const build = await requestPart(payload, "build");
+
+        // Step 3/3: practice
+        generateBtn.textContent = "正在生成 3/3...";
+        renderProgress(3, 3, "正在生成 3/3：融会贯通训练与 FAQ", "正在生成基础练习、变化挑战、逆向思维、进阶方向和常见问题。");
+        const practice = await requestPart(payload, "practice");
+
+        const instruction = mergeParts(overview, build, practice);
+        currentInstruction = instruction;
+
+        // Save to history
+        const historyItem = {
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          concept: payload.concept,
+          interest: payload.interest,
+          kit: payload.kit,
+          duration: payload.duration,
+          projectName: instruction.projectName,
+          createdAt: new Date().toISOString(),
+          instruction: instruction
+        };
+        saveHistory(historyItem);
+
+        renderInstruction(instruction);
+      } catch (error) {
+        console.error(error);
+        renderError(error.message || "生成失败，请重试");
+      } finally {
+        isGenerating = false;
+        generateBtn.disabled = false;
+        generateBtn.textContent = originalText;
+      }
+    }
+
+    /* ===== Render full instruction ===== */
+    function renderInstruction(instruction) {
+      const imageInfo = getImageInfo(instruction);
+
+      resultTitle.textContent = instruction.projectName || `${getCurrentConcept()} 学习方案`;
+      matchTag.textContent = "完整方案";
+      updateTag.textContent = `已生成 ${generateCount} 次 · ${getCurrentTimeText()}`;
+
+      projectCards.innerHTML = `
+        <article class="instruction-doc">
+          <header class="instruction-hero">
+            <div>
+              <p class="instruction-kicker">STEAM 项目指导</p>
+              <h2>${safeText(instruction.projectName)}</h2>
+              <p>${safeText(instruction.subtitle)}</p>
+              <div class="instruction-meta">
+                <span>状态：${safeText(instruction.meta?.studentLevel)}</span>
+                <span>知识点：${safeText(instruction.meta?.knowledgePoint)}</span>
+                <span>时长：${safeText(instruction.meta?.timeRequired)}</span>
+                <span>硬件：${safeText(instruction.meta?.hardware)}</span>
+              </div>
+            </div>
+          </header>
+
+          <figure class="instruction-visual">
+            <img src="${safeText(imageInfo.image)}" alt="${safeText(instruction.projectName)}" loading="lazy">
+            <figcaption>
+              <strong>${safeText(imageInfo.title)}</strong>
+              <span>${safeText(imageInfo.caption)}</span>
+            </figcaption>
+          </figure>
+
+          <!-- Action bar -->
+          <div class="action-bar">
+            <button type="button" class="btn primary small" id="saveBtn">收藏此方案</button>
+            <button type="button" class="btn ghost small" id="exportBtn">导出文本</button>
+            <button type="button" class="btn ghost small" id="shareBtn">分享链接</button>
+            <button type="button" class="btn ghost small" id="printBtn">打印</button>
+          </div>
+
+          <section class="instruction-section">
+            <h3>项目概述</h3>
+            <div class="highlight-box">
+              <strong>核心目标：</strong>${safeText(instruction.overview?.coreGoal)}
+            </div>
+            <p><strong>项目简介：</strong>${safeText(instruction.overview?.projectIntro)}</p>
+            <p><strong>为什么学生会想玩：</strong>${safeText(instruction.overview?.whyFun)}</p>
+            ${renderList("为什么这个项目能帮助学习", instruction.overview?.learningReasons)}
+          </section>
+
+          <section class="instruction-section">
+            <h3>交互流程预览</h3>
+            <div class="flow-grid">
+              <div><span>触发</span><strong>${safeText(instruction.interactionFlow?.trigger)}</strong></div>
+              <div><span>计算</span><strong>${safeText(instruction.interactionFlow?.calculation)}</strong></div>
+              <div><span>等级</span><strong>${safeText(instruction.interactionFlow?.level)}</strong></div>
+            </div>
+            ${renderList("反馈方式", instruction.interactionFlow?.feedback)}
+            <div class="tips-box">${safeText(instruction.interactionFlow?.levelReason)}</div>
+          </section>
+
+          <section class="instruction-section">
+            <h3>材料清单</h3>
+            ${renderMaterialsTable(instruction.materials)}
+          </section>
+
+          <section class="instruction-section">
+            <h3>制作步骤</h3>
+            ${renderSteps(instruction.steps)}
+          </section>
+
+          <section class="instruction-section">
+            <h3>知识点讲解</h3>
+            ${renderKnowledge(instruction.knowledgeExplanation)}
+          </section>
+
+          <section class="instruction-section mastery-block">
+            <h3>融会贯通训练</h3>
+            ${renderMastery(instruction.masteryTraining)}
+          </section>
+
+          <section class="instruction-section code-thought-section">
+            <div class="code-section-title">
+              <div>
+                <h3>代码思路</h3>
+                <p>同一个硬件逻辑提供两种写法：C++ / Arduino 与 MicroPython / K10。</p>
+              </div>
+            </div>
+            <div class="code-language-grid">
+              <div class="code-copy-card">
+                <div class="code-copy-header">
+                  <span class="code-dot red"></span>
+                  <span class="code-dot yellow"></span>
+                  <span class="code-dot green"></span>
+                  <strong>C++ / Arduino</strong>
+                  <button class="copy-code-btn compact" type="button" data-copy-code aria-label="复制 C++ 代码">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="2"></rect><rect x="5" y="3" width="10" height="12" rx="2"></rect></svg>
+                    <span>复制</span>
+                  </button>
+                </div>
+                <pre class="instruction-code"><code>${safeText(instruction.starterCodeCpp || "// C++ / Arduino 代码示例")}</code></pre>
+              </div>
+              <div class="code-copy-card">
+                <div class="code-copy-header">
+                  <span class="code-dot red"></span>
+                  <span class="code-dot yellow"></span>
+                  <span class="code-dot green"></span>
+                  <strong>MicroPython / K10</strong>
+                  <button class="copy-code-btn compact" type="button" data-copy-code aria-label="复制 MicroPython 代码">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="2"></rect><rect x="5" y="3" width="10" height="12" rx="2"></rect></svg>
+                    <span>复制</span>
+                  </button>
+                </div>
+                <pre class="instruction-code"><code>${safeText(instruction.starterCodePython || "# MicroPython / K10 代码示例")}</code></pre>
+              </div>
+            </div>
+          </section>
+
+          <section class="instruction-section">
+            <h3>进阶方向</h3>
+            ${renderList("", instruction.extensions)}
+          </section>
+
+          <section class="instruction-section">
+            <h3>常见问题</h3>
+            ${renderFaq(instruction.faq)}
+          </section>
+        </article>
+      `;
+
+      bindActionButtons(instruction);
+      bindCopyButtons();
+    }
+
+    /* ===== Render sub-sections ===== */
+    function renderList(title, items) {
+      const list = Array.isArray(items) ? items : [];
+      if (!list.length) return "";
+      return `${title ? `<h4>${safeText(title)}</h4>` : ""}<ul>${list.map(i => `<li>${safeText(i)}</li>`).join("")}</ul>`;
+    }
+
+    function renderMaterialsTable(materials) {
+      const list = Array.isArray(materials) ? materials : [];
+      if (!list.length) return "<p>暂无材料清单。</p>";
+      return `<table class="instruction-table"><thead><tr><th>材料</th><th>数量</th><th>用途</th><th>备注</th></tr></thead><tbody>${list.map(i => `<tr><td>${safeText(i.name)}</td><td>${safeText(i.quantity)}</td><td>${safeText(i.usage)}</td><td>${safeText(i.note)}</td></tr>`).join("")}</tbody></table>`;
+    }
+
+    function renderSteps(steps) {
+      const list = Array.isArray(steps) ? steps : [];
+      if (!list.length) return "<p>暂无制作步骤。</p>";
+      return list.map((s, i) => `
+        <details ${i === 0 ? "open" : ""}>
+          <summary>Step ${i + 1}: ${safeText(s.title)}（${safeText(s.duration)}）</summary>
+          <div class="detail-content">
+            <p>${safeText(s.content)}</p>
+            ${s.tips ? `<div class="tips-box">${safeText(s.tips)}</div>` : ""}
+            ${s.warning ? `<div class="warning-box">${safeText(s.warning)}</div>` : ""}
+          </div>
+        </details>
+      `).join("");
+    }
+
+    function renderKnowledge(k) {
+      return `
+        <details open><summary>核心概念</summary><div class="detail-content"><p>${safeText(k?.coreConcept)}</p></div></details>
+        <details><summary>关键公式 / 规则</summary><div class="detail-content"><div class="formula-box">${safeText(k?.keyFormula)}</div></div></details>
+        <details><summary>在项目中的应用</summary><div class="detail-content"><p>${safeText(k?.inProject)}</p></div></details>
+        <details><summary>深入理解与常见误区</summary><div class="detail-content"><p><strong>深入理解：</strong>${safeText(k?.deepUnderstanding)}</p><p><strong>常见误区：</strong>${safeText(k?.commonMisunderstanding)}</p></div></details>
+      `;
+    }
+
+    function renderMastery(t) {
+      const items = [
+        ["基础练习", t?.basicPractice],
+        ["变化挑战", t?.variationChallenge],
+        ["逆向思维", t?.reverseThinking],
+        ["综合应用", t?.comprehensiveApplication],
+        ["举一反三", t?.transferQuestion]
+      ];
+      return items.map(([title, item], i) => `
+        <details ${i === 0 ? "open" : ""}>
+          <summary>${safeText(title)}</summary>
+          <div class="detail-content training-card">
+            <p><strong>任务：</strong>${safeText(item?.task)}</p>
+            <p><strong>提示：</strong>${safeText(item?.hint)}</p>
+            <p><strong>参考答案：</strong>${safeText(item?.answer)}</p>
+          </div>
+        </details>
+      `).join("");
+    }
+
+    function renderFaq(faq) {
+      const list = Array.isArray(faq) ? faq : [];
+      if (!list.length) return "<p>暂无常见问题。</p>";
+      return list.map((item, i) => `
+        <details>
+          <summary>Q${i + 1}: ${safeText(item.question)}</summary>
+          <div class="detail-content"><p>${safeText(item.answer)}</p></div>
+        </details>
+      `).join("");
+    }
+
+    /* ===== Action buttons (save / export / share / print) ===== */
+    function bindActionButtons(instruction) {
+      const saveBtn = document.getElementById("saveBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const shareBtn = document.getElementById("shareBtn");
+      const printBtn = document.getElementById("printBtn");
+
+      if (saveBtn) {
+        saveBtn.addEventListener("click", () => {
+          const item = {
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            concept: getCurrentConcept(),
+            interest: activeInterest,
+            kit: getCurrentKitLabel(),
+            duration: getCurrentDuration(),
+            projectName: instruction.projectName,
+            createdAt: new Date().toISOString(),
+            instruction: instruction
+          };
+          saveToFavorites(item);
+          saveBtn.textContent = "已收藏";
+          saveBtn.disabled = true;
+          setTimeout(() => { saveBtn.textContent = "收藏此方案"; saveBtn.disabled = false; }, 1500);
+        });
+      }
+
+      if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+          const text = instructionToPlainText(instruction);
+          const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${instruction.projectName || "STEAM方案"}.txt`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      if (shareBtn) {
+        shareBtn.addEventListener("click", () => {
+          const params = new URLSearchParams({
+            c: getCurrentConcept(),
+            i: activeInterest,
+            k: getCurrentKitValue(),
+            d: getCurrentDuration()
+          });
+          const link = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+          document.getElementById("shareLink").value = link;
+          document.getElementById("shareModal").style.display = "flex";
+        });
+      }
+
+      if (printBtn) {
+        printBtn.addEventListener("click", () => window.print());
+      }
+    }
+
+    function instructionToPlainText(inst) {
+      let text = `=== ${inst.projectName || "STEAM 项目方案"} ===\n`;
+      text += `${inst.subtitle || ""}\n\n`;
+      text += `--- 项目概述 ---\n`;
+      text += `核心目标：${inst.overview?.coreGoal || ""}\n`;
+      text += `项目简介：${inst.overview?.projectIntro || ""}\n`;
+      text += `为什么学生会想玩：${inst.overview?.whyFun || ""}\n`;
+      if (inst.overview?.learningReasons?.length) {
+        text += `\n学习理由：\n`;
+        inst.overview.learningReasons.forEach(r => { text += `  - ${r}\n`; });
+      }
+      text += `\n--- 交互流程 ---\n`;
+      text += `触发：${inst.interactionFlow?.trigger || ""}\n`;
+      text += `计算：${inst.interactionFlow?.calculation || ""}\n`;
+      text += `等级：${inst.interactionFlow?.level || ""}\n`;
+      if (inst.interactionFlow?.feedback?.length) {
+        text += `反馈：\n`;
+        inst.interactionFlow.feedback.forEach(f => { text += `  - ${f}\n`; });
+      }
+      text += `\n--- 材料清单 ---\n`;
+      if (inst.materials?.length) {
+        inst.materials.forEach(m => { text += `  ${m.name} x${m.quantity} - ${m.usage} (${m.note || ""})\n`; });
+      }
+      text += `\n--- 制作步骤 ---\n`;
+      if (inst.steps?.length) {
+        inst.steps.forEach((s, i) => {
+          text += `\nStep ${i + 1}: ${s.title}（${s.duration}）\n${s.content}\n`;
+          if (s.tips) text += `提示：${s.tips}\n`;
+          if (s.warning) text += `注意：${s.warning}\n`;
+        });
+      }
+      text += `\n--- 知识点讲解 ---\n`;
+      text += `核心概念：${inst.knowledgeExplanation?.coreConcept || ""}\n`;
+      text += `关键公式：${inst.knowledgeExplanation?.keyFormula || ""}\n`;
+      text += `在项目中的应用：${inst.knowledgeExplanation?.inProject || ""}\n`;
+      text += `深入理解：${inst.knowledgeExplanation?.deepUnderstanding || ""}\n`;
+      text += `常见误区：${inst.knowledgeExplanation?.commonMisunderstanding || ""}\n`;
+      text += `\n--- 融会贯通训练 ---\n`;
+      const training = inst.masteryTraining || {};
+      const trainingItems = [
+        ["基础练习", training.basicPractice],
+        ["变化挑战", training.variationChallenge],
+        ["逆向思维", training.reverseThinking],
+        ["综合应用", training.comprehensiveApplication],
+        ["举一反三", training.transferQuestion]
+      ];
+      trainingItems.forEach(([title, item]) => {
+        if (item) {
+          text += `\n【${title}】\n任务：${item.task}\n提示：${item.hint}\n参考答案：${item.answer}\n`;
+        }
+      });
+      if (inst.starterCodeCpp) {
+        text += `\n--- C++ / Arduino 代码 ---\n${inst.starterCodeCpp}\n`;
+      }
+      if (inst.starterCodePython) {
+        text += `\n--- MicroPython / K10 代码 ---\n${inst.starterCodePython}\n`;
+      }
+      if (inst.extensions?.length) {
+        text += `\n--- 进阶方向 ---\n`;
+        inst.extensions.forEach(e => { text += `  - ${e}\n`; });
+      }
+      if (inst.faq?.length) {
+        text += `\n--- 常见问题 ---\n`;
+        inst.faq.forEach((f, i) => { text += `Q${i + 1}: ${f.question}\nA: ${f.answer}\n\n`; });
+      }
+      return text;
+    }
+
+    /* ===== Copy code buttons ===== */
+    function bindCopyButtons() {
+      document.querySelectorAll("[data-copy-code]").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const card = btn.closest(".code-copy-card");
+          const code = card?.querySelector("code")?.textContent || "";
+          if (!code.trim()) return;
+          const label = btn.querySelector("span");
+          const oldText = label?.textContent || "复制";
+          try {
+            await navigator.clipboard.writeText(code);
+            if (label) label.textContent = "已复制";
+            btn.classList.add("copied");
+            setTimeout(() => { if (label) label.textContent = oldText; btn.classList.remove("copied"); }, 1400);
+          } catch {
+            if (label) label.textContent = "复制失败";
+          }
+        });
+      });
+    }
+
+    /* ===== History modal ===== */
+    function renderHistoryModal() {
+      const list = getHistory();
+      const container = document.getElementById("historyList");
+      if (!list.length) { container.innerHTML = "<p class='modal-empty'>暂无生成记录</p>"; return; }
+      container.innerHTML = list.map(item => `
+        <div class="modal-item" data-id="${item.id}">
+          <div class="modal-item-info">
+            <strong>${safeText(item.projectName || item.concept)}</strong>
+            <span>${safeText(item.concept)} × ${safeText(item.interest)} · ${safeText(item.kit)}</span>
+            <small>${new Date(item.createdAt).toLocaleString("zh-CN")}</small>
+          </div>
+          <div class="modal-item-actions">
+            <button type="button" class="btn primary small modal-load" data-id="${item.id}">查看</button>
+            <button type="button" class="btn ghost small modal-delete-history" data-id="${item.id}">删除</button>
+          </div>
+        </div>
+      `).join("");
+
+      container.querySelectorAll(".modal-load").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const item = list.find(i => i.id === btn.dataset.id);
+          if (item?.instruction) {
+            currentInstruction = item.instruction;
+            renderInstruction(item.instruction);
+            document.getElementById("historyModal").style.display = "none";
+          }
+        });
+      });
+
+      container.querySelectorAll(".modal-delete-history").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const updated = list.filter(i => i.id !== btn.dataset.id);
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+          renderHistoryModal();
+        });
+      });
+    }
+
+    /* ===== Saved modal ===== */
+    function renderSavedModal() {
+      const list = getSaved();
+      const container = document.getElementById("savedList");
+      if (!list.length) { container.innerHTML = "<p class='modal-empty'>暂无收藏方案</p>"; return; }
+      container.innerHTML = list.map(item => `
+        <div class="modal-item" data-id="${item.id}">
+          <div class="modal-item-info">
+            <strong>${safeText(item.projectName || item.concept)}</strong>
+            <span>${safeText(item.concept)} × ${safeText(item.interest)} · ${safeText(item.kit)}</span>
+            <small>${new Date(item.createdAt).toLocaleString("zh-CN")}</small>
+          </div>
+          <div class="modal-item-actions">
+            <button type="button" class="btn primary small modal-load-saved" data-id="${item.id}">查看</button>
+            <button type="button" class="btn ghost small modal-delete-saved" data-id="${item.id}">取消收藏</button>
+          </div>
+        </div>
+      `).join("");
+
+      container.querySelectorAll(".modal-load-saved").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const item = list.find(i => i.id === btn.dataset.id);
+          if (item?.instruction) {
+            currentInstruction = item.instruction;
+            renderInstruction(item.instruction);
+            document.getElementById("savedModal").style.display = "none";
+          }
+        });
+      });
+
+      container.querySelectorAll(".modal-delete-saved").forEach(btn => {
+        btn.addEventListener("click", () => {
+          removeFromFavorites(btn.dataset.id);
+          renderSavedModal();
+        });
+      });
+    }
+
+    /* ===== Modal open/close ===== */
+    document.getElementById("historyBtn").addEventListener("click", () => { renderHistoryModal(); document.getElementById("historyModal").style.display = "flex"; });
+    document.getElementById("historyClose").addEventListener("click", () => { document.getElementById("historyModal").style.display = "none"; });
+    document.getElementById("savedBtn").addEventListener("click", () => { renderSavedModal(); document.getElementById("savedModal").style.display = "flex"; });
+    document.getElementById("savedClose").addEventListener("click", () => { document.getElementById("savedModal").style.display = "none"; });
+    document.getElementById("shareClose").addEventListener("click", () => { document.getElementById("shareModal").style.display = "none"; });
+
+    document.getElementById("copyShareLink").addEventListener("click", () => {
+      const input = document.getElementById("shareLink");
+      navigator.clipboard.writeText(input.value).then(() => {
+        document.getElementById("copyShareLink").textContent = "已复制";
+        setTimeout(() => { document.getElementById("copyShareLink").textContent = "复制"; }, 1500);
       });
     });
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      renderTask();
+    // Close modals on overlay click
+    document.querySelectorAll(".modal-overlay").forEach(overlay => {
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.style.display = "none";
+      });
     });
 
-    conceptSelect.addEventListener("change", renderTask);
-    gradeSelect.addEventListener("change", renderTask);
-    learningFormSelect.addEventListener("change", renderTask);
-    durationSelect.addEventListener("change", renderTask);
+    /* ===== Chip selection ===== */
+    interestChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        interestChips.forEach(item => item.classList.remove("active"));
+        chip.classList.add("active");
+        activeInterest = chip.dataset.interest;
+      });
+    });
 
-    renderTask();
+    /* ===== Form submit ===== */
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      generate();
+    });
+
+    /* ===== Load from URL params (share link) ===== */
+    function loadFromUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("c")) conceptInput.value = params.get("c");
+      if (params.has("i")) {
+        activeInterest = params.get("i");
+        interestChips.forEach(chip => {
+          chip.classList.toggle("active", chip.dataset.interest === activeInterest);
+        });
+      }
+      if (params.has("k")) kitSelect.value = params.get("k");
+      if (params.has("d")) durationSelect.value = params.get("d");
+    }
+
+    /* ===== Init ===== */
+    loadFromUrlParams();
+    renderWaitingState();
   </script>
 </body>
 </html>
