@@ -4138,3 +4138,146 @@ details[open] summary {
   }
 }
 
+/* ===== Animations ===== */
+
+/* Reveal on scroll */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays for grids */
+.problem-grid article:nth-child(1) { transition-delay: 0s; }
+.problem-grid article:nth-child(2) { transition-delay: 0.1s; }
+.problem-grid article:nth-child(3) { transition-delay: 0.2s; }
+.problem-grid article:nth-child(4) { transition-delay: 0.3s; }
+
+.learning-flow article:nth-child(1) { transition-delay: 0s; }
+.learning-flow article:nth-child(2) { transition-delay: 0.1s; }
+.learning-flow article:nth-child(3) { transition-delay: 0.2s; }
+.learning-flow article:nth-child(4) { transition-delay: 0.3s; }
+
+.output-grid article:nth-child(1) { transition-delay: 0s; }
+.output-grid article:nth-child(2) { transition-delay: 0.1s; }
+.output-grid article:nth-child(3) { transition-delay: 0.2s; }
+.output-grid article:nth-child(4) { transition-delay: 0.3s; }
+
+.stats-grid .stat-card:nth-child(1) { transition-delay: 0s; }
+.stats-grid .stat-card:nth-child(2) { transition-delay: 0.1s; }
+.stats-grid .stat-card:nth-child(3) { transition-delay: 0.2s; }
+.stats-grid .stat-card:nth-child(4) { transition-delay: 0.3s; }
+
+.teacher-grid .teacher-card:nth-child(1) { transition-delay: 0s; }
+.teacher-grid .teacher-card:nth-child(2) { transition-delay: 0.15s; }
+.teacher-grid .teacher-card:nth-child(3) { transition-delay: 0.3s; }
+
+.interest-case-grid article:nth-child(1) { transition-delay: 0s; }
+.interest-case-grid article:nth-child(2) { transition-delay: 0.1s; }
+.interest-case-grid article:nth-child(3) { transition-delay: 0.2s; }
+.interest-case-grid article:nth-child(4) { transition-delay: 0.3s; }
+
+/* Card hover lift effect */
+.problem-grid article,
+.learning-flow article,
+.output-grid article,
+.interest-case-grid article,
+.stat-card,
+.teacher-card,
+.case-compare .case-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.problem-grid article:hover,
+.learning-flow article:hover,
+.output-grid article:hover,
+.interest-case-grid article:hover,
+.stat-card:hover,
+.teacher-card:hover,
+.case-compare .case-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
+}
+
+/* Hero title typewriter cursor */
+.hero-title-line {
+  opacity: 1;
+}
+
+/* Glow orb animation keyframes */
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(20px, -15px); }
+  50% { transform: translate(-10px, 20px); }
+  75% { transform: translate(15px, 10px); }
+}
+
+/* Button pulse on primary */
+.btn.primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn.primary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s ease, height 0.5s ease;
+}
+
+.btn.primary:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Smooth section entrance */
+.clarity-problem-section,
+.clarity-flow-section,
+.clarity-case-section,
+.clarity-output-section,
+.clarity-stats-section,
+.clarity-teacher-section,
+.clarity-final-cta {
+  opacity: 1;
+}
+
+/* Particle canvas behind everything */
+#particleCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Ensure content stays above particles */
+.topbar,
+.clarity-hero,
+.page-shell,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero content initial state for fade-in */
+.clarity-hero-copy .eyebrow,
+.clarity-hero-copy p,
+.clarity-hero-copy .hero-actions {
+  opacity: 0;
+  transform: translateY(20px);
+}
+

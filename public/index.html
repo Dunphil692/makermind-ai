@@ -409,5 +409,206 @@
     <strong>MakerMind AI</strong>
     <span>面向科创课堂与项目式学习的互动任务生成工作台</span>
   </footer>
+
+  <script>
+    /* ===== Particle Background ===== */
+    (function() {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'particleCanvas';
+      canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.6;';
+      document.body.insertBefore(canvas, document.body.firstChild);
+
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      const PARTICLE_COUNT = 60;
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      class Particle {
+        constructor() {
+          this.reset();
+        }
+        reset() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * 2 + 0.5;
+          this.speedX = (Math.random() - 0.5) * 0.3;
+          this.speedY = (Math.random() - 0.5) * 0.3;
+          this.opacity = Math.random() * 0.5 + 0.2;
+          this.hue = Math.random() > 0.5 ? 20 : 220;
+        }
+        update() {
+          this.x += this.speedX;
+          this.y += this.speedY;
+          if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+        }
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.opacity})`;
+          ctx.fill();
+        }
+      }
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+
+      function drawLines() {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(100, 120, 160, ${0.1 * (1 - dist / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        drawLines();
+        requestAnimationFrame(animate);
+      }
+      animate();
+    })();
+
+    /* ===== Scroll Reveal Animation ===== */
+    (function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+      document.querySelectorAll('.problem-grid article, .learning-flow article, .output-grid article, .interest-case-grid article, .stats-grid .stat-card, .teacher-grid .teacher-card, .case-compare .case-card').forEach(el => {
+        el.classList.add('reveal-on-scroll');
+        observer.observe(el);
+      });
+    })();
+
+    /* ===== Hero Title Typewriter Effect ===== */
+    (function() {
+      const lines = document.querySelectorAll('.hero-title-line');
+      lines.forEach((line, i) => {
+        const text = line.textContent;
+        line.textContent = '';
+        line.style.opacity = '1';
+        let charIndex = 0;
+        setTimeout(() => {
+          const interval = setInterval(() => {
+            if (charIndex < text.length) {
+              line.textContent += text[charIndex];
+              charIndex++;
+            } else {
+              clearInterval(interval);
+            }
+          }, 40);
+        }, 400 + i * 600);
+      });
+    })();
+
+    /* ===== Hero Content Fade In ===== */
+    (function() {
+      const heroElements = document.querySelectorAll('.clarity-hero-copy .eyebrow, .clarity-hero-copy p, .clarity-hero-copy .hero-actions');
+      heroElements.forEach((el, i) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, 1400 + i * 200);
+      });
+    })();
+
+    /* ===== Floating Glow Orbs ===== */
+    (function() {
+      const hero = document.querySelector('.clarity-hero');
+      if (!hero) return;
+      for (let i = 0; i < 3; i++) {
+        const orb = document.createElement('div');
+        orb.className = 'glow-orb';
+        orb.style.cssText = `
+          position:absolute;
+          border-radius:50%;
+          filter:blur(80px);
+          pointer-events:none;
+          z-index:0;
+          opacity:0.35;
+        `;
+        const size = 200 + Math.random() * 200;
+        orb.style.width = size + 'px';
+        orb.style.height = size + 'px';
+        const colors = ['rgba(255,107,53,0.4)', 'rgba(79,108,255,0.3)', 'rgba(0,168,132,0.3)'];
+        orb.style.background = colors[i];
+        orb.style.left = (10 + Math.random() * 60) + '%';
+        orb.style.top = (10 + Math.random() * 60) + '%';
+        hero.appendChild(orb);
+
+        let angle = Math.random() * Math.PI * 2;
+        let radius = 20 + Math.random() * 30;
+        let speed = 0.002 + Math.random() * 0.003;
+        let cx = parseFloat(orb.style.left);
+        let cy = parseFloat(orb.style.top);
+
+        function floatOrb() {
+          angle += speed;
+          orb.style.left = (cx + Math.cos(angle) * radius * 0.3) + '%';
+          orb.style.top = (cy + Math.sin(angle) * radius * 0.3) + '%';
+          requestAnimationFrame(floatOrb);
+        }
+        floatOrb();
+      }
+    })();
+
+    /* ===== Number Counter Animation ===== */
+    (function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const numEl = entry.target.querySelector('.stat-number');
+            if (!numEl || numEl.dataset.animated) return;
+            numEl.dataset.animated = '1';
+            const targetText = numEl.textContent;
+            const isPercent = targetText.includes('%');
+            const isTimes = targetText.includes('x');
+            const targetNum = parseFloat(targetText);
+            let current = 0;
+            const duration = 1500;
+            const startTime = performance.now();
+
+            function update(now) {
+              const elapsed = now - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const ease = 1 - Math.pow(1 - progress, 3);
+              current = targetNum * ease;
+              if (isPercent) numEl.textContent = Math.round(current) + '%';
+              else if (isTimes) numEl.textContent = current.toFixed(1) + 'x';
+              else numEl.textContent = Math.round(current);
+              if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+          }
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.stat-card').forEach(card => observer.observe(card));
+    })();
+  </script>
 </body>
 </html>
