@@ -9,6 +9,13 @@
 </head>
 
 <body>
+  <!-- TRAE AI 创造力大赛参赛标识 -->
+  <div class="contest-banner">
+    <span>参赛项目</span>
+    <strong>TRAE AI 创造力大赛 · 学习工作赛道</strong>
+    <a href="https://www.trae.cn/ai-creativity" target="_blank" rel="noopener">了解大赛 →</a>
+  </div>
+
   <header class="topbar">
     <a class="brand" href="index.html">
       <span class="brand-mark">MM</span>
@@ -308,6 +315,149 @@
     let generateCount = 0;
 
     /* ===== Demo instruction ===== */
+    const demoInstruction2 = {
+      projectName: "音乐节奏灯光台",
+      subtitle: "通过声音强弱控制 LED 灯光反馈，理解声音、数据变化和输出关系",
+      imageKey: "rhythm-wall",
+      meta: {
+        studentLevel: "兴趣低，需要强反馈",
+        knowledgePoint: "声音与振动",
+        subject: "科学",
+        interest: "音乐节奏灯",
+        hardware: "UNIHIKER K10",
+        timeRequired: "45 分钟课堂活动",
+        projectType: "STEAM 硬件学习项目"
+      },
+      overview: {
+        coreGoal: "通过声音强度（输入）和 LED 灯光亮度/颜色（输出）的真实互动，让学生理解声音是一种可以被测量和转化的物理量，以及数据输入和输出反馈之间的对应关系。",
+        projectIntro: "学生将使用 UNIHIKER K10 制作一个"音乐节奏灯光台"。通过 K10 内置的麦克风读取环境声音强度，将声音数据映射为 LED 灯光的亮度和颜色变化。声音越大，灯光越亮、颜色越热烈；声音越小，灯光越暗、颜色越冷静。学生可以通过拍手、唱歌或播放音乐来控制灯光效果。",
+        whyFun: "它像一个随音乐跳舞的灯光秀——学生拍手或唱歌，灯光立刻跟着变化。声音大时灯光热烈闪烁，声音小时灯光柔和呼吸。学生可以举办一场"灯光音乐会"，用身体控制视觉输出。",
+        learningReasons: [
+          "声音强度可以被量化为数字数据，学生通过灯光变化直观感受"声音有大小"",
+          "数据映射关系（声音大→灯亮→颜色热烈）帮助学生理解输入输出的对应规则",
+          "通过改变映射参数（灵敏度），学生能理解"同样的输入可以产生不同的输出"",
+          "多感官参与（听觉+视觉）让知识记忆更深刻",
+          "团队合作的"灯光音乐会"增强课堂趣味性和参与度"
+        ]
+      },
+      interactionFlow: {
+        trigger: "学生拍手、唱歌或播放音乐，K10 麦克风读取环境声音强度（分贝值）作为输入",
+        calculation: "将声音强度映射为 LED 亮度（0-255）和颜色（冷色到暖色），灵敏度可调",
+        feedback: [
+          "RGB LED 根据声音强度改变亮度和颜色：小声=暗+冷色，大声=亮+暖色",
+          "K10 屏幕实时显示声音强度数值和当前灯光模式",
+          "可切换多种灯光模式：呼吸模式、闪烁模式、彩虹模式"
+        ],
+        level: "Level 3 多模态反馈",
+        levelReason: "项目通过麦克风感知声音（听觉输入），经过数据映射计算后，同时驱动 LED 灯光（视觉输出）和屏幕显示（信息输出），形成听觉-计算-视觉的多模态反馈闭环。"
+      },
+      materials: [
+        { name: "UNIHIKER K10", quantity: "1 块", usage: "主控板，提供麦克风输入、RGB LED 输出和屏幕显示", note: "免接线，开箱即用" },
+        { name: "USB Type-C 数据线", quantity: "1 根", usage: "供电和程序上传", note: "常规数据线即可" },
+        { name: "小型音箱或手机", quantity: "1 个", usage: "播放音乐或节拍，提供稳定的声音输入", note: "可选，学生也可以直接拍手或唱歌" },
+        { name: "彩色卡纸", quantity: "若干", usage: "制作灯罩，增强灯光视觉效果", note: "可制作不同形状的灯罩" },
+        { name: "双面胶", quantity: "1 卷", usage: "固定灯罩和装饰", note: "常规文具" }
+      ],
+      steps: [
+        {
+          title: "探索声音与数据的关系",
+          duration: "8 分钟",
+          content: "老师先让学生拍手、说话、唱歌，同时观察 K10 屏幕上的声音强度数值变化。引导学生思考：声音有大小，那计算机是怎么"听到"声音的？声音强度可以被转化成什么？",
+          tips: "让学生尝试不同的声音（拍手、跺脚、说话、唱歌），观察数值变化范围。",
+          warning: "避免学生大声喊叫，保护听力。"
+        },
+        {
+          title: "搭建灯光台底座",
+          duration: "7 分钟",
+          content: "用彩色卡纸制作一个简单的灯罩，套在 K10 的 RGB LED 上，增强灯光视觉效果。可以用双面胶固定。学生可以发挥创意，制作不同形状的灯罩（圆形、星形、花朵等）。",
+          tips: "灯罩不要完全封闭，需要留出散热空间。",
+          warning: "确保灯罩不会遮挡 K10 的麦克风和屏幕。"
+        },
+        {
+          title: "编写声音读取与灯光控制程序",
+          duration: "15 分钟",
+          content: "编写核心程序：读取麦克风的声音强度数据，将数据映射为 LED 的亮度和颜色。老师引导学生理解数据映射的概念——同样的声音强度，可以对应不同的灯光效果，这取决于我们怎么"翻译"这个数据。",
+          tips: "先只实现亮度变化，颜色变化作为进阶功能。",
+          warning: "麦克风数据需要做平滑处理，避免灯光闪烁过快。"
+        },
+        {
+          title: "添加多种灯光模式",
+          duration: "8 分钟",
+          content: "在基础亮度映射之上，添加多种灯光模式：呼吸模式（灯光缓慢明暗变化）、闪烁模式（灯光快速开关）、彩虹模式（颜色循环变化）。学生可以通过按键切换不同模式。",
+          tips: "每种模式对应不同的数学函数（正弦波、方波、线性循环），可以引导学生思考"函数决定形态"。",
+          warning: "模式不要太多，3 种即可，避免学生混淆。"
+        },
+        {
+          title: "举办班级灯光音乐会",
+          duration: "7 分钟",
+          content: "每个小组展示自己的音乐节奏灯光台，用拍手、唱歌或播放音乐控制灯光。全班一起举办一场"灯光音乐会"，评选"最佳视觉效果""最佳创意""最佳团队协作"等奖项。",
+          tips: "鼓励学生用身体动作和声音配合灯光，增强多感官体验。",
+          warning: "控制音量，避免影响其他班级。"
+        }
+      ],
+      knowledgeExplanation: {
+        coreConcept: "声音是一种机械波，通过空气传播。声音的强度（音量）可以用分贝（dB）来量化。在这个项目中，麦克风将声音波转化为电信号，再转化为数字数据。我们把这个数据映射为 LED 的亮度和颜色，实现了从"物理量"到"数字量"再到"物理输出"的完整转换。",
+        keyFormula: "声音强度映射公式：\n\n亮度 = (声音强度 - 最小值) / (最大值 - 最小值) × 255\n\n其中：\n- 声音强度：麦克风读取的原始数据（0-4095）\n- 最小值/最大值：环境噪音和最大声音的范围\n- 255：LED 最大亮度\n\n颜色映射：\n- 冷色（蓝色）：声音强度低\n- 暖色（红色/橙色）：声音强度高\n- 中间色（绿色/黄色）：声音强度中等",
+        inProject: "在音乐节奏灯光台中，麦克风读取的声音强度是输入数据，LED 的亮度和颜色是输出。学生通过改变声音大小，直接控制灯光效果。这种"输入-处理-输出"的结构是计算机科学和物理学的核心概念。",
+        deepUnderstanding: "数据映射的本质是"翻译"——把一种语言（声音数据）翻译成另一种语言（灯光效果）。不同的映射规则会产生不同的"翻译结果"。这帮助学生理解：数据本身没有意义，是我们赋予它意义。同样的声音数据，可以映射为亮度、颜色、频率等不同的输出。",
+        commonMisunderstanding: "误区1：认为麦克风"听到"的是和耳朵一样的东西。实际上麦克风只感知声波的振动强度，不感知音高或音色。误区2：认为声音强度和灯光亮度是"成正比"的。实际上映射关系是我们定义的，可以是线性的、指数的、对数的，取决于我们想要的效果。"
+      },
+      starterCodeCpp: "// 音乐节奏灯光台 - Arduino / ESP32 版本\n#include <Adafruit_NeoPixel.h>\n\n#define LED_PIN 6\n#define NUM_LEDS 1\n#define MIC_PIN A0\n\nAdafruit_NeoPixel pixels(NUM_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);\n\nint minVal = 100;\nint maxVal = 800;\n\nvoid setup() {\n  pixels.begin();\n  Serial.begin(115200);\n}\n\nvoid loop() {\n  int micVal = analogRead(MIC_PIN);\n  int brightness = constrain(map(micVal, minVal, maxVal, 0, 255), 0, 255);\n  \n  // 颜色映射：冷色到暖色\n  int r = brightness;\n  int g = brightness * 0.6;\n  int b = 255 - brightness;\n  \n  pixels.setPixelColor(0, r, g, b);\n  pixels.show();\n  \n  Serial.print(\"Mic: \"); Serial.print(micVal);\n  Serial.print(\" Brightness: \"); Serial.println(brightness);\n  \n  delay(50);\n}",
+      starterCodePython: "# 音乐节奏灯光台 - UNIHIKER K10 / MicroPython 版本\nimport time\nfrom pinpong.board import Board\n\nBoard().begin()\n\nmin_val = 100\nmax_val = 800\n\nwhile True:\n    # 读取麦克风数据\n    mic_val = Board().microphone[0]\n    \n    # 映射为亮度\n    brightness = max(0, min(255, (mic_val - min_val) * 255 // (max_val - min_val)))\n    \n    # 颜色映射：冷色到暖色\n    r = brightness\n    g = int(brightness * 0.6)\n    b = 255 - brightness\n    \n    # 设置 LED\n    Board().rgb[0] = (r, g, b)\n    \n    # 屏幕显示\n    Board().display.fill(0)\n    Board().display.draw_text(10, 20, f\"Sound: {mic_val}\", color=(255,255,255), size=2)\n    Board().display.draw_text(10, 60, f\"Light: {brightness}\", color=(255,255,255), size=2)\n    Board().display.refresh()\n    \n    time.sleep(0.05)",
+      masteryTraining: {
+        basicPractice: {
+          task: "拍手 3 次（小声、中声、大声），记录每次的声音强度数值和对应的 LED 亮度，验证映射关系是否正确。",
+          hint: "小声对应低亮度+冷色，大声对应高亮度+暖色。",
+          answer: "小声：mic≈200，brightness≈50，颜色偏蓝；中声：mic≈400，brightness≈128，颜色偏绿；大声：mic≈700，brightness≈230，颜色偏红。"
+        },
+        variationChallenge: {
+          task: "如果把映射公式改为 brightness = micVal × 2，会发生什么？灯光效果会有什么变化？",
+          hint: "同样的声音强度，新的公式会产生更大的亮度值。",
+          answer: "亮度会更快达到最大值 255，中等声音就会让灯光最亮。这意味着灯光对声音更"敏感"，但也更容易"饱和"（达到最大值后不再变化）。"
+        },
+        reverseThinking: {
+          task: "如果你想让灯光在安静时最亮、吵闹时最暗（反向映射），公式应该怎么写？",
+          hint: "用 255 减去原来的亮度值。",
+          answer: "brightness = 255 - ((micVal - minVal) × 255 // (maxVal - minVal))。这样安静时灯光最亮（白色），吵闹时灯光最暗（黑色）。"
+        },
+        comprehensiveApplication: {
+          task: "设计一个"节能模式"：当声音持续 10 秒低于某个阈值时，灯光自动关闭。这需要用到什么新知识？",
+          hint: "需要记录时间，判断声音是否持续低于阈值。",
+          answer: "需要用到计时器和条件判断。伪代码：if micVal < threshold for 10 seconds: turn off LED。这引入了"时间"这个新的维度，让项目从单纯的"实时映射"升级为"智能控制"。"
+        },
+        transferQuestion: {
+          task: "生活中还有哪些"输入数据→输出效果"的例子？请举出 2 个，并说明输入、处理和输出分别是什么。",
+          hint: "想想空调、自动门、手机屏幕亮度调节等。",
+          answer: "例1：空调。输入：温度传感器数据；处理：判断当前温度是否高于设定温度；输出：压缩机开启/关闭。例2：手机屏幕亮度。输入：光线传感器数据；处理：根据环境光强度计算屏幕亮度；输出：调整屏幕背光。"
+        }
+      },
+      extensions: [
+        "增加节拍检测功能：识别音乐的节奏，让灯光跟随节拍闪烁",
+        "加入多 LED 模式：用多个 LED 组成灯带，实现更复杂的灯光效果",
+        "制作"声音可视化仪"：在屏幕上绘制声音的波形图",
+        "增加录音和回放功能：记录一段声音，然后用灯光"播放"这段声音",
+        "设计"情绪灯光"：根据声音的音高和节奏，判断"情绪"并显示对应颜色"
+      ],
+      faq: [
+        {
+          question: "麦克风读数不稳定怎么办？",
+          answer: "对连续 10 次读数取平均值来平滑数据。在代码中使用一个循环读取 10 次，计算平均值后再映射为灯光效果。"
+        },
+        {
+          question: "学生只关注灯光效果，不关注声音数据怎么办？",
+          answer: "在灯光效果稳定后，让学生闭上眼睛只听声音，猜测当前的灯光颜色和亮度。然后睁开眼睛验证猜测，这种"猜测-验证"过程会自然引导学生关注数据。"
+        },
+        {
+          question: "课堂太吵，麦克风读数一直很高怎么办？",
+          answer: "调整 minVal 和 maxVal 的范围，让当前环境的噪音成为"最小值"。或者让学生分组进行，每组轮流展示。"
+        },
+        {
+          question: "没有 K10 可以用手机代替吗？",
+          answer: "可以先用手机上的声音检测 App 或网页模拟器体验概念，但无法获得 LED 灯光的物理反馈。建议后续补充 K10 硬件体验。"
+        }
+      ]
+    };
+
     const demoInstruction = {
       projectName: "点球力度计分台",
       subtitle: "通过射门力度与得分反馈，理解一次函数 y = kx + b 中 k 和 b 的真实含义",
@@ -1197,9 +1347,15 @@
     loadFromUrlParams();
     const params = new URLSearchParams(window.location.search);
     const forceDemo = params.has("demo");
+    const demoCase = params.get("case");
     if (!localStorage.getItem("makermind_demo_loaded") || forceDemo) {
-      currentInstruction = demoInstruction;
-      renderInstruction(demoInstruction);
+      if (demoCase === "2") {
+        currentInstruction = demoInstruction2;
+        renderInstruction(demoInstruction2);
+      } else {
+        currentInstruction = demoInstruction;
+        renderInstruction(demoInstruction);
+      }
       localStorage.setItem("makermind_demo_loaded", "1");
     } else {
       renderWaitingState();
