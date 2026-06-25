@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>常见问题｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .faq-page { padding-top: 36px; }
+    .faq-grid { max-width: 800px; margin: 0 auto; }
+    .faq-item { margin-bottom: 16px; border-radius: 20px; background: rgba(255,255,255,0.92); border: 1px solid rgba(15,23,42,0.08); box-shadow: 0 18px 48px rgba(15,23,42,0.06); overflow: hidden; }
+    .faq-item summary { padding: 20px 28px; cursor: pointer; font-weight: 700; font-size: 17px; color: #0f172a; }
+    .faq-item summary:hover { background: rgba(241,245,249,0.5); }
+    .faq-item[open] summary { border-bottom: 1px solid #e2e8f0; }
+    .faq-answer { padding: 20px 28px; color: #334155; line-height: 1.8; font-size: 15px; }
+    .faq-answer p { margin-bottom: 10px; }
+    .faq-answer ul { padding-left: 20px; }
+    .faq-answer li { margin-bottom: 6px; }
+    .faq-category { margin-bottom: 40px; }
+    .faq-category h2 { font-size: 24px; color: #0f172a; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; }
+    @media (max-width: 760px) { .faq-item summary { padding: 16px 20px; font-size: 15px; } .faq-answer { padding: 16px 20px; } }
+  </style>
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+</head>
+<body>
+  <!-- TRAE AI 创造力大赛参赛标识 -->
+  <div class="contest-banner">
+    <span>参赛项目</span>
+    <strong>TRAE AI 创造力大赛 · 学习工作赛道</strong>
+    <a href="https://www.trae.cn/ai-creativity" target="_blank" rel="noopener">了解大赛 →</a>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">MM</span>
+      <span><strong>MakerMind AI</strong><small>Project-based lesson studio</small></span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="rules.html">课堂痛点</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="students.html">学生分层</a>
+      <a class="active" href="faq.html">常见问题</a>
+      <a href="about.html">关于我们</a>
+    </nav>
+  </header>
+
+  <main class="page-main faq-page page-shell">
+    <section class="page-hero compact left-hero">
+      <span class="eyebrow">FAQ</span>
+      <h1>常见问题</h1>
+      <p>以下是教师在使用 MakerMind AI 时最常问到的问题。如果没有找到你的问题，欢迎联系我们。</p>
+    </section>
+
+    <div class="faq-grid">
+      <div class="faq-category">
+        <h2>开始使用</h2>
+        <details class="faq-item">
+          <summary>MakerMind AI 适合什么学科的老师使用？</summary>
+          <div class="faq-answer">
+            <p>MakerMind AI 目前主要支持数学、科学、物理、信息技术和综合实践等学科。我们的 AI 模型可以处理各学科的知识点，并将其转化为动手项目。</p>
+            <p>只要你想让学生通过动手实践来理解某个知识点，MakerMind AI 都能帮你生成对应的 STEAM 项目方案。</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>我需要会编程才能使用吗？</summary>
+          <div class="faq-answer">
+            <p><strong>完全不需要。</strong> MakerMind AI 的设计初衷就是让不懂编程的老师也能设计高质量的 STEAM 项目课。</p>
+            <p>你只需要：</p>
+            <ul>
+              <li>输入你想教的知识点</li>
+              <li>选择学生感兴趣的场景</li>
+              <li>选择课堂时长和硬件条件</li>
+            </ul>
+            <p>AI 会帮你生成完整的项目方案，包括学生任务卡、教师引导问题、材料清单和可运行的代码。即使方案中包含代码，也会有详细的注释和解释，确保你能理解并在课堂上指导学生。</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>生成的方案真的可以直接在课堂上使用吗？</summary>
+          <div class="faq-answer">
+            <p>是的。每个生成的方案都包含以下可直接使用的材料：</p>
+            <ul>
+              <li><strong>学生任务卡</strong>：用学生能理解的语言说明挑战目标、操作步骤和成功标志</li>
+              <li><strong>教师引导卡</strong>：提供课堂提问、观察重点和学生卡住时的提示</li>
+              <li><strong>材料清单</strong>：精确到数量和用途的器材列表</li>
+              <li><strong>课堂流程</strong>：每个步骤的时间分配和注意事项</li>
+              <li><strong>代码示例</strong>：可直接上传运行的 C++ 和 MicroPython 代码</li>
+            </ul>
+            <p>当然，我们建议你在使用前根据班级实际情况做微调，比如调整时间分配或简化某些步骤。</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="faq-category">
+        <h2>硬件相关</h2>
+        <details class="faq-item">
+          <summary>必须使用 UNIHIKER K10 吗？</summary>
+          <div class="faq-answer">
+            <p><strong>不是必须的。</strong> MakerMind AI 支持多种硬件套件：</p>
+            <ul>
+              <li><strong>UNIHIKER K10</strong>（推荐）：免接线，内置多种传感器，适合课堂快速上手</li>
+              <li><strong>Arduino / ESP32</strong>：适合有一定硬件基础的老师</li>
+              <li><strong>micro:bit</strong>：适合小学低年级</li>
+              <li><strong>纸电路 / 无需编程</strong>：适合没有硬件条件或初次尝试的老师</li>
+              <li><strong>纸板 + 电子模块</strong>：低成本方案</li>
+            </ul>
+            <p>你可以根据学校的硬件条件和学生水平灵活选择。</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>如果学校没有硬件设备怎么办？</summary>
+          <div class="faq-answer">
+            <p>你可以选择"纸电路 / 无需编程"选项，系统会生成纯软件和低成本材料的方案。</p>
+            <p>此外， MakerMind AI 的设计理念是"先用网页互动降低门槛，再通过材料任务和硬件拓展"。即使只有纸板和基本文具，也能设计出高质量的项目课。</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>代码示例是学生要写的，还是老师直接用的？</summary>
+          <div class="faq-answer">
+            <p>代码示例主要是<strong>给老师参考</strong>的。方案中包含了两种写法：</p>
+            <ul>
+              <li><strong>C++ / Arduino</strong>：适合 Arduino 和 ESP32 平台</li>
+              <li><strong>MicroPython / K10</strong>：适合 UNIHIKER K10 平台</li>
+            </ul>
+            <p>对于初学者，我们建议老师先将代码上传运行，让学生看到效果，然后逐步引导学生理解代码逻辑。对于高年级学生，可以让他们在老师指导下修改参数或添加功能。</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="faq-category">
+        <h2>方案生成</h2>
+        <details class="faq-item">
+          <summary>AI 生成一个方案需要多长时间？</summary>
+          <div class="faq-answer">
+            <p>通常需要 <strong>30-60 秒</strong>。系统会分三段调用 DeepSeek AI 生成：</p>
+            <ul>
+              <li>第 1 段（约 10 秒）：项目概述和交互流程</li>
+              <li>第 2 段（约 15 秒）：制作步骤和知识点讲解</li>
+              <li>第 3 段（约 15 秒）：融会贯通训练和常见问题</li>
+            </ul>
+            <p>生成过程中页面会显示实时进度，请耐心等待。</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>生成的方案可以保存和分享吗？</summary>
+          <div class="faq-answer">
+            <p>当然可以。生成后的方案支持以下操作：</p>
+            <ul>
+              <li><strong>收藏</strong>：点击"收藏此方案"按钮，方案会保存到你的收藏列表中</li>
+              <li><strong>历史记录</strong>：所有生成过的方案都会自动保存在历史记录中</li>
+              <li><strong>导出文本</strong>：点击"导出文本"按钮，可以下载为 .txt 文件</li>
+              <li><strong>分享链接</strong>：点击"分享链接"按钮，复制链接发送给其他老师</li>
+              <li><strong>打印</strong>：点击"打印"按钮，可以直接打印方案</li>
+            </ul>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>同一个知识点可以生成不同的方案吗？</summary>
+          <div class="faq-answer">
+            <p>可以！同一个知识点，通过选择不同的<strong>兴趣场景</strong>、<strong>学生学习状态</strong>和<strong>硬件套件</strong>，AI 会生成完全不同的项目方案。</p>
+            <p>例如，同样是"一次函数"：</p>
+            <ul>
+              <li>选择"球星点球大战" → 生成点球力度计分台</li>
+              <li>选择"篮球投篮" → 生成投篮角度挑战器</li>
+              <li>选择"赛车计时" → 生成赛车速度控制器</li>
+            </ul>
+            <p>这样你可以根据班级学生的兴趣，选择最合适的方案。</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="faq-category">
+        <h2>教学相关</h2>
+        <details class="faq-item">
+          <summary>方案中的"融会贯通训练"是什么？</summary>
+          <div class="faq-answer">
+            <p>"融会贯通训练"是 MakerMind AI 的特色功能，确保学生不只是"做完了项目"，而是"真正理解了知识"。</p>
+            <p>每个方案都包含 5 层训练：</p>
+            <ul>
+              <li><strong>基础练习</strong>：验证核心概念是否理解</li>
+              <li><strong>变化挑战</strong>：改变参数，观察结果变化</li>
+              <li><strong>逆向思维</strong>：从结果反推输入</li>
+              <li><strong>综合应用</strong>：结合多个知识点解决复杂问题</li>
+              <li><strong>举一反三</strong>：将知识应用到生活中的其他场景</li>
+            </ul>
+            <p>这种分层训练设计，确保不同水平的学生都能获得适合自己的挑战。</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary>45 分钟和 60 分钟的方案有什么区别？</summary>
+          <div class="faq-answer">
+            <p>不同时长的方案在<strong>深度</strong>和<strong>复杂度</strong>上有明显区别：</p>
+            <ul>
+              <li><strong>15 分钟快速体验</strong>：适合课堂导入或课后拓展，只包含核心概念体验</li>
+              <li><strong>30 分钟小任务</strong>：适合单课时，包含基础制作和简单训练</li>
+              <li><strong>45 分钟课堂活动</strong>：适合标准课时，包含完整制作和知识点讲解</li>
+              <li><strong>60 分钟项目课</strong>：适合项目课，包含完整制作、知识讲解和融会贯通训练</li>
+            </ul>
+            <p>你可以根据学校的课时安排灵活选择。</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer page-shell">
+    <strong>MakerMind AI</strong>
+    <span>Project-based lesson studio</span>
+    <div style="margin-top:12px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="index.html" style="color:#64748b;text-decoration:none;font-size:14px;">首页</a>
+      <a href="generator.html" style="color:#64748b;text-decoration:none;font-size:14px;">任务生成器</a>
+      <a href="gallery.html" style="color:#64748b;text-decoration:none;font-size:14px;">任务案例</a>
+      <a href="about.html" style="color:#64748b;text-decoration:none;font-size:14px;">关于我们</a>
+      <a href="faq.html" style="color:#64748b;text-decoration:none;font-size:14px;">常见问题</a>
+    </div>
+  </footer>
+</body>
+</html>

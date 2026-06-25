@@ -317,6 +317,38 @@
       z-index: 1;
     }
 
+    .contact-methods {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .contact-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-item span {
+      font-size: 20px;
+    }
+
+    .contact-item strong {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
     @media (max-width: 1050px) {
       .about-grid,
       .student-grid,
@@ -349,7 +381,7 @@
       <span class="brand-mark">MM</span>
       <span>
         <strong>MakerMind AI</strong>
-        <small>Hardware learning studio</small>
+        <small>Project-based lesson studio</small>
       </span>
     </a>
     <nav class="nav-links">
@@ -358,6 +390,7 @@
       <a href="generator.html">任务生成器</a>
       <a href="gallery.html">任务案例</a>
       <a href="students.html">学生分层</a>
+      <a href="faq.html">常见问题</a>
       <a class="active" href="about.html">关于我们</a>
     </nav>
   </header>
@@ -713,6 +746,16 @@
           如果你是老师、学校或教育机构，对 MakerMind AI 感兴趣，欢迎联系我们。
           我们提供免费试用和定制化服务，帮助你在课堂中落地项目式学习。
         </p>
+        <div class="contact-methods">
+          <a href="mailto:hello@makermind.ai" class="contact-item">
+            <span>📧</span>
+            <strong>hello@makermind.ai</strong>
+          </a>
+          <a href="https://github.com/Dunphil692/makermind-ai" target="_blank" rel="noopener" class="contact-item">
+            <span>💻</span>
+            <strong>GitHub 开源仓库</strong>
+          </a>
+        </div>
       </div>
     </section>
   </main>

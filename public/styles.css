@@ -4652,3 +4652,46 @@ body {
   }
 }
 
+/* ===== Demo Badge ===== */
+.demo-badge {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 6px 16px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.generator-tips {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+}
+
+.generator-tips h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #0369a1;
+}
+
+.generator-tips ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.generator-tips li {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.generator-tips li strong {
+  color: #0f172a;
+}
+

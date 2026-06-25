@@ -31,6 +31,7 @@
       <a class="active" href="generator.html">任务生成器</a>
       <a href="gallery.html">任务案例</a>
       <a href="students.html">学生分层</a>
+      <a href="faq.html">常见问题</a>
       <a href="about.html">关于我们</a>
     </nav>
   </header>
@@ -86,12 +87,13 @@
         </label>
 
         <label>
-          学段
+          学生学习状态
           <select id="levelSelect">
             <option value="需要项目带着学">需要项目带着学</option>
             <option value="理解快，需要挑战">理解快，需要挑战</option>
             <option value="兴趣低，需要强反馈">兴趣低，需要强反馈</option>
           </select>
+          <small style="display:block;margin-top:4px;color:#64748b;font-size:13px;">根据学生的学习状态和兴趣水平选择，系统将据此调整项目难度和引导方式</small>
         </label>
 
         <label>
@@ -136,9 +138,16 @@
           <button type="button" class="btn ghost small" id="savedBtn" style="flex:1">已收藏</button>
         </div>
 
-        <p class="generator-note">
-          系统会分三段调用 AI 生成完整方案（概述 → 制作步骤 → 训练），总耗时约 30-60 秒。
-        </p>
+        <div class="generator-tips">
+          <h4>💡 使用提示</h4>
+          <ul>
+            <li><strong>第一步：</strong>输入或选择知识点（如"一次函数"）</li>
+            <li><strong>第二步：</strong>根据学生兴趣选择场景（如"球星点球大战"）</li>
+            <li><strong>第三步：</strong>选择硬件套件和课堂时长</li>
+            <li><strong>第四步：</strong>点击生成，等待 30-60 秒即可获得完整方案</li>
+          </ul>
+          <p style="margin-top:10px;color:#64748b;font-size:13px;">系统会分三段调用 DeepSeek AI 生成（项目概述 → 制作步骤 → 融会贯通训练）</p>
+        </div>
       </form>
 
       <section class="result-panel generator-result-panel">
@@ -878,6 +887,7 @@
         <article class="instruction-doc">
           <header class="instruction-hero">
             <div>
+              <div class="demo-badge">示例方案 · 基于真实AI生成</div>
               <p class="instruction-kicker">STEAM 项目指导</p>
               <h2>${safeText(instruction.projectName)}</h2>
               <p>${safeText(instruction.subtitle)}</p>
