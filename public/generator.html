@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MakerMind AI｜任务生成器</title>
+  <title>任务生成器｜MakerMind AI</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="任务生成器 — MakerMind AI" />
+  <meta property="og:description" content="输入知识点，选择学生兴趣和硬件条件，AI 在 60 秒内生成完整的 STEAM 项目方案。" />
+  <meta property="og:url" content="https://makermind-ai.makermind-studio.workers.dev/generator.html" />
+  <meta property="og:image" content="https://makermind-ai.makermind-studio.workers.dev/assets/soccer-penalty.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="description" content="MakerMind AI 任务生成器：输入知识点，选择兴趣场景和硬件条件，AI 生成完整的 STEAM 项目课方案。" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
@@ -175,6 +182,15 @@
               <div><span>套件</span><strong>UNIHIKER K10</strong></div>
               <div><span>时长</span><strong>60 分钟项目课</strong></div>
             </div>
+            <div class="quick-presets">
+              <h5>💡 快速推荐组合</h5>
+              <div class="preset-chips">
+                <button type="button" class="preset-chip" data-concept="一次函数" data-interest="球星点球大战" data-kit="k10" data-duration="60 分钟项目课">数学 × 点球大战</button>
+                <button type="button" class="preset-chip" data-concept="声音与振动" data-interest="音乐节奏灯" data-kit="k10" data-duration="45 分钟课堂活动">科学 × 音乐灯</button>
+                <button type="button" class="preset-chip" data-concept="数据统计" data-interest="篮球投篮挑战" data-kit="paper" data-duration="30 分钟小任务">数学 × 投篮（无硬件）</button>
+                <button type="button" class="preset-chip" data-concept="光照与条件判断" data-interest="环保监测项目" data-kit="mixed" data-duration="60 分钟项目课">科学 × 环保监测</button>
+              </div>
+            </div>
           </article>
         </div>
       </section>
@@ -220,6 +236,15 @@
           <input type="text" id="shareLink" readonly />
           <button type="button" class="btn primary small" id="copyShareLink">复制</button>
         </div>
+        <div class="share-social-row">
+          <p style="font-size:14px;color:#64748b;margin:0;">或通过社交平台分享：</p>
+          <div class="share-social-buttons">
+            <a href="#" id="shareWeibo" class="share-social-btn" target="_blank" rel="noopener" title="分享到微博">微博</a>
+            <a href="#" id="shareQQ" class="share-social-btn" target="_blank" rel="noopener" title="分享到QQ">QQ</a>
+            <a href="#" id="shareTwitter" class="share-social-btn" target="_blank" rel="noopener" title="分享到Twitter">Twitter</a>
+            <button type="button" id="shareWechatHint" class="share-social-btn" title="复制链接到微信发送">微信</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -227,6 +252,14 @@
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
     <span>面向科创课堂与项目式学习的互动任务生成工作台</span>
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="faq.html">常见问题</a>
+      <a href="about.html">关于我们</a>
+      <a href="https://github.com/Dunphil692/makermind-ai" target="_blank" rel="noopener">GitHub</a>
+    </div>
   </footer>
 
   <script>
@@ -765,16 +798,42 @@
       matchTag.textContent = "生成失败";
       updateTag.textContent = `失败 · ${getCurrentTimeText()}`;
 
+      let errorType = "未知错误";
+      let errorSuggestion = "请检查网络连接后重试，或联系管理员确认 API 配置。";
+
+      if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("network")) {
+        errorType = "网络连接失败";
+        errorSuggestion = "请检查网络连接是否正常，然后点击重新生成。如果问题持续，可能是服务器暂时不可用。";
+      } else if (message.includes("401") || message.includes("403") || message.includes("API key")) {
+        errorType = "API 密钥错误";
+        errorSuggestion = "服务器 API 配置可能有问题，请联系管理员检查 DeepSeek API 密钥。";
+      } else if (message.includes("429") || message.includes("rate limit") || message.includes("quota")) {
+        errorType = "请求过于频繁";
+        errorSuggestion = "AI 生成请求已达上限，请等待 1 分钟后重试。";
+      } else if (message.includes("500") || message.includes("502") || message.includes("503")) {
+        errorType = "服务器错误";
+        errorSuggestion = "服务器暂时不可用，请稍后重试。";
+      } else if (message.includes("timeout") || message.includes("超时")) {
+        errorType = "请求超时";
+        errorSuggestion = "AI 生成耗时过长，请重试。如果持续超时，建议选择较短的课堂时长。";
+      }
+
       projectCards.innerHTML = `
         <article class="instruction-empty demo-fallback-card">
           <div class="project-card-header">
-            <h4>AI 生成失败</h4>
+            <h4>AI 生成失败：${safeText(errorType)}</h4>
             <span class="badge">错误</span>
           </div>
-          <p>${safeText(message)}</p>
-          <p style="margin-top:12px;color:#64748b;">请检查网络连接后重试，或联系管理员确认 API 配置。</p>
+          <p style="font-size:16px;color:#e54612;font-weight:600;margin-bottom:12px;">${safeText(message)}</p>
+          <p style="margin-top:12px;color:#64748b;">${safeText(errorSuggestion)}</p>
+          <button type="button" class="btn primary" id="retryBtn" style="margin-top:16px;">重新生成</button>
         </article>
       `;
+
+      const retryBtn = document.getElementById("retryBtn");
+      if (retryBtn) {
+        retryBtn.addEventListener("click", () => generate());
+      }
     }
 
     /* ===== API call ===== */
@@ -1317,6 +1376,42 @@
       });
     });
 
+    /* ===== Social share buttons ===== */
+    function updateSocialShareLinks() {
+      const link = document.getElementById("shareLink").value;
+      const encodedLink = encodeURIComponent(link);
+      const title = encodeURIComponent("MakerMind AI — AI 驱动的 STEAM 项目课生成工作台");
+      const desc = encodeURIComponent("输入知识点，AI 在 60 秒内生成完整的 STEAM 项目方案，包含制作步骤、材料清单、代码和训练题。");
+
+      const weiboBtn = document.getElementById("shareWeibo");
+      if (weiboBtn) weiboBtn.href = `https://service.weibo.com/share/share.php?url=${encodedLink}&title=${title}`;
+
+      const qqBtn = document.getElementById("shareQQ");
+      if (qqBtn) qqBtn.href = `https://connect.qq.com/widget/shareqq/index.html?url=${encodedLink}&title=${title}&desc=${desc}`;
+
+      const twitterBtn = document.getElementById("shareTwitter");
+      if (twitterBtn) twitterBtn.href = `https://twitter.com/intent/tweet?url=${encodedLink}&text=${title}`;
+    }
+
+    const wechatHint = document.getElementById("shareWechatHint");
+    if (wechatHint) {
+      wechatHint.addEventListener("click", () => {
+        const input = document.getElementById("shareLink");
+        navigator.clipboard.writeText(input.value).then(() => {
+          wechatHint.textContent = "链接已复制，去微信粘贴";
+          setTimeout(() => { wechatHint.textContent = "微信"; }, 2000);
+        });
+      });
+    }
+
+    // Update social links when share modal opens
+    const shareBtnForSocial = document.getElementById("shareBtn");
+    if (shareBtnForSocial) {
+      shareBtnForSocial.addEventListener("click", () => {
+        setTimeout(updateSocialShareLinks, 50);
+      });
+    }
+
     // Close modals on overlay click
     document.querySelectorAll(".modal-overlay").forEach(overlay => {
       overlay.addEventListener("click", (e) => {
@@ -1337,6 +1432,18 @@
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       generate();
+    });
+
+    /* ===== Preset chips ===== */
+    document.querySelectorAll(".preset-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        conceptInput.value = chip.dataset.concept;
+        activeInterest = chip.dataset.interest;
+        interestChips.forEach(c => c.classList.toggle("active", c.dataset.interest === activeInterest));
+        kitSelect.value = chip.dataset.kit;
+        durationSelect.value = chip.dataset.duration;
+        renderWaitingState();
+      });
     });
 
     /* ===== Load from URL params (share link) ===== */

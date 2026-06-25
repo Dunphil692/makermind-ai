@@ -1,255 +1,85 @@
-# MakerMind AI
+# MakerMind AI — 互动项目课生成工作台
 
-> AI-powered STEAM instruction generator that turns knowledge points into hands-on hardware learning projects.
+> 输入知识点，AI 在 60 秒内生成完整的 STEAM 项目方案。
 
-MakerMind AI is a web-based learning tool for maker education.
-It helps teachers and students transform abstract knowledge points into complete STEAM project instructions, including project overview, interaction flow, materials, building steps, knowledge explanation, practice tasks, FAQ, and starter code.
+## 项目简介
 
-Live Demo: https://makermind-ai.makermind-studio.workers.dev
+MakerMind AI 是一个面向中小学教师的 AI 驱动 STEAM 项目课生成工具。教师输入知识点、选择学生兴趣场景和硬件条件后，系统调用 DeepSeek AI 分三段生成完整的项目指导方案。
 
----
+**参赛信息**：TRAE AI 创造力大赛 · 学习工作赛道
 
-## Preview
+## 核心功能
 
-### Homepage
+- **知识点 → 项目方案**：输入任意知识点，AI 生成完整 STEAM 项目
+- **三层递进设计**：网页模拟 → 低成本任务 → 硬件拓展
+- **5 层融会贯通训练**：基础练习 → 变化挑战 → 逆向思维 → 综合应用 → 举一反三
+- **双语言代码**：C++ / Arduino + MicroPython / K10
+- **完整课堂材料**：学生任务卡、教师引导卡、材料清单、制作步骤、FAQ
 
-![Homepage](public/assets/readme/homepage.png)
+## 技术架构
 
-### Generator
-
-![Generator](public/assets/readme/generator.png)
-
-### Generated Instruction
-
-![Instruction Result](public/assets/readme/instruction-result.png)
-
----
-
-## Project Overview
-
-Many project-based learning activities look creative, but students may only remember the final product instead of truly understanding the knowledge behind it.
-
-MakerMind AI focuses on one core idea:
-
-> The goal is not just to make a project.
-> The goal is to help students understand a knowledge point through a project.
-
-Instead of generating simple project ideas, MakerMind AI generates a complete learning instruction that connects:
-
-* knowledge points
-* student profiles
-* interest preferences
-* available hardware kits
-* classroom time
-* hands-on practice
-* reflection and transfer tasks
-
----
-
-## Core Features
-
-### Knowledge-driven generation
-
-Teachers enter a knowledge point, such as:
-
-* linear functions
-* probability
-* circuits
-* buoyancy
-* programming loops
-
-The system generates a hands-on STEAM learning project around that concept.
-
-### Student profile adaptation
-
-The generator considers the student's learning status and interests, such as:
-
-* needs project-based guidance
-* enjoys games
-* enjoys pets
-* enjoys music
-* prefers hands-on challenges
-
-### Hardware-aware project design
-
-The instruction can adapt to different hardware kits, such as:
-
-* Arduino / ESP32
-* micro:bit
-* paper circuits
-* mixed maker materials
-* UNIHIKER K10
-
-### Full learning instruction
-
-Each generated result includes:
-
-* project overview
-* interaction flow
-* materials list
-* step-by-step building guide
-* knowledge explanation
-* practice and transfer tasks
-* extension challenges
-* FAQ
-* starter code
-
-### Segmented AI generation
-
-To improve stability, the instruction is generated in three parts:
-
-1. Overview, interaction flow, and materials
-2. Building steps, knowledge explanation, and starter code
-3. Practice tasks, extensions, and FAQ
-
-### Dual-language starter code
-
-The generated instruction provides two starter code styles:
-
-* C++ / Arduino
-* MicroPython / K10
-
-Each code block supports one-click copy.
-
----
-
-## How It Works
-
-```text
-Teacher input
-↓
-Knowledge point + student profile + interest + hardware kit
-↓
-AI segmented generation
-↓
-Overview + build guide + practice tasks
-↓
-Frontend merges the result
-↓
-Complete STEAM learning instruction
+```
+用户浏览器 (HTML/CSS/JS)
+    ↓ POST /api/generate-instruction-part
+Cloudflare Workers (src/index.js)
+    ↓ HTTP Request
+DeepSeek AI API
+    ↓ JSON Response
+分段渲染（overview → build → practice）
 ```
 
----
+- **前端**：纯 HTML/CSS/JS，无框架依赖，响应式设计
+- **后端**：Cloudflare Workers，分段式 AI 生成
+- **AI 模型**：DeepSeek Chat API
+- **Prompt Engineering**：三段式结构化 Prompt，每段输出严格 JSON Schema
 
-## Tech Stack
+## 本地开发
 
-* HTML
-* CSS
-* JavaScript
-* Cloudflare Workers
-* Cloudflare Static Assets
-* AI text generation API
-* GitHub
+```bash
+# 安装依赖
+npm install
 
----
+# 本地预览
+cd public && python3 -m http.server 8080
 
-## Project Structure
+# 部署到 Cloudflare Workers
+npx wrangler deploy
+```
 
-```text
-.
+## 环境变量
+
+在 Cloudflare Workers 中配置以下 Secret：
+
+- `DEEPSEEK_API_KEY`：DeepSeek API 密钥
+
+## 项目结构
+
+```
+makermind-ai/
+├── public/              # 前端静态文件
+│   ├── index.html       # 首页
+│   ├── generator.html   # 任务生成器（核心页面）
+│   ├── gallery.html     # 任务案例库
+│   ├── rules.html       # 课堂痛点
+│   ├── students.html    # 学生分层
+│   ├── about.html       # 关于我们
+│   ├── faq.html         # 常见问题
+│   ├── app.js           # 学生分层交互逻辑
+│   └── styles.css       # 全局样式
 ├── src/
-│   └── index.js              # Cloudflare Worker backend and AI generation logic
-├── public/
-│   ├── index.html            # Homepage
-│   ├── generator.html        # AI generator page
-│   ├── gallery.html          # Project effect gallery
-│   ├── students.html         # Student profile page
-│   ├── rules.html            # Project design rules
-│   ├── about.html            # Product philosophy page
-│   ├── app.js                # Frontend generator logic
-│   ├── styles.css            # Global styles
-│   └── assets/
-│       ├── readme/           # README screenshots
-│       └── reference/        # Fixed reference images
+│   └── index.js         # Cloudflare Workers 后端
+├── wrangler.jsonc       # Cloudflare 配置
 └── README.md
 ```
 
----
+## 支持的硬件
 
-## Local Development
+- UNIHIKER K10（推荐）
+- Arduino / ESP32
+- micro:bit
+- 纸电路 / 无需编程
+- 纸板 + 电子模块
 
-Clone the repository:
+## License
 
-```bash
-git clone https://github.com/Dunphil692/makermind-ai.git
-cd makermind-ai
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run locally with Cloudflare Wrangler:
-
-```bash
-npx wrangler dev
-```
-
----
-
-## Environment Variables
-
-The AI generation backend requires the following environment variables:
-
-```text
-AI_API_KEY
-AI_BASE_URL
-AI_MODEL
-```
-
-The current version does not require real-time image generation.
-Project images are displayed using fixed reference images stored in the project.
-
----
-
-## Current Status
-
-Completed:
-
-* Homepage
-* AI generator page
-* Gallery page
-* Student profile page
-* Project rules page
-* About page
-* Segmented AI instruction generation
-* Dual-language starter code blocks
-* Copy button for starter code
-* Fixed reference image system
-* Custom favicon
-* GitHub project screenshots
-
-In progress:
-
-* More stable JSON repair logic
-* Better demo fallback instruction
-* Improved homepage guide-style layout
-* Better non-technical error messages
-* Custom domain setup
-
----
-
-## Roadmap
-
-Planned improvements:
-
-* Add a static example instruction for demo fallback
-* Add “copy full instruction” button
-* Add export to HTML / PDF
-* Save generated instruction history
-* Support more hardware kits
-* Add teacher observation points
-* Add more student profile templates
-* Improve classroom-ready instruction formatting
-
----
-
-## Project Vision
-
-MakerMind AI is designed for AI + maker education.
-
-It helps teachers transform abstract knowledge into something students can see, touch, test, and explain.
-
-The final goal is to make project-based learning more personal, more practical, and more connected to real understanding.
+MIT

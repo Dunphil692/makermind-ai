@@ -4,6 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>关于我们｜MakerMind AI</title>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="关于 MakerMind AI — 互动项目课生成工作台" />
+  <meta property="og:description" content="MakerMind AI 由教育工作者和 AI 技术团队打造，帮助老师在 15 分钟内设计出高质量的互动项目课。" />
+  <meta property="og:url" content="https://makermind-ai.makermind-studio.workers.dev/about.html" />
+  <meta property="og:image" content="https://makermind-ai.makermind-studio.workers.dev/assets/soccer-penalty.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="description" content="了解 MakerMind AI 的团队、愿景、技术架构和社会价值——让每位老师都能快速设计互动项目课。" />
   <link rel="stylesheet" href="styles.css" />
   <style>
     .about-page {
@@ -691,6 +698,11 @@
           <li><strong>推动项目式学习落地：</strong>解决"理念好但难执行"的核心痛点，让 PBL 真正走进课堂</li>
           <li><strong>培养创新思维：</strong>通过动手做项目，培养学生的创造力、批判性思维和问题解决能力</li>
         </ul>
+        <div class="quote-box" style="margin-top:20px;">
+          <strong>一位乡村教师的故事：</strong>
+          "我们学校只有一块 UNIHIKER K10，以前我不知道怎么用它上好一节课。用 MakerMind AI 生成了'光照与条件判断'的方案后，学生用 K10 的光敏传感器做了教室光线监测器。虽然只有一个设备，但学生分组轮流使用，整节课没有一个走神的。"
+          <span style="display:block;margin-top:8px;font-size:13px;color:#64748b;">—— 来自云南某乡村小学的科学老师</span>
+        </div>
       </article>
     </section>
 
@@ -711,6 +723,38 @@
             <strong>硬件生态整合</strong>
             <p>与 UNIHIKER K10、Arduino、micro:bit 等主流教育硬件平台深度整合，提供精确的材料清单和代码方案。</p>
           </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="about-shell about-grid">
+      <article class="about-card wide">
+        <h2>技术实现与架构</h2>
+        <p>MakerMind AI 采用纯前端 + Cloudflare Workers Serverless 后端架构，核心技术创新在于<strong>三段式结构化 AI 生成</strong>和<strong>教育级 Prompt Engineering</strong>。</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <strong>三段式分段生成</strong>
+            <p>将一次 AI 生成拆分为 overview（项目概述+材料清单）、build（制作步骤+知识讲解+代码）、practice（融会贯通训练+FAQ）三个独立请求。每段使用独立的 Prompt 和 JSON Schema，降低单次生成的 token 消耗，提高输出质量和稳定性。如果某段生成失败，只需重试该段，不影响其他部分。</p>
+          </div>
+          <div class="feature-item">
+            <strong>教育级 Prompt Engineering</strong>
+            <p>Prompt 中内嵌了 STEAM 教育设计理念（硬件交互 Level 1-5 等级体系）、知识点锚定规则、学生兴趣映射逻辑和输出格式约束。AI 不是"自由发挥"，而是在教育专家定义的框架内生成方案，确保输出内容的教学专业性。</p>
+          </div>
+          <div class="feature-item">
+            <strong>双语言代码生成</strong>
+            <p>每个项目方案同时生成 C++/Arduino 和 MicroPython/K10 两种语言的代码，代码以数组形式逐行存储，避免 JSON 转义问题。代码逻辑统一遵循"读取传感器 → 知识点计算 → 输出反馈"的闭环结构。</p>
+          </div>
+          <div class="feature-item">
+            <strong>错误处理与自动重试</strong>
+            <p>后端内置 2 次自动重试机制，前端根据错误类型（网络失败/API 密钥/频率限制/服务器错误/超时）分类展示不同的解决建议，并提供"重新生成"按钮，确保用户体验不中断。</p>
+          </div>
+          <div class="feature-item">
+            <strong>Serverless 部署</strong>
+            <p>基于 Cloudflare Workers 全球边缘网络部署，前端静态资源通过 Workers Assets 分发，API 请求在最近的边缘节点处理。无需维护服务器，API 密钥通过 Workers Secret 安全存储，不暴露在前端代码中。</p>
+          </div>
+        </div>
+        <div class="quote-box">
+          技术架构：用户浏览器 (HTML/CSS/JS) → Cloudflare Workers (src/index.js) → DeepSeek AI API → 分段 JSON 渲染（overview → build → practice）
         </div>
       </article>
     </section>
@@ -762,7 +806,15 @@
 
   <footer class="footer page-shell">
     <strong>MakerMind AI</strong>
-    <span>把硬件项目变成真正的学习路径</span>
+    <span>面向科创课堂与项目式学习的互动任务生成工作台</span>
+    <div class="footer-links">
+      <a href="index.html">首页</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="faq.html">常见问题</a>
+      <a href="about.html">关于我们</a>
+      <a href="https://github.com/Dunphil692/makermind-ai" target="_blank" rel="noopener">GitHub</a>
+    </div>
   </footer>
 
 <script>

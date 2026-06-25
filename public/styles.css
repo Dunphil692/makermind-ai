@@ -819,6 +819,25 @@ select:focus {
   color: var(--text);
 }
 
+.footer-links {
+  margin-top: 12px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: #64748b;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+}
+
 @media (max-width: 980px) {
   .hero,
   .comparison-card,
@@ -3993,6 +4012,42 @@ details[open] summary {
   background: #f8fafc;
 }
 
+.share-social-row {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.share-social-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.share-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.share-social-btn:hover {
+  background: #eef2ff;
+  border-color: #6366f1;
+  color: #4338ca;
+  transform: translateY(-1px);
+}
+
 /* ===== Responsive ===== */
 
 @media (max-width: 760px) {
@@ -4288,6 +4343,79 @@ details[open] summary {
   background: linear-gradient(180deg, rgba(248,250,252,0.3) 0%, rgba(248,250,252,0.6) 50%, rgba(248,250,252,0.9) 100%);
   pointer-events: none;
   z-index: 1;
+}
+
+/* ===== Hero trust row ===== */
+.hero-trust-row {
+  display: flex;
+  gap: 32px;
+  margin: 24px 0 28px;
+  flex-wrap: wrap;
+}
+
+.trust-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.trust-item strong {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.trust-item span {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+@media (max-width: 760px) {
+  .hero-trust-row {
+    gap: 20px;
+  }
+  .trust-item strong {
+    font-size: 22px;
+  }
+}
+
+/* ===== Quick presets in generator ===== */
+.quick-presets {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.quick-presets h5 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.preset-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.preset-chip {
+  padding: 10px 18px;
+  border-radius: 100px;
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
 }
 
 .clarity-hero {
@@ -4596,6 +4724,85 @@ body {
 /* ===== Partners Section ===== */
 .clarity-partners-section {
   padding: 80px 0;
+}
+
+/* ===== Differentiation table ===== */
+.clarity-diff-section {
+  padding: 80px 0;
+}
+
+.diff-table {
+  margin-top: 40px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
+}
+
+.diff-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1.5fr;
+  gap: 0;
+}
+
+.diff-row:not(:last-child) {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.diff-header {
+  background: #f8fafc;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.diff-header > div {
+  padding: 18px 24px;
+  color: #64748b;
+}
+
+.diff-header .diff-highlight {
+  color: var(--primary);
+  background: rgba(255, 107, 53, 0.05);
+}
+
+.diff-row:not(.diff-header) > div {
+  padding: 18px 24px;
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+}
+
+.diff-label {
+  font-weight: 700;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.diff-highlight {
+  background: rgba(255, 107, 53, 0.04);
+  font-weight: 600;
+  color: #0f172a;
+}
+
+@media (max-width: 760px) {
+  .diff-row {
+    grid-template-columns: 1fr;
+  }
+
+  .diff-header {
+    display: none;
+  }
+
+  .diff-row:not(.diff-header) > div {
+    padding: 12px 16px;
+  }
+
+  .diff-label {
+    background: #0f172a;
+    color: #fff;
+  }
 }
 
 .partners-grid {
