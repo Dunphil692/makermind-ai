@@ -4422,6 +4422,17 @@ details[open] summary {
 .clarity-hero {
   position: relative;
   overflow: hidden;
+  margin-top: 34px;
+  margin-bottom: 34px;
+  padding: 60px 50px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(79, 70, 229, 0.08), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(255, 107, 53, 0.08), transparent 32%),
+    rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 54px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(22px);
 }
 
 .clarity-hero-copy {
