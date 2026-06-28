@@ -227,8 +227,9 @@ main,
 
 .btn.ghost {
   color: var(--text);
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.64);
+  border: 0;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
 .btn.wide {
@@ -4681,12 +4682,16 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 10px 20px;
+  width: min(1220px, calc(100% - 36px));
+  margin: 18px auto 0;
+  padding: 10px 24px;
+  border-radius: 999px;
   background: linear-gradient(135deg, #111827 0%, #312e81 100%);
   color: #fff;
   font-size: 14px;
   position: relative;
   z-index: 1001;
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.18);
 }
 
 .contest-banner span {
@@ -4716,7 +4721,9 @@ body {
   .contest-banner {
     flex-wrap: wrap;
     gap: 6px;
-    padding: 8px 12px;
+    margin-top: 12px;
+    padding: 8px 16px;
+    border-radius: 28px;
     font-size: 12px;
   }
 }
