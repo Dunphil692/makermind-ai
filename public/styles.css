@@ -225,6 +225,25 @@ main,
   box-shadow: 0 16px 36px rgba(255, 107, 53, 0.26);
 }
 
+.btn .btn-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.btn.loading .btn-icon {
+  animation: btnSpin 1s linear infinite;
+}
+
+.btn.loading {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+@keyframes btnSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .btn.ghost {
   color: var(--text);
   border: 0;

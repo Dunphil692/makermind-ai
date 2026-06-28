@@ -138,7 +138,21 @@
           </select>
         </label>
 
-        <button class="btn primary wide" type="submit" id="generateBtn">生成 STEAM 项目方案</button>
+        <div class="quick-presets" style="margin-top: 24px;">
+          <h5>💡 快速推荐组合</h5>
+          <p style="margin-bottom:12px;color:#64748b;font-size:13px;">点击即可一键填充所有参数</p>
+          <div class="preset-chips">
+            <button type="button" class="preset-chip" data-concept="一次函数" data-interest="球星点球大战" data-kit="k10" data-duration="60 分钟项目课">⚽ 数学 × 点球大战</button>
+            <button type="button" class="preset-chip" data-concept="声音与振动" data-interest="音乐节奏灯" data-kit="k10" data-duration="45 分钟课堂活动">🎵 科学 × 音乐灯</button>
+            <button type="button" class="preset-chip" data-concept="数据统计" data-interest="篮球投篮挑战" data-kit="paper" data-duration="30 分钟小任务">🏀 数学 × 投篮</button>
+            <button type="button" class="preset-chip" data-concept="光照与条件判断" data-interest="环保监测项目" data-kit="mixed" data-duration="60 分钟项目课">🌿 科学 × 环保监测</button>
+          </div>
+        </div>
+
+        <button class="btn primary wide" type="submit" id="generateBtn">
+          <span class="btn-icon">⚡</span>
+          生成 STEAM 项目方案
+        </button>
 
         <div class="generator-actions-row">
           <button type="button" class="btn ghost small" id="historyBtn" style="flex:1">历史记录</button>
@@ -181,15 +195,6 @@
               <div><span>兴趣</span><strong>球星点球大战</strong></div>
               <div><span>套件</span><strong>UNIHIKER K10</strong></div>
               <div><span>时长</span><strong>60 分钟项目课</strong></div>
-            </div>
-            <div class="quick-presets">
-              <h5>💡 快速推荐组合</h5>
-              <div class="preset-chips">
-                <button type="button" class="preset-chip" data-concept="一次函数" data-interest="球星点球大战" data-kit="k10" data-duration="60 分钟项目课">数学 × 点球大战</button>
-                <button type="button" class="preset-chip" data-concept="声音与振动" data-interest="音乐节奏灯" data-kit="k10" data-duration="45 分钟课堂活动">科学 × 音乐灯</button>
-                <button type="button" class="preset-chip" data-concept="数据统计" data-interest="篮球投篮挑战" data-kit="paper" data-duration="30 分钟小任务">数学 × 投篮（无硬件）</button>
-                <button type="button" class="preset-chip" data-concept="光照与条件判断" data-interest="环保监测项目" data-kit="mixed" data-duration="60 分钟项目课">科学 × 环保监测</button>
-              </div>
             </div>
           </article>
         </div>
@@ -878,8 +883,9 @@
       if (isGenerating) return;
       isGenerating = true;
 
-      const originalText = generateBtn.textContent;
+      const originalText = generateBtn.innerHTML;
       generateBtn.disabled = true;
+      generateBtn.classList.add("loading");
 
       try {
         const payload = {
@@ -895,17 +901,17 @@
         generateCount += 1;
 
         // Step 1/3: overview
-        generateBtn.textContent = "正在生成 1/3...";
+        generateBtn.innerHTML = '<span class="btn-icon">⏳</span>正在生成 1/3...';
         renderProgress(1, 3, "正在生成 1/3：项目概述与交互设计", "正在生成项目标题、学习目标、交互流程和材料清单。");
         const overview = await requestPart(payload, "overview");
 
         // Step 2/3: build
-        generateBtn.textContent = "正在生成 2/3...";
+        generateBtn.innerHTML = '<span class="btn-icon">⏳</span>正在生成 2/3...';
         renderProgress(2, 3, "正在生成 2/3：制作步骤与知识讲解", "正在生成详细制作步骤、知识点讲解和代码思路。");
         const build = await requestPart(payload, "build");
 
         // Step 3/3: practice
-        generateBtn.textContent = "正在生成 3/3...";
+        generateBtn.innerHTML = '<span class="btn-icon">⏳</span>正在生成 3/3...';
         renderProgress(3, 3, "正在生成 3/3：融会贯通训练与 FAQ", "正在生成基础练习、变化挑战、逆向思维、进阶方向和常见问题。");
         const practice = await requestPart(payload, "practice");
 
@@ -932,7 +938,8 @@
       } finally {
         isGenerating = false;
         generateBtn.disabled = false;
-        generateBtn.textContent = originalText;
+        generateBtn.classList.remove("loading");
+        generateBtn.innerHTML = originalText;
       }
     }
 
