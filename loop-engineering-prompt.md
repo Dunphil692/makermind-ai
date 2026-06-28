@@ -190,6 +190,16 @@
 反思：验收标准已达到，首屏视觉层次更丰富；未引入新问题
 适配：下一轮建议聚焦维度 F（细节一致性），检查 7 个页面的导航、footer、视觉风格一致性
 
+### 第 2 轮：维度 F - 细节一致性
+
+聚焦：修复所有页面 footer 链接不一致问题
+现状：所有 7 个页面的 footer 缺少 rules.html 和 students.html 链接，与导航栏不一致
+验收标准：所有 7 个页面的 footer 链接与导航栏保持一致（包含 rules.html 和 students.html）
+执行：逐个修改 index.html、students.html、rules.html、faq.html、about.html、gallery.html、generator.html 的 footer，在 gallery.html 和 faq.html 之间添加 rules.html 和 students.html 链接
+测试结果：所有 7 个页面的 footer 现在都有 8 个链接（7 个内部链接 + GitHub），每个页面都有 2 个 rules.html 和 2 个 students.html 链接（导航栏 + footer）
+反思：验收标准已达到，footer 链接与导航栏完全一致；未引入新问题
+适配：下一轮建议聚焦维度 B（核心生成流程体验），优化 generator.html 的交互体验
+
 ---
 
 ## 使用方式
