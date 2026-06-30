@@ -13,7 +13,7 @@ import {
   handleRemoveFavorite,
   handleListFavorites
 } from "./projects.js";
-import { handleGenerateInstructionPart } from "./ai.js";
+import { handleDialogueTaskBrief, handleGenerateInstructionPart } from "./ai.js";
 
 function methodNotAllowed() {
   return json({ error: "Method not allowed" }, 405);
@@ -51,6 +51,10 @@ export default {
     }
 
     // ---------- AI 生成 ----------
+    if (pathname === "/api/dialogue-task-brief") {
+      return method === "POST" ? handleDialogueTaskBrief(request, env) : methodNotAllowed();
+    }
+
     if (pathname === "/api/generate-instruction-part") {
       return method === "POST" ? handleGenerateInstructionPart(request, env) : methodNotAllowed();
     }

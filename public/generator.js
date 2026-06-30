@@ -13,11 +13,18 @@
     const matchTag = document.querySelector("#matchTag");
     const updateTag = document.querySelector("#updateTag");
     const projectCards = document.querySelector("#projectCards");
+    const dialogueMessagesEl = document.querySelector("#dialogueMessages");
+    const dialogueInput = document.querySelector("#dialogueInput");
+    const dialogueSendBtn = document.querySelector("#dialogueSendBtn");
+    const briefStatus = document.querySelector("#briefStatus");
 
     /* ===== State ===== */
     let isGenerating = false;
+    let isDialogueThinking = false;
     let currentInstruction = null;
     let generateCount = 0;
+    let dialogueMessages = [];
+    let taskBrief = createEmptyBrief();
 
     /* ===== Demo instruction ===== */
     const demoInstruction2 = {
@@ -377,6 +384,192 @@
       return { image: images[0] || "/assets/reaction-trainer.jpg", title: lib.title, caption: lib.caption };
     }
 
+    function createEmptyBrief() {
+      return {
+        studentInterest: "",
+        hardwareKit: "",
+        knowledgeGoal: "",
+        subject: "数学",
+        level: "需要项目带着学",
+        duration: "60 分钟项目课",
+        confidence: {
+          studentInterest: 0,
+          hardwareKit: 0,
+          knowledgeGoal: 0
+        },
+        missingFields: ["studentInterest", "hardwareKit", "knowledgeGoal"],
+        readyToGenerate: false
+      };
+    }
+
+    function canGenerateFromBrief(brief) {
+      return Boolean(brief?.studentInterest && brief?.hardwareKit && brief?.knowledgeGoal);
+    }
+
+    function normalizeClientBrief(brief) {
+      const next = { ...createEmptyBrief(), ...(brief || {}) };
+      next.confidence = { ...createEmptyBrief().confidence, ...(brief?.confidence || {}) };
+      next.missingFields = [];
+      if (!next.studentInterest) next.missingFields.push("studentInterest");
+      if (!next.hardwareKit) next.missingFields.push("hardwareKit");
+      if (!next.knowledgeGoal) next.missingFields.push("knowledgeGoal");
+      next.readyToGenerate = next.missingFields.length === 0;
+      return next;
+    }
+
+    function fieldLabel(key) {
+      return {
+        studentInterest: "学生兴趣",
+        hardwareKit: "硬件/材料",
+        knowledgeGoal: "学习知识"
+      }[key] || key;
+    }
+
+    function renderDialogueMessages() {
+      if (!dialogueMessagesEl) return;
+      dialogueMessagesEl.innerHTML = dialogueMessages.map(message => `
+        <div class="chat-message ${message.role === "user" ? "user" : "assistant"}">
+          <span>${message.role === "user" ? "老师" : "AI"}</span>
+          <p>${safeText(message.content)}</p>
+        </div>
+      `).join("") + (isDialogueThinking ? `
+        <div class="chat-message assistant chat-thinking">
+          <span>AI</span>
+          <p>正在整理课堂需求...</p>
+        </div>
+      ` : "");
+      dialogueMessagesEl.scrollTop = dialogueMessagesEl.scrollHeight;
+    }
+
+    function appendDialogueMessage(role, content) {
+      dialogueMessages.push({ role, content });
+      if (dialogueMessages.length > 16) dialogueMessages = dialogueMessages.slice(-16);
+      renderDialogueMessages();
+    }
+
+    function renderBriefStatus() {
+      if (!briefStatus) return;
+      const items = [
+        ["studentInterest", taskBrief.studentInterest],
+        ["hardwareKit", taskBrief.hardwareKit],
+        ["knowledgeGoal", taskBrief.knowledgeGoal]
+      ];
+      briefStatus.innerHTML = items.map(([key, value]) => {
+        const complete = Boolean(value);
+        return `<div class="brief-chip ${complete ? "complete" : "missing"}"><span>${fieldLabel(key)}</span><strong>${safeText(value || "待了解")}</strong></div>`;
+      }).join("");
+      updateGenerateButtonState();
+    }
+
+    function updateGenerateButtonState() {
+      if (!generateBtn) return;
+      const ready = canGenerateFromBrief(taskBrief);
+      generateBtn.disabled = isGenerating || !ready;
+      if (!isGenerating) {
+        generateBtn.innerHTML = ready
+          ? '<span class="btn-icon">⚡</span>生成 STEAM 项目方案'
+          : '<span class="btn-icon">💬</span>请先补全三项信息';
+      }
+    }
+
+    function inferKitValue(hardwareText) {
+      const text = String(hardwareText || "").toLowerCase();
+      if (text.includes("k10") || text.includes("unihiker")) return "k10";
+      if (text.includes("arduino") || text.includes("esp32")) return "arduino";
+      if (text.includes("micro:bit") || text.includes("microbit")) return "microbit";
+      if (text.includes("纸") || text.includes("无需编程") || text.includes("不编程")) return "paper";
+      if (text.includes("纸板") || text.includes("电子模块")) return "mixed";
+      return "k10";
+    }
+
+    function applyBriefToLegacyInputs(brief) {
+      if (conceptInput && brief.knowledgeGoal) conceptInput.value = brief.knowledgeGoal;
+      if (interestInput && brief.studentInterest) interestInput.value = brief.studentInterest;
+      if (subjectSelect && brief.subject) subjectSelect.value = brief.subject;
+      if (levelSelect && brief.level) levelSelect.value = brief.level;
+      if (durationSelect && brief.duration) durationSelect.value = brief.duration;
+      if (kitSelect && brief.hardwareKit) kitSelect.value = inferKitValue(brief.hardwareKit);
+      interestChips.forEach(chip => chip.classList.toggle("active", chip.dataset.interest === getInterest()));
+      renderWaitingState();
+    }
+
+    async function requestDialogueTurn(messages, brief) {
+      const response = await fetch("/api/dialogue-task-brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages, brief })
+      });
+      const text = await response.text();
+      let data;
+      try { data = JSON.parse(text); } catch { throw new Error(`接口返回非 JSON：${text.slice(0, 200)}`); }
+      if (!response.ok) throw new Error(data.detail || data.error || "对话理解失败");
+      return data;
+    }
+
+    async function sendDialogueMessage() {
+      if (!dialogueInput || isDialogueThinking) return;
+      const text = dialogueInput.value.trim();
+      if (!text) return;
+      dialogueInput.value = "";
+      appendDialogueMessage("user", text);
+      isDialogueThinking = true;
+      if (dialogueSendBtn) dialogueSendBtn.disabled = true;
+      renderDialogueMessages();
+
+      try {
+        const data = await requestDialogueTurn(dialogueMessages, taskBrief);
+        taskBrief = normalizeClientBrief(data.brief);
+        applyBriefToLegacyInputs(taskBrief);
+        appendDialogueMessage("assistant", data.reply || "我已经更新了课堂需求信息。");
+        renderBriefStatus();
+      } catch (error) {
+        appendDialogueMessage("assistant", `我刚才没有成功理解这条需求：${error.message || "请稍后重试"}。你可以换一种说法再发一次。`);
+      } finally {
+        isDialogueThinking = false;
+        if (dialogueSendBtn) dialogueSendBtn.disabled = false;
+        renderDialogueMessages();
+        renderBriefStatus();
+      }
+    }
+
+    function seedDialogueFromFields() {
+      const interest = getInterest();
+      const concept = getCurrentConcept();
+      const kit = getCurrentKitLabel();
+      taskBrief = normalizeClientBrief({
+        studentInterest: interestInput?.value.trim() ? interest : "",
+        hardwareKit: kit,
+        knowledgeGoal: conceptInput?.value.trim() ? concept : "",
+        subject: getCurrentSubject(),
+        level: getCurrentLevel(),
+        duration: getCurrentDuration(),
+        confidence: {
+          studentInterest: interestInput?.value.trim() ? 0.92 : 0,
+          hardwareKit: 0.92,
+          knowledgeGoal: conceptInput?.value.trim() ? 0.92 : 0
+        }
+      });
+      renderBriefStatus();
+    }
+
+    function syncBriefFromAdvancedFields() {
+      taskBrief = normalizeClientBrief({
+        ...taskBrief,
+        studentInterest: interestInput?.value.trim() || taskBrief.studentInterest,
+        hardwareKit: getCurrentKitLabel(),
+        knowledgeGoal: conceptInput?.value.trim() || taskBrief.knowledgeGoal,
+        subject: getCurrentSubject(),
+        level: getCurrentLevel(),
+        duration: getCurrentDuration(),
+        confidence: {
+          studentInterest: interestInput?.value.trim() ? 0.92 : taskBrief.confidence?.studentInterest,
+          hardwareKit: 0.92,
+          knowledgeGoal: conceptInput?.value.trim() ? 0.92 : taskBrief.confidence?.knowledgeGoal
+        }
+      });
+      renderBriefStatus();
+    }
+
     /* ===== LocalStorage helpers ===== */
     const HISTORY_KEY = "makermind_history";
     const SAVED_KEY = "makermind_saved";
@@ -545,6 +738,8 @@
         generateBtn.disabled = true;
         generateBtn.classList.add("loading");
 
+        applyBriefToLegacyInputs(taskBrief);
+
         const payload = {
           concept: getCurrentConcept(),
           subject: getCurrentSubject(),
@@ -611,9 +806,9 @@
       } finally {
         isGenerating = false;
         if (generateBtn) {
-          generateBtn.disabled = false;
           generateBtn.classList.remove("loading");
           if (originalText) generateBtn.innerHTML = originalText;
+          updateGenerateButtonState();
         }
       }
     }
@@ -1114,6 +1309,7 @@
         interestChips.forEach(item => item.classList.remove("active"));
         chip.classList.add("active");
         interestInput.value = chip.dataset.interest;
+        syncBriefFromAdvancedFields();
       });
     });
 
@@ -1130,8 +1326,15 @@
             chip.classList.remove("active");
           }
         });
+        syncBriefFromAdvancedFields();
       });
     }
+
+    [conceptInput, subjectSelect, levelSelect, kitSelect, durationSelect].forEach(input => {
+      if (!input) return;
+      input.addEventListener("change", syncBriefFromAdvancedFields);
+      input.addEventListener("input", syncBriefFromAdvancedFields);
+    });
 
     /* ===== 获取当前兴趣场景值 ===== */
     function getInterest() {
@@ -1141,8 +1344,31 @@
     /* ===== Form submit ===== */
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+      if (!canGenerateFromBrief(taskBrief)) return;
+      applyBriefToLegacyInputs(taskBrief);
       generate();
     });
+
+    if (generateBtn) {
+      generateBtn.addEventListener("click", () => {
+        if (!canGenerateFromBrief(taskBrief)) return;
+        applyBriefToLegacyInputs(taskBrief);
+        generate();
+      });
+    }
+
+    if (dialogueSendBtn) {
+      dialogueSendBtn.addEventListener("click", sendDialogueMessage);
+    }
+
+    if (dialogueInput) {
+      dialogueInput.addEventListener("keydown", event => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          sendDialogueMessage();
+        }
+      });
+    }
 
     /* ===== Preset chips ===== */
     document.querySelectorAll(".preset-chip").forEach(chip => {
@@ -1152,6 +1378,18 @@
         interestChips.forEach(c => c.classList.toggle("active", c.dataset.interest === chip.dataset.interest));
         kitSelect.value = chip.dataset.kit;
         durationSelect.value = chip.dataset.duration;
+        taskBrief = normalizeClientBrief({
+          studentInterest: chip.dataset.interest,
+          hardwareKit: getCurrentKitLabel(),
+          knowledgeGoal: chip.dataset.concept,
+          subject: getCurrentSubject(),
+          level: getCurrentLevel(),
+          duration: chip.dataset.duration,
+          confidence: { studentInterest: 1, hardwareKit: 1, knowledgeGoal: 1 }
+        });
+        appendDialogueMessage("user", `我想做${chip.dataset.interest}，使用${getCurrentKitLabel()}，让学生学习${chip.dataset.concept}。`);
+        appendDialogueMessage("assistant", "这组信息已经够了，我已整理成项目简报。你可以继续补充学生基础，或直接点击生成方案。");
+        renderBriefStatus();
         renderWaitingState();
       });
     });
@@ -1169,9 +1407,14 @@
       }
       if (params.has("k")) kitSelect.value = params.get("k");
       if (params.has("d")) durationSelect.value = params.get("d");
+      if (params.has("c") || params.has("i") || params.has("k") || params.has("d")) {
+        seedDialogueFromFields();
+      }
     }
 
     /* ===== Init ===== */
+    appendDialogueMessage("assistant", "你好，我会像和你一起备课一样了解需求。请直接告诉我：学生最近喜欢什么？你想用什么硬件或材料？这节课最想让学生学会哪个知识点？");
+    renderBriefStatus();
     loadFromUrlParams();
     const params = new URLSearchParams(window.location.search);
     const projectId = params.get("project");

@@ -56,93 +56,113 @@
     <section class="generator-layout">
       <form class="control-panel generator-control-panel" id="generatorForm">
         <div class="form-section-title">
-          <span>STEP 01</span>
-          <h2>设置学习任务</h2>
-          <p>选择或输入知识点，再选择兴趣场景和硬件条件。</p>
+          <span>AI CHAT INTAKE</span>
+          <h2>和 AI 一起备课</h2>
+          <p>像聊天一样告诉 AI 课堂想法，系统会先了解学生兴趣、硬件条件和学习目标，再生成完整项目方案。</p>
         </div>
 
-        <label>
-          知识点
-          <input type="text" id="conceptInput" list="conceptSuggestions" placeholder="输入知识点，如：一次函数、勾股定理..." value="一次函数" />
-          <datalist id="conceptSuggestions">
-            <option value="一次函数"></option>
-            <option value="分数与比例"></option>
-            <option value="面积与周长"></option>
-            <option value="角度与几何"></option>
-            <option value="数据统计"></option>
-            <option value="声音与振动"></option>
-            <option value="光照与条件判断"></option>
-            <option value="勾股定理"></option>
-            <option value="二元一次方程"></option>
-            <option value="电路串联与并联"></option>
-            <option value="概率与随机"></option>
-            <option value="速度与路程"></option>
-            <option value="温度与热传递"></option>
-            <option value="力的合成与分解"></option>
-          </datalist>
-        </label>
+        <div class="chat-generator-panel">
+          <div class="chat-thread" id="dialogueMessages" aria-live="polite"></div>
 
-        <label>
-          学科方向
-          <select id="subjectSelect">
-            <option value="数学">数学</option>
-            <option value="科学">科学</option>
-            <option value="物理">物理</option>
-            <option value="信息技术">信息技术</option>
-            <option value="综合实践">综合实践</option>
-          </select>
-        </label>
+          <div class="brief-status" id="briefStatus" aria-label="任务简报状态"></div>
 
-        <label>
-          学生学习状态
-          <select id="levelSelect">
-            <option value="需要项目带着学">需要项目带着学</option>
-            <option value="理解快，需要挑战">理解快，需要挑战</option>
-            <option value="兴趣低，需要强反馈">兴趣低，需要强反馈</option>
-          </select>
-          <small class="field-help">根据学生的学习状态和兴趣水平选择，系统将据此调整项目难度和引导方式</small>
-        </label>
-
-        <label>
-          兴趣场景
-          <input type="text" id="interestInput" class="interest-input" placeholder="输入你感兴趣的场景，如：无人机、智能家居、太空探索…" value="球星点球大战" autocomplete="off" />
-          <div class="interest-hint">以下是参考示例，可直接点击使用，也可以在上面自行输入</div>
-          <div class="chips" id="interestChips">
-            <button type="button" class="chip active" data-interest="球星点球大战">球星点球大战</button>
-            <button type="button" class="chip" data-interest="篮球投篮挑战">篮球投篮</button>
-            <button type="button" class="chip" data-interest="音乐节奏灯">音乐节奏灯</button>
-            <button type="button" class="chip" data-interest="宠物自动喂食器">宠物喂食器</button>
-            <button type="button" class="chip" data-interest="赛车计时挑战">赛车计时</button>
-            <button type="button" class="chip" data-interest="科学实验装置">科学实验</button>
-            <button type="button" class="chip" data-interest="校园生活助手">校园生活</button>
-            <button type="button" class="chip" data-interest="环保监测项目">环保监测</button>
+          <div class="chat-input-row">
+            <textarea id="dialogueInput" class="dialogue-input" rows="3" placeholder="例如：我们班学生喜欢足球点球，我想用 K10，让他们学一次函数。"></textarea>
+            <button type="button" class="btn primary small" id="dialogueSendBtn">发送</button>
           </div>
-        </label>
 
-        <label>
-          硬件套件
-          <select id="kitSelect">
-            <option value="k10">UNIHIKER K10（推荐）</option>
-            <option value="arduino">Arduino / ESP32</option>
-            <option value="microbit">micro:bit</option>
-            <option value="paper">纸电路 / 无需编程</option>
-            <option value="mixed">纸板 + 电子模块</option>
-          </select>
-        </label>
+          <button class="btn primary wide" type="button" id="generateBtn" disabled>
+            <span class="btn-icon">⚡</span>
+            信息完整后生成方案
+          </button>
+        </div>
 
-        <label>
-          课堂时长
-          <select id="durationSelect">
-            <option value="15 分钟快速体验">15 分钟快速体验</option>
-            <option value="30 分钟小任务">30 分钟小任务</option>
-            <option value="45 分钟课堂活动">45 分钟课堂活动</option>
-            <option value="60 分钟项目课" selected>60 分钟项目课</option>
-          </select>
-        </label>
+        <details class="advanced-generator-fields">
+          <summary>高级参数 / 自动填充字段</summary>
+          <div class="advanced-fields-grid">
+            <label>
+              知识点
+              <input type="text" id="conceptInput" list="conceptSuggestions" placeholder="输入知识点，如：一次函数、勾股定理..." value="一次函数" />
+              <datalist id="conceptSuggestions">
+                <option value="一次函数"></option>
+                <option value="分数与比例"></option>
+                <option value="面积与周长"></option>
+                <option value="角度与几何"></option>
+                <option value="数据统计"></option>
+                <option value="声音与振动"></option>
+                <option value="光照与条件判断"></option>
+                <option value="勾股定理"></option>
+                <option value="二元一次方程"></option>
+                <option value="电路串联与并联"></option>
+                <option value="概率与随机"></option>
+                <option value="速度与路程"></option>
+                <option value="温度与热传递"></option>
+                <option value="力的合成与分解"></option>
+              </datalist>
+            </label>
+
+            <label>
+              学科方向
+              <select id="subjectSelect">
+                <option value="数学">数学</option>
+                <option value="科学">科学</option>
+                <option value="物理">物理</option>
+                <option value="信息技术">信息技术</option>
+                <option value="综合实践">综合实践</option>
+              </select>
+            </label>
+
+            <label>
+              学生学习状态
+              <select id="levelSelect">
+                <option value="需要项目带着学">需要项目带着学</option>
+                <option value="理解快，需要挑战">理解快，需要挑战</option>
+                <option value="兴趣低，需要强反馈">兴趣低，需要强反馈</option>
+              </select>
+            </label>
+
+            <label>
+              兴趣场景
+              <input type="text" id="interestInput" class="interest-input" placeholder="输入你感兴趣的场景，如：无人机、智能家居、太空探索…" value="" autocomplete="off" />
+              <div class="interest-hint">AI 对话会自动填充，也可以在这里手动修正。</div>
+              <div class="chips" id="interestChips">
+                <button type="button" class="chip" data-interest="球星点球大战">球星点球大战</button>
+                <button type="button" class="chip" data-interest="篮球投篮挑战">篮球投篮</button>
+                <button type="button" class="chip" data-interest="音乐节奏灯">音乐节奏灯</button>
+                <button type="button" class="chip" data-interest="宠物自动喂食器">宠物喂食器</button>
+                <button type="button" class="chip" data-interest="赛车计时挑战">赛车计时</button>
+                <button type="button" class="chip" data-interest="科学实验装置">科学实验</button>
+                <button type="button" class="chip" data-interest="校园生活助手">校园生活</button>
+                <button type="button" class="chip" data-interest="环保监测项目">环保监测</button>
+              </div>
+            </label>
+
+            <label>
+              硬件套件
+              <select id="kitSelect">
+                <option value="k10">UNIHIKER K10（推荐）</option>
+                <option value="arduino">Arduino / ESP32</option>
+                <option value="microbit">micro:bit</option>
+                <option value="paper">纸电路 / 无需编程</option>
+                <option value="mixed">纸板 + 电子模块</option>
+              </select>
+            </label>
+
+            <label>
+              课堂时长
+              <select id="durationSelect">
+                <option value="15 分钟快速体验">15 分钟快速体验</option>
+                <option value="30 分钟小任务">30 分钟小任务</option>
+                <option value="45 分钟课堂活动">45 分钟课堂活动</option>
+                <option value="60 分钟项目课" selected>60 分钟项目课</option>
+              </select>
+            </label>
+          </div>
+        </details>
 
         <div class="quick-presets">
-          <h5>💡 快速推荐组合</h5>
-          <p class="preset-help">点击即可一键填充所有参数</p>
+          <h5>💡 一键示例，也可以直接发给 AI</h5>
+          <p class="preset-help">点击后会填充对话和参数，便于快速演示。</p>
           <div class="preset-chips">
             <button type="button" class="preset-chip" data-concept="一次函数" data-interest="球星点球大战" data-kit="k10" data-duration="60 分钟项目课">⚽ 数学 × 点球大战</button>
             <button type="button" class="preset-chip" data-concept="声音与振动" data-interest="音乐节奏灯" data-kit="k10" data-duration="45 分钟课堂活动">🎵 科学 × 音乐灯</button>
@@ -150,11 +170,6 @@
             <button type="button" class="preset-chip" data-concept="光照与条件判断" data-interest="环保监测项目" data-kit="mixed" data-duration="60 分钟项目课">🌿 科学 × 环保监测</button>
           </div>
         </div>
-
-        <button class="btn primary wide" type="submit" id="generateBtn">
-          <span class="btn-icon">⚡</span>
-          生成 STEAM 项目方案
-        </button>
 
         <div class="generator-actions-row">
           <button type="button" class="btn ghost small" id="historyBtn">历史记录</button>
@@ -164,12 +179,11 @@
         <div class="generator-tips">
           <h4>💡 使用提示</h4>
           <ul>
-            <li><strong>第一步：</strong>输入或选择知识点（如"一次函数"）</li>
-            <li><strong>第二步：</strong>根据学生兴趣选择场景（如"球星点球大战"）</li>
-            <li><strong>第三步：</strong>选择硬件套件和课堂时长</li>
-            <li><strong>第四步：</strong>点击生成，等待 30-60 秒即可获得完整方案</li>
+            <li><strong>直接描述：</strong>告诉 AI 学生喜欢什么、想用什么硬件、要学什么知识。</li>
+            <li><strong>逐步补充：</strong>如果信息不完整，AI 会像备课助手一样追问。</li>
+            <li><strong>自动生成：</strong>信息完整后点击生成，系统仍会分三段生成完整方案。</li>
           </ul>
-          <p class="generator-note">系统会分三段调用 DeepSeek AI 生成（项目概述 → 制作步骤 → 融会贯通训练）</p>
+          <p class="generator-note">对话只负责收集需求，最终 project 仍使用原来的高质量生成和展示样式。</p>
         </div>
       </form>
 
