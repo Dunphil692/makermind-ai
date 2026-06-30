@@ -1372,7 +1372,7 @@ select:focus {
   margin: 0;
   padding: 26px 30px;
   background: #0f172a;
-  color: rgba(15, 23, 42, 0.06);
+  color: #e2e8f0;
   overflow-x: auto;
   font-size: 16px;
   line-height: 1.75;
@@ -3682,7 +3682,7 @@ main {
 }
 
 .instruction-visual figcaption strong {
-  color: #c0c0d0;
+  color: var(--text-secondary);
 }
 
 /* ===== Action bar ===== */
@@ -3712,12 +3712,12 @@ main {
 .instruction-section h4 {
   margin: 16px 0 8px;
   font-size: 17px;
-  color: #c0c0d0;
+  color: var(--text-secondary);
 }
 
 .instruction-section p {
   line-height: 1.85;
-  color: #c0c0d0;
+  color: var(--text-secondary);
 }
 
 .instruction-section ul {
@@ -3727,7 +3727,7 @@ main {
 .instruction-section li {
   margin-bottom: 6px;
   line-height: 1.75;
-  color: #c0c0d0;
+  color: var(--text-secondary);
 }
 
 /* ===== Highlight / Tips / Warning boxes ===== */
@@ -3758,7 +3758,7 @@ main {
   border-radius: 14px;
   background: rgba(0, 168, 132, 0.06);
   border-left: 4px solid var(--green);
-  color: #c0c0d0;
+  color: var(--text-secondary);
   font-size: 15px;
   line-height: 1.75;
 }
@@ -3768,7 +3768,7 @@ main {
   border-radius: 14px;
   background: rgba(229, 86, 86, 0.06);
   border-left: 4px solid var(--red);
-  color: #c0c0d0;
+  color: var(--text-secondary);
   font-size: 15px;
   line-height: 1.75;
 }
@@ -3832,7 +3832,7 @@ main {
 .instruction-table td {
   padding: 12px 16px;
   font-size: 15px;
-  color: #c0c0d0;
+  color: var(--text-secondary);
   border-top: 1px solid rgba(15, 23, 42, 0.036);
 }
 
@@ -4062,7 +4062,7 @@ details[open] summary {
   border-radius: 10px;
   border: 1px solid rgba(15, 23, 42, 0.06);
   background: rgba(15, 23, 42, 0.02);
-  color: #c0c0d0;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -4204,7 +4204,7 @@ details[open] summary {
 
 .teacher-card p {
   font-size: 15px;
-  color: #c0c0d0;
+  color: var(--text-secondary);
   line-height: 1.8;
 }
 
@@ -4459,7 +4459,7 @@ details[open] summary {
   background: rgba(15, 23, 42, 0.02);
   font-size: 14px;
   font-weight: 600;
-  color: #c0c0d0;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -4886,7 +4886,7 @@ body {
 .diff-row:not(.diff-header) > div {
   padding: 18px 24px;
   font-size: 15px;
-  color: #c0c0d0;
+  color: var(--text-secondary);
   line-height: 1.6;
   display: flex;
   align-items: center;
@@ -5012,7 +5012,7 @@ body {
 .generator-tips li {
   margin-bottom: 6px;
   font-size: 14px;
-  color: #c0c0d0;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
