@@ -56,16 +56,16 @@
       <div class="hero-decor hero-decor-2">🎯 项目式学习</div>
       <div class="hero-decor hero-decor-3">✨ 即开即用</div>
       <div class="clarity-hero-copy">
-        <span class="eyebrow">AI 驱动的 STEAM 项目课生成工作台</span>
+        <span class="eyebrow">TRAE AI 创造力大赛 · 学习工作赛道</span>
 
         <h1 class="hero-title">
-          <span class="hero-title-line">知识点不会上项目课？</span>
-          <span class="hero-title-line">AI 60 秒帮你备完整堂课</span>
+          <span class="hero-title-line">把一个知识点，</span>
+          <span class="hero-title-line">变成能上课的项目任务</span>
         </h1>
 
         <p>
-          输入知识点，选一个学生感兴趣的场景，AI 直接生成可直接上课的 STEAM 项目方案——
-          含制作步骤、材料清单、知识讲解、代码示例和 5 层融会贯通训练。
+          MakerMind AI 面向老师和科创机构：输入知识点、学生兴趣与课堂条件，60 秒生成可直接使用的
+          STEAM 项目方案，包含任务卡、材料清单、代码示例、教师引导与分层训练。
         </p>
 
         <div class="hero-trust-row">
@@ -80,8 +80,8 @@
             <span class="btn-icon">🚀</span>
             免费生成我的项目课
           </a>
-          <a class="btn ghost" href="generator.html?demo=1">
-            看看生成效果 →
+          <a class="btn ghost" href="gallery.html">
+            查看获奖级案例 →
           </a>
         </div>
       </div>
@@ -400,7 +400,7 @@
         <p>
           基于项目式学习理论和试点课堂反馈，我们总结了 MakerMind AI 对教师备课和课堂教学的预期提升效果。
         </p>
-        <p style="font-size:13px;color:#94a3b8;margin-top:8px;">* 数据为基于设计理念和课堂观察的预估效果，实际效果因使用场景而异</p>
+        <p class="stats-note">* 数据为基于设计理念和课堂观察的预估效果，实际效果因使用场景而异</p>
       </div>
       <div class="stats-grid">
         <article class="stat-card">
@@ -536,41 +536,7 @@
       });
     })();
 
-    /* ===== Hero Title Typewriter Effect ===== */
-    (function() {
-      const lines = document.querySelectorAll('.hero-title-line');
-      lines.forEach((line, i) => {
-        const text = line.textContent;
-        line.textContent = '';
-        line.style.opacity = '1';
-        let charIndex = 0;
-        setTimeout(() => {
-          const interval = setInterval(() => {
-            if (charIndex < text.length) {
-              line.textContent += text[charIndex];
-              charIndex++;
-            } else {
-              clearInterval(interval);
-            }
-          }, 40);
-        }, 400 + i * 600);
-      });
-    })();
-
-    /* ===== Hero Content Fade In ===== */
-    (function() {
-      const heroElements = document.querySelectorAll('.clarity-hero-copy .eyebrow, .clarity-hero-copy p, .clarity-hero-copy .hero-actions');
-      heroElements.forEach((el, i) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-        setTimeout(() => {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0)';
-        }, 1400 + i * 200);
-      });
-    })();
-
+    /* Hero content is intentionally visible immediately for judging and screenshots. */
     /* ===== Number Counter Animation ===== */
     (function() {
       const observer = new IntersectionObserver((entries) => {
