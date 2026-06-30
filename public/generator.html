@@ -100,7 +100,7 @@
             <option value="理解快，需要挑战">理解快，需要挑战</option>
             <option value="兴趣低，需要强反馈">兴趣低，需要强反馈</option>
           </select>
-          <small style="display:block;margin-top:4px;color:#64748b;font-size:13px;">根据学生的学习状态和兴趣水平选择，系统将据此调整项目难度和引导方式</small>
+          <small class="field-help">根据学生的学习状态和兴趣水平选择，系统将据此调整项目难度和引导方式</small>
         </label>
 
         <label>
@@ -140,9 +140,9 @@
           </select>
         </label>
 
-        <div class="quick-presets" style="margin-top: 24px;">
+        <div class="quick-presets">
           <h5>💡 快速推荐组合</h5>
-          <p style="margin-bottom:12px;color:#64748b;font-size:13px;">点击即可一键填充所有参数</p>
+          <p class="preset-help">点击即可一键填充所有参数</p>
           <div class="preset-chips">
             <button type="button" class="preset-chip" data-concept="一次函数" data-interest="球星点球大战" data-kit="k10" data-duration="60 分钟项目课">⚽ 数学 × 点球大战</button>
             <button type="button" class="preset-chip" data-concept="声音与振动" data-interest="音乐节奏灯" data-kit="k10" data-duration="45 分钟课堂活动">🎵 科学 × 音乐灯</button>
@@ -157,8 +157,8 @@
         </button>
 
         <div class="generator-actions-row">
-          <button type="button" class="btn ghost small" id="historyBtn" style="flex:1">历史记录</button>
-          <button type="button" class="btn ghost small" id="savedBtn" style="flex:1">已收藏</button>
+          <button type="button" class="btn ghost small" id="historyBtn">历史记录</button>
+          <button type="button" class="btn ghost small" id="savedBtn">已收藏</button>
         </div>
 
         <div class="generator-tips">
@@ -169,7 +169,7 @@
             <li><strong>第三步：</strong>选择硬件套件和课堂时长</li>
             <li><strong>第四步：</strong>点击生成，等待 30-60 秒即可获得完整方案</li>
           </ul>
-          <p style="margin-top:10px;color:#64748b;font-size:13px;">系统会分三段调用 DeepSeek AI 生成（项目概述 → 制作步骤 → 融会贯通训练）</p>
+          <p class="generator-note">系统会分三段调用 DeepSeek AI 生成（项目概述 → 制作步骤 → 融会贯通训练）</p>
         </div>
       </form>
 
@@ -244,7 +244,7 @@
           <button type="button" class="btn primary small" id="copyShareLink">复制</button>
         </div>
         <div class="share-social-row">
-          <p style="font-size:14px;color:#64748b;margin:0;">或通过社交平台分享：</p>
+          <p class="share-social-help">或通过社交平台分享：</p>
           <div class="share-social-buttons">
             <a href="#" id="shareWeibo" class="share-social-btn" target="_blank" rel="noopener" title="分享到微博">微博</a>
             <a href="#" id="shareQQ" class="share-social-btn" target="_blank" rel="noopener" title="分享到QQ">QQ</a>

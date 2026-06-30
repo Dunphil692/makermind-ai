@@ -302,7 +302,7 @@ function getStableImageIndex(instruction, imageCount) {
 function getImageInfo(instruction) {
   const key = instruction.imageKey || "reaction-trainer";
   const libraryItem = imageLibrary[key] || imageLibrary["reaction-trainer"];
-  const images = Array.isArray(libraryItem.images) ? libraryItem.images : [];
+  const images = Array.isArray(libraryItem.images) ? libraryItem.images.filter((image) => !image.includes("/assets/reference/")) : [];
   const index = getStableImageIndex(instruction, images.length);
   const selectedImage = images[index] || "/assets/reaction-trainer.jpg";
 
