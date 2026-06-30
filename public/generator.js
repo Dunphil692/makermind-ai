@@ -7,6 +7,7 @@
     const kitSelect = document.querySelector("#kitSelect");
     const durationSelect = document.querySelector("#durationSelect");
     const interestChips = document.querySelectorAll("#interestChips .chip");
+    const interestInput = document.querySelector("#interestInput");
     const generateBtn = document.querySelector("#generateBtn");
     const resultTitle = document.querySelector("#resultTitle");
     const matchTag = document.querySelector("#matchTag");
@@ -14,7 +15,6 @@
     const projectCards = document.querySelector("#projectCards");
 
     /* ===== State ===== */
-    let activeInterest = "球星点球大战";
     let isGenerating = false;
     let currentInstruction = null;
     let generateCount = 0;
@@ -409,7 +409,7 @@
     /* ===== Render waiting state ===== */
     function renderWaitingState() {
       matchTag.textContent = "等待生成";
-      resultTitle.textContent = `${getCurrentConcept()} × ${activeInterest}｜STEAM 项目方案`;
+      resultTitle.textContent = `${getCurrentConcept()} × ${getInterest()}｜STEAM 项目方案`;
       updateTag.textContent = "未调用 AI";
 
       projectCards.innerHTML = `
@@ -424,7 +424,7 @@
           </p>
           <div class="project-meta">
             <div><span>当前知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
-            <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
+            <div><span>兴趣</span><strong>${safeText(getInterest())}</strong></div>
             <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
             <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
           </div>
@@ -434,7 +434,7 @@
 
     /* ===== Render progress state ===== */
     function renderProgress(step, total, title, desc) {
-      resultTitle.textContent = `${getCurrentConcept()} × ${activeInterest}｜STEAM 项目方案`;
+      resultTitle.textContent = `${getCurrentConcept()} × ${getInterest()}｜STEAM 项目方案`;
       matchTag.textContent = `AI 生成中 ${step}/${total}`;
       updateTag.textContent = `生成中 ${getCurrentTimeText()}`;
 
@@ -447,7 +447,7 @@
           <p>${safeText(desc)}</p>
           <div class="project-meta">
             <div><span>知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
-            <div><span>兴趣</span><strong>${safeText(activeInterest)}</strong></div>
+            <div><span>兴趣</span><strong>${safeText(getInterest())}</strong></div>
             <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
             <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
           </div>
@@ -549,7 +549,7 @@
           concept: getCurrentConcept(),
           subject: getCurrentSubject(),
           level: getCurrentLevel(),
-          interest: activeInterest,
+          interest: getInterest(),
           kit: getCurrentKitLabel(),
           duration: getCurrentDuration(),
           materials: getCurrentMaterials()
@@ -833,7 +833,7 @@
           const item = {
             id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
             concept: getCurrentConcept(),
-            interest: activeInterest,
+            interest: getInterest(),
             kit: getCurrentKitLabel(),
             duration: getCurrentDuration(),
             projectName: instruction.projectName,
@@ -869,7 +869,7 @@
         shareBtn.addEventListener("click", () => {
           const params = new URLSearchParams({
             c: getCurrentConcept(),
-            i: activeInterest,
+            i: getInterest(),
             k: getCurrentKitValue(),
             d: getCurrentDuration()
           });
@@ -1108,14 +1108,35 @@
       });
     });
 
-    /* ===== Chip selection ===== */
+    /* ===== Chip selection (点击标签填充输入框) ===== */
     interestChips.forEach(chip => {
       chip.addEventListener("click", () => {
         interestChips.forEach(item => item.classList.remove("active"));
         chip.classList.add("active");
-        activeInterest = chip.dataset.interest;
+        interestInput.value = chip.dataset.interest;
       });
     });
+
+    /* ===== 用户手动输入时清除标签选中 ===== */
+    if (interestInput) {
+      interestInput.addEventListener("input", () => {
+        const val = interestInput.value.trim();
+        let matched = false;
+        interestChips.forEach(chip => {
+          if (chip.dataset.interest === val) {
+            chip.classList.add("active");
+            matched = true;
+          } else {
+            chip.classList.remove("active");
+          }
+        });
+      });
+    }
+
+    /* ===== 获取当前兴趣场景值 ===== */
+    function getInterest() {
+      return (interestInput && interestInput.value.trim()) ? interestInput.value.trim() : "球星点球大战";
+    }
 
     /* ===== Form submit ===== */
     form.addEventListener("submit", (event) => {
@@ -1127,8 +1148,8 @@
     document.querySelectorAll(".preset-chip").forEach(chip => {
       chip.addEventListener("click", () => {
         conceptInput.value = chip.dataset.concept;
-        activeInterest = chip.dataset.interest;
-        interestChips.forEach(c => c.classList.toggle("active", c.dataset.interest === activeInterest));
+        if (interestInput) interestInput.value = chip.dataset.interest;
+        interestChips.forEach(c => c.classList.toggle("active", c.dataset.interest === chip.dataset.interest));
         kitSelect.value = chip.dataset.kit;
         durationSelect.value = chip.dataset.duration;
         renderWaitingState();
@@ -1140,9 +1161,10 @@
       const params = new URLSearchParams(window.location.search);
       if (params.has("c")) conceptInput.value = params.get("c");
       if (params.has("i")) {
-        activeInterest = params.get("i");
+        const val = params.get("i");
+        if (interestInput) interestInput.value = val;
         interestChips.forEach(chip => {
-          chip.classList.toggle("active", chip.dataset.interest === activeInterest);
+          chip.classList.toggle("active", chip.dataset.interest === val);
         });
       }
       if (params.has("k")) kitSelect.value = params.get("k");
