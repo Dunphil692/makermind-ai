@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的工作台｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <style>
+    /* 覆盖全局深色主题，工作台使用浅色背景 */
+    body {
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fff5f0 100%) !important;
+    }
+    body::before { display: none !important; }
+    .topbar {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border-color: rgba(0, 0, 0, 0.06) !important;
+      backdrop-filter: blur(12px);
+    }
+    .brand strong { color: #0f172a !important; }
+    .brand small { color: #94a3b8 !important; }
+    .brand-mark { color: #fff !important; }
+    .nav-links a { color: #475569 !important; }
+    .nav-links a:hover { color: #ff6b35 !important; }
+
+    .dashboard-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+    .dash-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+    .dash-greeting h1 { font-size: 28px; margin: 0 0 4px; color: #0f172a; }
+    .dash-greeting p { margin: 0; color: #94a3b8; font-size: 14px; }
+    .dash-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+    .dash-stat { background: #fff; border-radius: 16px; padding: 16px 24px; box-shadow: 0 4px 16px rgba(15,23,42,.06); text-align: center; min-width: 110px; }
+    .dash-stat strong { display: block; font-size: 28px; color: #ff6b35; }
+    .dash-stat span { font-size: 13px; color: #94a3b8; }
+    .dash-new-btn { background: linear-gradient(135deg,#ff6b35,#ff8e53); color: #fff; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; }
+
+    .dash-tabs { display: flex; gap: 4px; background: #f1f5f9; border-radius: 12px; padding: 4px; width: fit-content; margin-bottom: 24px; }
+    .dash-tab { padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border: none; background: transparent; transition: all .2s; }
+    .dash-tab.active { background: #fff; color: #ff6b35; box-shadow: 0 2px 8px rgba(15,23,42,.08); }
+
+    .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .project-card { background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 20px rgba(15,23,42,.07); transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; }
+    .project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(15,23,42,.12); }
+    .project-card-img { width: 100%; height: 160px; object-fit: cover; background: #f8fafc; }
+    .project-card-body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; }
+    .project-card-title { font-size: 16px; font-weight: 700; color: #0f172a; margin: 0 0 8px; }
+    .project-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .project-tag { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: #f1f5f9; color: #475569; }
+    .project-tag.concept { background: rgba(255,107,53,.1); color: #ff6b35; }
+    .project-card-meta { font-size: 12px; color: #94a3b8; margin: 0 0 12px; }
+    .project-card-actions { display: flex; gap: 8px; margin-top: auto; }
+    .pc-btn { flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: #fff; color: #475569; text-align: center; text-decoration: none; transition: all .2s; }
+    .pc-btn:hover { border-color: #ff6b35; color: #ff6b35; }
+    .pc-btn.danger:hover { border-color: #ef4444; color: #ef4444; }
+    .pc-btn.primary { background: linear-gradient(135deg,#ff6b35,#ff8e53); color: #fff; border-color: transparent; }
+    .pc-btn.primary:hover { opacity: .9; color: #fff; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
+    .empty-state h3 { font-size: 18px; color: #475569; margin: 0 0 8px; }
+    .empty-state p { margin: 0 0 20px; font-size: 14px; }
+    .empty-state a { display: inline-block; padding: 10px 24px; background: linear-gradient(135deg,#ff6b35,#ff8e53); color: #fff; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; }
+    .fav-badge { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,.95); border-radius: 999px; padding: 4px 10px; font-size: 12px; color: #ff6b35; font-weight: 600; }
+    .card-thumb-wrap { position: relative; }
+    .loading-spin { text-align: center; padding: 60px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">MM</span>
+      <span>
+        <strong>MakerMind AI</strong>
+        <small>Project-based lesson studio</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="about.html">关于我们</a>
+    </nav>
+  </header>
+
+  <main class="dashboard-wrap">
+    <div class="dash-header">
+      <div class="dash-greeting">
+        <h1 id="greetTitle">我的工作台</h1>
+        <p id="greetSub">登录后即可查看你的项目方案</p>
+      </div>
+      <a class="dash-new-btn" href="generator.html">+ 生成新方案</a>
+    </div>
+
+    <div class="dash-stats" id="dashStats"></div>
+
+    <div class="dash-tabs">
+      <button class="dash-tab active" data-tab="projects">我的项目</button>
+      <button class="dash-tab" data-tab="favorites">我的收藏</button>
+    </div>
+
+    <div id="projectList" class="project-grid">
+      <div class="loading-spin">加载中…</div>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    if (!window.MMAuth.requireAuth("dashboard.html")) {
+      // requireAuth 会跳转，下方不执行
+    } else {
+      const user = window.MMAuth.getCurrentUser();
+      document.getElementById("greetTitle").textContent = "你好，" + (user.displayName || user.email);
+      document.getElementById("greetSub").textContent = user.role === "teacher" ? "教师工作台 · 管理你的项目方案" : "学生工作台 · 查看分配给你的项目";
+
+      let currentTab = "projects";
+      let projectsCache = [];
+      let favoritesCache = [];
+
+      const tabs = document.querySelectorAll(".dash-tab");
+      tabs.forEach(function (t) {
+        t.addEventListener("click", function () {
+          tabs.forEach(function (x) { x.classList.remove("active"); });
+          t.classList.add("active");
+          currentTab = t.dataset.tab;
+          render();
+        });
+      });
+
+      function imageUrl(imageKey) {
+        if (!imageKey) return "/assets/reaction-trainer.png";
+        return "/assets/" + imageKey + ".png";
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return "";
+        const d = new Date(iso);
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      }
+
+      function projectCard(p, isFav) {
+        const img = p.imageKey || p.image_key;
+        const actions = isFav
+          ? '<a class="pc-btn primary" href="generator.html?project=' + p.id + '">查看方案</a>'
+          : '<a class="pc-btn" href="generator.html?project=' + p.id + '">查看</a>' +
+            '<button class="pc-btn danger" data-del="' + p.id + '">删除</button>';
+        return '<article class="project-card">' +
+          '<div class="card-thumb-wrap">' +
+            '<img class="project-card-img" src="' + imageUrl(img) + '" alt="' + escapeAttr(p.title) + '" onerror="this.src=\'/assets/reaction-trainer.png\'" />' +
+            (isFav ? '<span class="fav-badge">★ 收藏</span>' : '') +
+          '</div>' +
+          '<div class="project-card-body">' +
+            '<h3 class="project-card-title">' + escapeHtml(p.title) + '</h3>' +
+            '<div class="project-card-tags">' +
+              (p.subject ? '<span class="project-tag">' + escapeHtml(p.subject) + '</span>' : '') +
+              (p.concept ? '<span class="project-tag concept">' + escapeHtml(p.concept) + '</span>' : '') +
+              (p.interest ? '<span class="project-tag">' + escapeHtml(p.interest) + '</span>' : '') +
+            '</div>' +
+            '<p class="project-card-meta">' + fmtDate(p.createdAt || p.created_at) + '</p>' +
+            '<div class="project-card-actions">' + actions + '</div>' +
+          '</div>' +
+        '</article>';
+      }
+
+      function emptyState(tab) {
+        const isFav = tab === "favorites";
+        return '<div class="empty-state">' +
+          '<h3>' + (isFav ? "还没有收藏任何方案" : "还没有保存过项目方案") + '</h3>' +
+          '<p>' + (isFav ? "在项目列表中点击收藏，即可在这里查看" : "生成你的第一个项目方案，保存后就会出现在这里") + '</p>' +
+          '<a href="generator.html">去生成方案</a>' +
+        '</div>';
+      }
+
+      function render() {
+        const list = document.getElementById("projectList");
+        const data = currentTab === "projects" ? projectsCache : favoritesCache;
+        if (data.length === 0) {
+          list.innerHTML = emptyState(currentTab);
+          return;
+        }
+        list.innerHTML = data.map(function (p) {
+          return projectCard(p, currentTab === "favorites");
+        }).join("");
+
+        // 绑定删除
+        list.querySelectorAll("[data-del]").forEach(function (btn) {
+          btn.addEventListener("click", async function () {
+            if (!confirm("确定删除这个项目方案吗？")) return;
+            const id = btn.dataset.del;
+            const res = await window.MMAuth.authFetch("/api/projects/" + id, { method: "DELETE" });
+            if (res.ok) {
+              projectsCache = projectsCache.filter(function (p) { return p.id !== id; });
+              render();
+              updateStats();
+            }
+          });
+        });
+      }
+
+      function updateStats() {
+        document.getElementById("dashStats").innerHTML =
+          statCard(projectsCache.length, "项目方案") +
+          statCard(favoritesCache.length, "收藏");
+      }
+
+      function statCard(n, label) {
+        return '<div class="dash-stat"><strong>' + n + '</strong><span>' + label + '</span></div>';
+      }
+
+      function escapeHtml(t) { const d = document.createElement("div"); d.textContent = String(t || ""); return d.innerHTML; }
+      function escapeAttr(t) { return escapeHtml(t).replace(/"/g, "&quot;"); }
+
+      async function load() {
+        const [pRes, fRes] = await Promise.all([
+          window.MMAuth.authFetch("/api/projects"),
+          window.MMAuth.authFetch("/api/favorites")
+        ]);
+        const pData = await pRes.json();
+        const fData = await fRes.json();
+        projectsCache = pData.projects || [];
+        favoritesCache = fData.favorites || [];
+        updateStats();
+        render();
+      }
+
+      load().catch(function () {
+        document.getElementById("projectList").innerHTML = '<div class="empty-state"><h3>加载失败</h3><p>请刷新页面重试</p></div>';
+      });
+    }
+  </script>
+</body>
+</html>

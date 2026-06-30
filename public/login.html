@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 / 注册｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <style>
+    /* 覆盖全局深色主题，登录页使用浅色背景 */
+    body {
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fff5f0 100%) !important;
+    }
+    body::before { display: none !important; }
+    .topbar {
+      background: rgba(255, 255, 255, 0.85) !important;
+      border-color: rgba(0, 0, 0, 0.06) !important;
+      backdrop-filter: blur(12px);
+    }
+    .brand strong { color: #0f172a !important; }
+    .brand small { color: #94a3b8 !important; }
+    .brand-mark { color: #fff !important; }
+    .nav-links a { color: #475569 !important; }
+    .nav-links a:hover { color: #ff6b35 !important; }
+
+    .auth-wrap {
+      min-height: calc(100vh - 120px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 12px 48px rgba(15, 23, 42, .12);
+      padding: 40px 36px;
+      position: relative;
+      z-index: 1;
+    }
+    .auth-card h1 {
+      font-size: 24px;
+      margin: 0 0 4px;
+      text-align: center;
+      color: #0f172a;
+    }
+    .auth-subtitle {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+      margin: 0 0 28px;
+    }
+    .auth-tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      transition: all .2s;
+      border: none;
+      background: transparent;
+    }
+    .auth-tab.active {
+      background: #fff;
+      color: #ff6b35;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+    }
+    .auth-field {
+      margin-bottom: 16px;
+    }
+    .auth-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    .auth-field input,
+    .auth-field select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #0f172a;
+      background: #fff;
+      transition: border-color .2s;
+      box-sizing: border-box;
+    }
+    .auth-field input:focus,
+    .auth-field select:focus {
+      outline: none;
+      border-color: #ff6b35;
+    }
+    .auth-role-group {
+      display: flex;
+      gap: 10px;
+    }
+    .auth-role-group label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .2s;
+      margin: 0;
+      font-size: 14px;
+    }
+    .auth-role-group input { width: auto; }
+    .auth-role-group label:has(input:checked) {
+      border-color: #ff6b35;
+      background: rgba(255, 107, 53, .06);
+      color: #ff6b35;
+    }
+    .auth-submit {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff6b35, #ff8e53);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s;
+      margin-top: 8px;
+    }
+    .auth-submit:hover { opacity: .92; }
+    .auth-submit:disabled { opacity: .5; cursor: not-allowed; }
+    .auth-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .auth-error.show { display: block; }
+    .auth-toggle-hint {
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 20px;
+    }
+    .auth-toggle-hint a {
+      color: #ff6b35;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .register-only { display: none; }
+    .auth-card.is-register .register-only { display: block; }
+    .auth-card.is-register .login-only { display: none; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">MM</span>
+      <span>
+        <strong>MakerMind AI</strong>
+        <small>Project-based lesson studio</small>
+      </span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html">首页</a>
+      <a href="generator.html">任务生成器</a>
+      <a href="gallery.html">任务案例</a>
+      <a href="about.html">关于我们</a>
+    </nav>
+  </header>
+
+  <main class="auth-wrap">
+    <div class="auth-card" id="authCard">
+      <h1 id="authTitle">欢迎回来</h1>
+      <p class="auth-subtitle" id="authSubtitle">登录后即可保存和管理你的项目方案</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-mode="login" id="tabLogin">登录</button>
+        <button class="auth-tab" data-mode="register" id="tabRegister">注册</button>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+
+      <form id="authForm">
+        <div class="auth-field register-only">
+          <label>昵称</label>
+          <input type="text" id="displayName" placeholder="例如：李老师" autocomplete="name" />
+        </div>
+
+        <div class="auth-field">
+          <label>邮箱</label>
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+
+        <div class="auth-field">
+          <label>密码</label>
+          <input type="password" id="password" placeholder="至少 6 位" autocomplete="current-password" />
+        </div>
+
+        <div class="auth-field register-only">
+          <label>角色</label>
+          <div class="auth-role-group">
+            <label><input type="radio" name="role" value="teacher" checked /> 教师</label>
+            <label><input type="radio" name="role" value="student" /> 学生</label>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-submit" id="authSubmit">登录</button>
+      </form>
+
+      <p class="auth-toggle-hint login-only">
+        还没有账号？<a href="#" id="toRegister">立即注册</a>
+      </p>
+      <p class="auth-toggle-hint register-only">
+        已有账号？<a href="#" id="toLogin">返回登录</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    let mode = params.get("mode") === "register" ? "register" : "login";
+    const redirect = params.get("redirect") || "dashboard.html";
+
+    const card = document.getElementById("authCard");
+    const title = document.getElementById("authTitle");
+    const subtitle = document.getElementById("authSubtitle");
+    const submitBtn = document.getElementById("authSubmit");
+    const errorEl = document.getElementById("authError");
+    const tabLogin = document.getElementById("tabLogin");
+    const tabRegister = document.getElementById("tabRegister");
+
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add("show");
+    }
+
+    function clearError() {
+      errorEl.classList.remove("show");
+    }
+
+    function setMode(m) {
+      mode = m;
+      clearError();
+      if (m === "register") {
+        card.classList.add("is-register");
+        title.textContent = "创建账号";
+        subtitle.textContent = "注册后即可保存项目方案到云端";
+        submitBtn.textContent = "注册";
+        tabLogin.classList.remove("active");
+        tabRegister.classList.add("active");
+      } else {
+        card.classList.remove("is-register");
+        title.textContent = "欢迎回来";
+        subtitle.textContent = "登录后即可保存和管理你的项目方案";
+        submitBtn.textContent = "登录";
+        tabLogin.classList.add("active");
+        tabRegister.classList.remove("active");
+      }
+    }
+
+    tabLogin.addEventListener("click", function () { setMode("login"); });
+    tabRegister.addEventListener("click", function () { setMode("register"); });
+    document.getElementById("toRegister").addEventListener("click", function (e) { e.preventDefault(); setMode("register"); });
+    document.getElementById("toLogin").addEventListener("click", function (e) { e.preventDefault(); setMode("login"); });
+
+    // 已登录则直接跳转
+    if (window.MMAuth && window.MMAuth.isLoggedIn()) {
+      location.href = redirect;
+    }
+
+    document.getElementById("authForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearError();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showError("请填写邮箱和密码");
+        return;
+      }
+
+      const payload = { email: email.toLowerCase(), password };
+
+      if (mode === "register") {
+        const displayName = document.getElementById("displayName").value.trim();
+        if (!displayName) {
+          showError("请填写昵称");
+          return;
+        }
+        payload.displayName = displayName;
+        payload.role = document.querySelector('input[name="role"]:checked').value;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = mode === "register" ? "注册中…" : "登录中…";
+
+      try {
+        const endpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.error || "操作失败，请重试");
+          submitBtn.disabled = false;
+          submitBtn.textContent = mode === "register" ? "注册" : "登录";
+          return;
+        }
+
+        window.MMAuth.setAuth(data.token, data.user);
+        location.href = redirect;
+      } catch (err) {
+        showError("网络错误，请检查连接后重试");
+        submitBtn.disabled = false;
+        submitBtn.textContent = mode === "register" ? "注册" : "登录";
+      }
+    });
+
+    setMode(mode);
+  </script>
+</body>
+</html>

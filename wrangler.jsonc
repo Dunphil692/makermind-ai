@@ -6,5 +6,12 @@
   "assets": {
     "directory": "./public",
     "binding": "ASSETS"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "makermind-db",
+      "database_id": "0b334b9b-9406-4e84-b21a-ede2e9d55b47"
+    }
+  ]
 }
