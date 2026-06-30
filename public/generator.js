@@ -332,15 +332,15 @@
 
     /* ===== Image library (mirrors app.js) ===== */
     const imageLibrary = {
-      "reaction-trainer": { images: ["/assets/reaction-trainer.png"], title: "项目效果参考", caption: "互动反应、计时挑战" },
-      "distance-radar": { images: ["/assets/distance-radar.png"], title: "项目效果参考", caption: "距离测量、数据映射" },
-      "rhythm-wall": { images: ["/assets/rhythm-wall.png"], title: "项目效果参考", caption: "音乐节奏、声音互动" },
-      "pet-house": { images: ["/assets/pet-house.png"], title: "项目效果参考", caption: "宠物照护、环境监测" },
-      "pet-feeder": { images: ["/assets/pet-feeder.png"], title: "项目效果参考", caption: "自动投喂、定时控制" },
-      "basketball-scoreboard": { images: ["/assets/basketball-scoreboard.png"], title: "项目效果参考", caption: "运动计分、比赛规则" },
-      "livestream-dashboard": { images: ["/assets/livestream-dashboard.png"], title: "项目效果参考", caption: "直播热度、实时数据" },
-      "milk-tea-console": { images: ["/assets/milk-tea-console.png"], title: "项目效果参考", caption: "配方比例、参数调节" },
-      "character-energy-core": { images: ["/assets/character-energy-core.png"], title: "项目效果参考", caption: "角色成长、能量数值" }
+      "reaction-trainer": { images: ["/assets/reaction-trainer.jpg"], title: "项目效果参考", caption: "互动反应、计时挑战" },
+      "distance-radar": { images: ["/assets/distance-radar.jpg"], title: "项目效果参考", caption: "距离测量、数据映射" },
+      "rhythm-wall": { images: ["/assets/rhythm-wall.jpg"], title: "项目效果参考", caption: "音乐节奏、声音互动" },
+      "pet-house": { images: ["/assets/pet-house.jpg"], title: "项目效果参考", caption: "宠物照护、环境监测" },
+      "pet-feeder": { images: ["/assets/pet-feeder.jpg"], title: "项目效果参考", caption: "自动投喂、定时控制" },
+      "basketball-scoreboard": { images: ["/assets/basketball-scoreboard.jpg"], title: "项目效果参考", caption: "运动计分、比赛规则" },
+      "livestream-dashboard": { images: ["/assets/livestream-dashboard.jpg"], title: "项目效果参考", caption: "直播热度、实时数据" },
+      "milk-tea-console": { images: ["/assets/milk-tea-console.jpg"], title: "项目效果参考", caption: "配方比例、参数调节" },
+      "character-energy-core": { images: ["/assets/character-energy-core.jpg"], title: "项目效果参考", caption: "角色成长、能量数值" }
     };
 
     /* ===== Helpers ===== */
@@ -374,7 +374,7 @@
       const key = instruction.imageKey || "reaction-trainer";
       const lib = imageLibrary[key] || imageLibrary["reaction-trainer"];
       const images = Array.isArray(lib.images) ? lib.images : [];
-      return { image: images[0] || "/assets/reaction-trainer.png", title: lib.title, caption: lib.caption };
+      return { image: images[0] || "/assets/reaction-trainer.jpg", title: lib.title, caption: lib.caption };
     }
 
     /* ===== LocalStorage helpers ===== */

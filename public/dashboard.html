@@ -7,22 +7,6 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
   <style>
-    /* 覆盖全局深色主题，工作台使用浅色背景 */
-    body {
-      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fff5f0 100%) !important;
-    }
-    body::before { display: none !important; }
-    .topbar {
-      background: rgba(255, 255, 255, 0.85) !important;
-      border-color: rgba(0, 0, 0, 0.06) !important;
-      backdrop-filter: blur(12px);
-    }
-    .brand strong { color: #0f172a !important; }
-    .brand small { color: #94a3b8 !important; }
-    .brand-mark { color: #fff !important; }
-    .nav-links a { color: #475569 !important; }
-    .nav-links a:hover { color: #ff6b35 !important; }
-
     .dashboard-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
     .dash-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
     .dash-greeting h1 { font-size: 28px; margin: 0 0 4px; color: #0f172a; }
@@ -125,7 +109,7 @@
       });
 
       function imageUrl(imageKey) {
-        if (!imageKey) return "/assets/reaction-trainer.png";
+        if (!imageKey) return "/assets/reaction-trainer.jpg";
         return "/assets/" + imageKey + ".png";
       }
 
@@ -143,7 +127,7 @@
             '<button class="pc-btn danger" data-del="' + p.id + '">删除</button>';
         return '<article class="project-card">' +
           '<div class="card-thumb-wrap">' +
-            '<img class="project-card-img" src="' + imageUrl(img) + '" alt="' + escapeAttr(p.title) + '" onerror="this.src=\'/assets/reaction-trainer.png\'" />' +
+            '<img class="project-card-img" src="' + imageUrl(img) + '" alt="' + escapeAttr(p.title) + '" onerror="this.src=\'/assets/reaction-trainer.jpg\'" />' +
             (isFav ? '<span class="fav-badge">★ 收藏</span>' : '') +
           '</div>' +
           '<div class="project-card-body">' +

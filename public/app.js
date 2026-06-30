@@ -19,7 +19,7 @@ const imageLibrary = {
       "/assets/reference/reaction-trainer-02.png",
       "/assets/reference/reaction-trainer-03.png",
       "/assets/reference/reaction-trainer-04.png",
-      "/assets/reaction-trainer.png"
+      "/assets/reaction-trainer.jpg"
     ],
     title: "项目效果参考",
     caption: "互动反应、计时挑战、按钮反馈和游戏得分"
@@ -30,7 +30,7 @@ const imageLibrary = {
       "/assets/reference/distance-radar-02.png",
       "/assets/reference/distance-radar-03.png",
       "/assets/reference/distance-radar-04.png",
-      "/assets/distance-radar.png"
+      "/assets/distance-radar.jpg"
     ],
     title: "项目效果参考",
     caption: "距离测量、数据映射、传感器反馈和角度变化"
@@ -41,7 +41,7 @@ const imageLibrary = {
       "/assets/reference/rhythm-wall-02.png",
       "/assets/reference/rhythm-wall-03.png",
       "/assets/reference/rhythm-wall-04.png",
-      "/assets/rhythm-wall.png"
+      "/assets/rhythm-wall.jpg"
     ],
     title: "项目效果参考",
     caption: "音乐节奏、声音互动、灯光变化和速度挑战"
@@ -51,7 +51,7 @@ const imageLibrary = {
       "/assets/reference/pet-house-01.png",
       "/assets/reference/pet-house-02.png",
       "/assets/reference/pet-house-03.png",
-      "/assets/pet-house.png"
+      "/assets/pet-house.jpg"
     ],
     title: "项目效果参考",
     caption: "宠物照护、环境监测、温湿度反馈和生活场景"
@@ -61,7 +61,7 @@ const imageLibrary = {
       "/assets/reference/pet-feeder-01.png",
       "/assets/reference/pet-feeder-02.png",
       "/assets/reference/pet-feeder-03.png",
-      "/assets/pet-feeder.png"
+      "/assets/pet-feeder.jpg"
     ],
     title: "项目效果参考",
     caption: "自动投喂、定时控制、余量检测和小管家系统"
@@ -71,7 +71,7 @@ const imageLibrary = {
       "/assets/reference/basketball-scoreboard-01.png",
       "/assets/reference/basketball-scoreboard-02.png",
       "/assets/reference/basketball-scoreboard-03.png",
-      "/assets/basketball-scoreboard.png"
+      "/assets/basketball-scoreboard.jpg"
     ],
     title: "项目效果参考",
     caption: "运动计分、比赛规则、倒计时和数据统计"
@@ -81,7 +81,7 @@ const imageLibrary = {
       "/assets/reference/livestream-dashboard-01.png",
       "/assets/reference/livestream-dashboard-02.png",
       "/assets/reference/livestream-dashboard-03.png",
-      "/assets/livestream-dashboard.png"
+      "/assets/livestream-dashboard.jpg"
     ],
     title: "项目效果参考",
     caption: "直播热度、实时数据、趋势变化和可视化看板"
@@ -91,7 +91,7 @@ const imageLibrary = {
       "/assets/reference/milk-tea-console-01.png",
       "/assets/reference/milk-tea-console-02.png",
       "/assets/reference/milk-tea-console-03.png",
-      "/assets/milk-tea-console.png"
+      "/assets/milk-tea-console.jpg"
     ],
     title: "项目效果参考",
     caption: "配方比例、参数调节、旋钮输入和比例变化"
@@ -101,7 +101,7 @@ const imageLibrary = {
       "/assets/reference/character-energy-core-01.png",
       "/assets/reference/character-energy-core-02.png",
       "/assets/reference/character-energy-core-03.png",
-      "/assets/character-energy-core.png"
+      "/assets/character-energy-core.jpg"
     ],
     title: "项目效果参考",
     caption: "角色成长、能量数值、等级变化和灯光反馈"
@@ -304,7 +304,7 @@ function getImageInfo(instruction) {
   const libraryItem = imageLibrary[key] || imageLibrary["reaction-trainer"];
   const images = Array.isArray(libraryItem.images) ? libraryItem.images : [];
   const index = getStableImageIndex(instruction, images.length);
-  const selectedImage = images[index] || "/assets/reaction-trainer.png";
+  const selectedImage = images[index] || "/assets/reaction-trainer.jpg";
 
   return {
     image: selectedImage,
