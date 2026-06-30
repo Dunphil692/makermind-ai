@@ -3,6 +3,40 @@
 
 import { json } from "./utils.js";
 
+export async function handleDialogueTaskBrief(request, env) {
+  const startedAt = Date.now();
+
+  try {
+    checkEnv(env);
+
+    const body = await request.json();
+    const messages = normalizeDialogueMessages(body.messages);
+    const previousBrief = normalizeDialogueBrief(body.brief || {}, {});
+    const prompt = buildDialogueBriefPrompt(messages, previousBrief);
+    const parsed = await generateParsedPartWithRetry(env, prompt, "dialogue");
+    const normalizedBrief = normalizeDialogueBrief(parsed.brief || parsed.taskBrief || parsed, previousBrief);
+    const reply = cleanString(
+      parsed.reply || parsed.assistantReply || "我已经更新了课堂需求信息。你可以继续补充，或在信息完整后点击生成。",
+      "我已经更新了课堂需求信息。你可以继续补充，或在信息完整后点击生成。"
+    );
+
+    return json({
+      reply,
+      brief: normalizedBrief,
+      elapsedMs: Date.now() - startedAt
+    });
+  } catch (error) {
+    return json(
+      {
+        error: "AI dialogue brief extraction failed",
+        detail: error.message,
+        elapsedMs: Date.now() - startedAt
+      },
+      500
+    );
+  }
+}
+
 export async function handleGenerateInstructionPart(request, env) {
   const startedAt = Date.now();
 
@@ -117,6 +151,70 @@ function buildPartPrompt(input, part) {
   }
 
   return buildPracticePrompt(input);
+}
+
+function normalizeDialogueMessages(value) {
+  const list = Array.isArray(value) ? value : [];
+
+  return list
+    .slice(-12)
+    .map(item => ({
+      role: item?.role === "user" ? "user" : "assistant",
+      content: cleanString(item?.content, "").slice(0, 900)
+    }))
+    .filter(item => item.content);
+}
+
+function buildDialogueBriefPrompt(messages, brief) {
+  const transcript = messages.length
+    ? messages.map(item => `${item.role === "user" ? "老师" : "AI"}：${item.content}`).join("\n")
+    : "老师还没有输入。";
+
+  return `
+你是 MakerMind AI 的课堂项目生成前置对话助手。
+
+你的任务不是生成完整项目方案，而是通过像备课聊天一样的方式，提取并更新一个结构化任务简报。
+
+必须了解的三项核心信息：
+1. studentInterest：学生感兴趣的事情、主题、游戏、生活场景或作品方向。
+2. hardwareKit：老师希望使用的硬件、材料或套件，例如 UNIHIKER K10、Arduino / ESP32、micro:bit、纸电路、纸板 + 电子模块。
+3. knowledgeGoal：老师希望学生学到的具体知识点，例如一次函数、温度变化、条件判断、声音与振动、数据统计。
+
+上一轮任务简报：
+${JSON.stringify(brief)}
+
+当前对话：
+${transcript}
+
+对话策略：
+- 以后出现的老师修正优先，例如“改成纸电路”必须覆盖旧硬件。
+- 如果三项核心信息都已经明确，reply 要确认将如何生成，并提示可以点击生成或继续补充。
+- 如果仍缺信息，reply 最多追问 1-2 个问题，优先问缺失的核心字段。
+- 可以根据知识点推断 subject，例如一次函数属于数学，声音与振动属于科学。
+- 如果没有学生状态，level 默认“需要项目带着学”。
+- 如果没有课堂时长，duration 默认“60 分钟项目课”。
+- 不要生成完整项目步骤、代码、材料清单或训练题。
+
+必须只返回严格 JSON，不要 Markdown，不要代码块，不要在 JSON 外写任何文字。
+JSON 结构必须是：
+{
+  "reply": "给老师的下一句回复",
+  "brief": {
+    "studentInterest": "",
+    "hardwareKit": "",
+    "knowledgeGoal": "",
+    "subject": "",
+    "level": "",
+    "duration": "",
+    "confidence": {
+      "studentInterest": 0,
+      "hardwareKit": 0,
+      "knowledgeGoal": 0
+    },
+    "missingFields": [],
+    "readyToGenerate": false
+  }
+}`;
 }
 
 function baseDesignRules(input) {
@@ -498,6 +596,7 @@ async function callTextModel(env, prompt, part) {
   const timeout = setTimeout(() => controller.abort(), 120000);
 
   const tokenByPart = {
+    dialogue: 1600,
     overview: 3600,
     build: 5000,
     practice: 4200
@@ -671,6 +770,49 @@ function escapeControlCharactersInJsonStrings(text) {
   return result;
 }
 
+
+function normalizeDialogueBrief(data, previousBrief = {}) {
+  const fallback = previousBrief || {};
+  const confidenceInput = data?.confidence && typeof data.confidence === "object" ? data.confidence : {};
+  const studentInterest = cleanString(data?.studentInterest, fallback.studentInterest || "");
+  const hardwareKit = cleanString(data?.hardwareKit, fallback.hardwareKit || "");
+  const knowledgeGoal = cleanString(data?.knowledgeGoal, fallback.knowledgeGoal || "");
+  const missingFields = [];
+
+  if (!studentInterest) missingFields.push("studentInterest");
+  if (!hardwareKit) missingFields.push("hardwareKit");
+  if (!knowledgeGoal) missingFields.push("knowledgeGoal");
+
+  return {
+    studentInterest,
+    hardwareKit,
+    knowledgeGoal,
+    subject: cleanString(data?.subject, fallback.subject || inferSubjectFromConcept(knowledgeGoal)),
+    level: cleanString(data?.level, fallback.level || "需要项目带着学"),
+    duration: cleanString(data?.duration, fallback.duration || "60 分钟项目课"),
+    confidence: {
+      studentInterest: clampConfidence(confidenceInput.studentInterest, studentInterest ? 0.82 : 0),
+      hardwareKit: clampConfidence(confidenceInput.hardwareKit, hardwareKit ? 0.82 : 0),
+      knowledgeGoal: clampConfidence(confidenceInput.knowledgeGoal, knowledgeGoal ? 0.82 : 0)
+    },
+    missingFields,
+    readyToGenerate: missingFields.length === 0
+  };
+}
+
+function clampConfidence(value, fallback) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return Math.max(0, Math.min(1, number));
+}
+
+function inferSubjectFromConcept(concept) {
+  const text = String(concept || "");
+  if (/函数|方程|比例|分数|面积|周长|角度|几何|统计|概率|勾股/.test(text)) return "数学";
+  if (/电路|力|速度|路程|声|光|温度|热|振动/.test(text)) return "科学";
+  if (/编程|算法|数据|条件判断|传感器/.test(text)) return "信息技术";
+  return "综合实践";
+}
 
 function normalizePartData(part, data, input) {
   if (part === "overview") {
