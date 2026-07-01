@@ -175,7 +175,8 @@ export async function handleRegister(request, env) {
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
     const displayName = String(body.displayName || "").trim();
-    const role = body.role === "student" ? "student" : "teacher";
+    const allowedRoles = new Set(["teacher", "student", "parent"]);
+    const role = allowedRoles.has(body.role) ? body.role : "teacher";
 
     if (!isValidEmail(email)) {
       return json({ error: "邮箱格式不正确" }, 400);

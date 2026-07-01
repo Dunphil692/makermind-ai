@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>家长端｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Parent view</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="dashboard.html">工作台</a></nav>
+  </header>
+
+  <main class="dashboard-wrap">
+    <div class="dash-header">
+      <div class="dash-greeting"><h1>家长端</h1><p>查看孩子的项目进度、课堂记录、教师反馈与作品</p></div>
+    </div>
+    <div class="dash-stats" id="stats"></div>
+    <section class="project-grid" id="children"><div class="loading-spin">加载中…</div></section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    if (window.MMAuth.requireAuth("parent.html")) {
+      const user = window.MMAuth.getCurrentUser();
+      if (user.role !== "parent") location.href = user.role === "teacher" ? "teacher.html" : "student.html";
+      const list = document.getElementById("children");
+      const stats = document.getElementById("stats");
+      function esc(t){const d=document.createElement("div");d.textContent=String(t||"");return d.innerHTML;}
+      function progressBar(n){return '<div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.max(0,Math.min(100,n||0))+'%;background:linear-gradient(135deg,#16a34a,#22c55e)"></span></div>';}
+      async function loadChild(s){
+        const [pRes,seRes,fRes,wRes]=await Promise.all([
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/progress'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/sessions'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/feedbacks'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/works')
+        ]);
+        const p=await pRes.json(), se=await seRes.json(), f=await fRes.json(), w=await wRes.json();
+        return Object.assign({},s,{progress:p.progress||[],summary:p.summary||{},sessions:se.sessions||[],feedbacks:f.feedbacks||[],works:w.works||[]});
+      }
+      function card(s){
+        const current=s.progress[0];
+        const pct=current?current.progressPercent:0;
+        const latestSession=s.sessions[0];
+        const latestFeedback=s.feedbacks[0];
+        return '<article class="project-card"><div class="project-card-body">'+
+          '<h3 class="project-card-title">'+esc(s.name)+'</h3>'+
+          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(s.interestDirection||'暂无兴趣画像')+'</span></div>'+
+          '<p class="project-card-meta">当前项目：'+esc(current?current.title:'暂无项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'%</p>'+
+          '<p class="project-card-meta"><strong>最近课堂：</strong>'+esc(latestSession?latestSession.structuredSummary:'暂无课堂记录')+'</p>'+
+          '<p class="project-card-meta"><strong>教师反馈：</strong>'+esc(latestFeedback?latestFeedback.content:'暂无反馈')+'</p>'+
+          '<p class="project-card-meta"><strong>作品：</strong>'+esc(s.works.length?s.works.map(w=>w.workName||'未命名作品').join('、'):'暂无作品')+'</p>'+
+          '</div></article>';
+      }
+      async function load(){
+        const res=await window.MMAuth.authFetch('/api/students');
+        const data=await res.json();
+        const children=await Promise.all((data.students||[]).map(loadChild));
+        stats.innerHTML='<div class="dash-stat"><strong>'+children.length+'</strong><span>孩子</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.sessions.length,0)+'</strong><span>课堂记录</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.works.length,0)+'</strong><span>作品</span></div>';
+        list.innerHTML=children.length?children.map(card).join(''):'<div class="empty-state"><h3>暂无孩子档案</h3><p>请联系老师绑定家长账号</p></div>';
+      }
+      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
+    }
+  </script>
+</body>
+</html>

@@ -94,10 +94,13 @@
     area.className = "nav-auth-area";
 
     if (user) {
+      const roleHome = user.role === "teacher" ? "teacher.html" : user.role === "parent" ? "parent.html" : user.role === "student" ? "student.html" : "dashboard.html";
+      const roleLabel = user.role === "teacher" ? "教师端" : user.role === "parent" ? "家长端" : user.role === "student" ? "学生端" : "工作台";
       area.innerHTML =
-        '<a href="dashboard.html" class="nav-user-link">👤 ' +
-        escapeHtml(user.displayName || "我") +
+        '<a href="' + roleHome + '" class="nav-user-link">👤 ' +
+        escapeHtml(user.displayName || roleLabel || "我") +
         "</a>" +
+        '<a href="' + roleHome + '" class="nav-user-link">' + roleLabel + '</a>' +
         '<a href="#" class="nav-logout-link" id="mmNavLogout">退出</a>';
       nav.appendChild(area);
       const btn = area.querySelector("#mmNavLogout");

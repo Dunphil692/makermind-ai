@@ -201,7 +201,7 @@ export async function handleDeleteProject(request, env, id) {
   await env.DB.prepare("DELETE FROM projects WHERE id = ?").bind(id).run();
   // 级联清理收藏与进度
   await env.DB.prepare("DELETE FROM favorites WHERE project_id = ?").bind(id).run();
-  await env.DB.prepare("DELETE FROM student_progress WHERE project_id = ?").bind(id).run();
+  await env.DB.prepare("DELETE FROM student_projects WHERE project_id = ?").bind(id).run();
 
   return json({ ok: true, id });
 }

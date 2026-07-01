@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>学生端｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Student workspace</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="dashboard.html">工作台</a></nav>
+  </header>
+
+  <main class="dashboard-wrap">
+    <div class="dash-header">
+      <div class="dash-greeting"><h1>学生端</h1><p>查看项目任务、提交作品、阅读教师反馈</p></div>
+    </div>
+    <div class="dash-stats" id="stats"></div>
+    <section class="project-grid" id="tasks"><div class="loading-spin">加载中…</div></section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    if (window.MMAuth.requireAuth("student.html")) {
+      const user = window.MMAuth.getCurrentUser();
+      if (user.role !== "student") location.href = user.role === "teacher" ? "teacher.html" : "parent.html";
+      const list=document.getElementById('tasks');
+      const stats=document.getElementById('stats');
+      let currentStudent=null;
+      function esc(t){const d=document.createElement('div');d.textContent=String(t||'');return d.innerHTML;}
+      function progressBar(n){return '<div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.max(0,Math.min(100,n||0))+'%;background:linear-gradient(135deg,#2563eb,#38bdf8)"></span></div>';}
+      async function submitWork(studentId){
+        const name=prompt('请输入作品名称');
+        if(!name) return;
+        const url=prompt('作品链接或文件路径（可选）')||'';
+        const res=await window.MMAuth.authFetch('/api/students/'+studentId+'/works',{method:'POST',body:JSON.stringify({workName:name,workType:'project',sourceType:url?'url':'manual',sourceUrl:url,status:'submitted'})});
+        if(!res.ok) alert('提交失败'); else load();
+      }
+      function card(p, feedbacks){
+        return '<article class="project-card"><div class="project-card-body">'+
+          '<h3 class="project-card-title">'+esc(p.title||'未命名项目')+'</h3>'+
+          '<div class="project-card-tags"><span class="project-tag">'+esc(p.subject||'项目')+'</span><span class="project-tag concept">'+esc(p.concept||'任务')+'</span></div>'+
+          progressBar(p.progressPercent)+'<p class="project-card-meta">进度 '+(p.progressPercent||0)+'% · 状态 '+esc(p.status)+'</p>'+
+          '<p class="project-card-meta"><strong>教师反馈：</strong>'+esc(feedbacks[0]?feedbacks[0].content:'暂无反馈')+'</p>'+
+          '<div class="project-card-actions"><a class="pc-btn" href="generator.html?project='+encodeURIComponent(p.projectId)+'">查看任务</a><button class="pc-btn primary" data-work="'+esc(currentStudent.studentId)+'">提交作品</button></div>'+
+          '</div></article>';
+      }
+      async function load(){
+        const sRes=await window.MMAuth.authFetch('/api/students');
+        const sData=await sRes.json();
+        currentStudent=(sData.students||[])[0];
+        if(!currentStudent){list.innerHTML='<div class="empty-state"><h3>暂无学生档案</h3><p>请联系老师绑定学生账号</p></div>';return;}
+        const [pRes,fRes,wRes]=await Promise.all([
+          window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/projects'),
+          window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/feedbacks'),
+          window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/works')
+        ]);
+        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json();
+        const projects=p.projects||[], feedbacks=f.feedbacks||[], works=w.works||[];
+        stats.innerHTML='<div class="dash-stat"><strong>'+projects.length+'</strong><span>任务</span></div><div class="dash-stat"><strong>'+works.length+'</strong><span>作品</span></div><div class="dash-stat"><strong>'+feedbacks.length+'</strong><span>反馈</span></div>';
+        list.innerHTML=projects.length?projects.map(x=>card(x,feedbacks)).join(''):'<div class="empty-state"><h3>暂无项目任务</h3><p>老师布置项目后会出现在这里</p></div>';
+        list.querySelectorAll('[data-work]').forEach(b=>b.onclick=()=>submitWork(b.dataset.work));
+      }
+      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
+    }
+  </script>
+</body>
+</html>

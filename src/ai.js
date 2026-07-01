@@ -2,17 +2,24 @@
 // 依赖 env.AI_API_KEY / env.AI_BASE_URL / env.AI_MODEL
 
 import { json } from "./utils.js";
+import { requireUser, requireRole, assertStudentAccess } from "./rbac.js";
 
 export async function handleDialogueTaskBrief(request, env) {
   const startedAt = Date.now();
 
   try {
-    checkEnv(env);
-
     const body = await request.json();
+    const mockMode = env.AI_MOCK === "1";
+    const profileResult = await loadAuthorizedStudentProfile(request, env, body.studentId || body.student_id || "");
+    if (profileResult.response) return profileResult.response;
+    if (mockMode) {
+      return json({ reply: "我已结合学生画像整理好需求，可以继续生成个性化方案。", brief: normalizeDialogueBrief(body.brief || {}, {}), elapsedMs: Date.now() - startedAt });
+    }
+
+    checkEnv(env);
     const messages = normalizeDialogueMessages(body.messages);
     const previousBrief = normalizeDialogueBrief(body.brief || {}, {});
-    const prompt = buildDialogueBriefPrompt(messages, previousBrief);
+    const prompt = buildDialogueBriefPrompt(messages, previousBrief, profileResult.profile);
     const parsed = await generateParsedPartWithRetry(env, prompt, "dialogue");
     const normalizedBrief = normalizeDialogueBrief(parsed.brief || parsed.taskBrief || parsed, previousBrief);
     const reply = cleanString(
@@ -37,13 +44,41 @@ export async function handleDialogueTaskBrief(request, env) {
   }
 }
 
+export async function handleStructureSession(request, env) {
+  const startedAt = Date.now();
+
+  try {
+    const auth = await requireUser(request, env);
+    if (auth.response) return auth.response;
+    const roleError = requireRole(auth.user, ["teacher"]);
+    if (roleError) return roleError;
+
+    const body = await request.json();
+    const transcript = cleanString(body.rawTranscript || body.raw_transcript || "", "").slice(0, 6000);
+    if (!transcript) return json({ error: "缺少课堂转写文本" }, 400);
+
+    const mockMode = env.AI_MOCK === "1";
+    if (!mockMode) checkEnv(env);
+    const profile = await loadStudentProfile(env, body.studentId || body.student_id || "");
+    const prompt = buildStructureSessionPrompt(transcript, profile);
+    const parsed = mockMode ? mockStructuredSession(transcript) : await generateParsedPartWithRetry(env, prompt, "session");
+    const structured = normalizeStructuredSession(parsed);
+
+    return json({ structured, elapsedMs: Date.now() - startedAt });
+  } catch (error) {
+    return json({ error: "AI session structuring failed", detail: error.message, elapsedMs: Date.now() - startedAt }, 500);
+  }
+}
+
 export async function handleGenerateInstructionPart(request, env) {
   const startedAt = Date.now();
 
   try {
-    checkEnv(env);
-
     const body = await request.json();
+    const mockMode = env.AI_MOCK === "1";
+    const profileResult = await loadAuthorizedStudentProfile(request, env, body.studentId || body.student_id || "");
+    if (!mockMode) checkEnv(env);
+    if (profileResult.response) return profileResult.response;
 
     const input = {
       concept: body.concept || "一次函数",
@@ -58,8 +93,8 @@ export async function handleGenerateInstructionPart(request, env) {
     };
 
     const part = normalizePartName(body.part || body.section || "overview");
-    const prompt = buildPartPrompt(input, part);
-    const parsed = await generateParsedPartWithRetry(env, prompt, part);
+    const prompt = buildPartPrompt(input, part, profileResult.profile);
+    const parsed = mockMode ? mockInstructionPart(part, input, profileResult.profile) : await generateParsedPartWithRetry(env, prompt, part);
 
     const partData = parsed[part] || parsed.data || parsed;
 
@@ -141,16 +176,17 @@ function checkEnv(env) {
   }
 }
 
-function buildPartPrompt(input, part) {
+function buildPartPrompt(input, part, profile = null) {
+  const personalizedInput = { ...input, studentProfileBlock: formatStudentProfileForPrompt(profile) };
   if (part === "overview") {
-    return buildOverviewPrompt(input);
+    return buildOverviewPrompt(personalizedInput);
   }
 
   if (part === "build") {
-    return buildBuildPrompt(input);
+    return buildBuildPrompt(personalizedInput);
   }
 
-  return buildPracticePrompt(input);
+  return buildPracticePrompt(personalizedInput);
 }
 
 function normalizeDialogueMessages(value) {
@@ -165,7 +201,7 @@ function normalizeDialogueMessages(value) {
     .filter(item => item.content);
 }
 
-function buildDialogueBriefPrompt(messages, brief) {
+function buildDialogueBriefPrompt(messages, brief, profile = null) {
   const transcript = messages.length
     ? messages.map(item => `${item.role === "user" ? "老师" : "AI"}：${item.content}`).join("\n")
     : "老师还没有输入。";
@@ -182,6 +218,9 @@ function buildDialogueBriefPrompt(messages, brief) {
 
 上一轮任务简报：
 ${JSON.stringify(brief)}
+
+学生画像（如果有，请用于推断更合适的兴趣场景、难度和追问方式，但不要编造完整项目）：
+${formatStudentProfileForPrompt(profile)}
 
 当前对话：
 ${transcript}
@@ -236,6 +275,16 @@ function baseDesignRules(input) {
 - 可用套件：${input.kit}
 - 课堂时长：${input.duration}
 - 可用材料：${input.materials}
+
+学生画像（如为空则按普通班级项目生成）：
+${input.studentProfileBlock || "无指定学生画像"}
+
+个性化要求：
+- 如果画像显示基础弱，要降低代码复杂度，增加图形化、动作化和即时反馈。
+- 如果画像显示能力强，要增加变式挑战、参数调优和开放探索。
+- 场景选择优先贴合兴趣方向与近期课堂中的投入点。
+- 如果性格特点显示耐心不足或容易放弃，步骤要更短，反馈更即时。
+- 避免把画像当作永久标签，用“本次更适合”来设计。
 
 核心设计理念：
 1. 让知识"活"起来，而不是"展示"知识。
@@ -554,6 +603,157 @@ answer 可以是参考答案、判断标准或示例答案。
 `;
 }
 
+function mockInstructionPart(part, input, profile) {
+  const profileHint = profile?.student?.interest_direction || input.interest;
+  if (part === "overview") {
+    return { overview: { projectName: `${input.concept}个性化挑战`, subtitle: `结合${profileHint || input.interest}理解${input.concept}`, imageKey: "reaction-trainer", meta: { studentLevel: input.level, knowledgePoint: input.concept, subject: input.subject, interest: input.interest, hardware: input.kit, timeRequired: input.duration, projectType: "STEAM 个性化项目" }, overview: { coreGoal: `让学生通过${input.interest}场景理解${input.concept}`, projectIntro: "根据学生画像调整任务难度和反馈节奏。", whyFun: "贴合学生兴趣，有即时反馈。", learningReasons: ["结合学生兴趣", "根据近期表现调整难度", "用动手任务理解知识", "通过反馈保持投入"] }, interactionFlow: { trigger: "学生动作或传感器输入", calculation: `围绕${input.concept}进行判断`, feedback: ["屏幕反馈", "灯光提示", "声音鼓励"], level: "Level 3 感知驱动", levelReason: "输入、计算、反馈形成闭环" }, materials: [{ name: input.kit, quantity: "1 套", usage: "完成互动项目", note: "按学生能力降低或提高复杂度" }] } };
+  }
+  if (part === "build") {
+    return { build: { steps: [{ title: "理解任务", duration: "8 分钟", content: "先用学生熟悉的场景解释知识点。", tips: "多提问", warning: "先做基础版" }, { title: "搭建原型", duration: "12 分钟", content: "完成一个输入和一个反馈。", tips: "及时鼓励", warning: "避免功能过多" }, { title: "测试优化", duration: "15 分钟", content: "让学生根据反馈调整参数。", tips: "记录变化", warning: "保留成功版本" }], knowledgeExplanation: { coreConcept: input.concept, keyFormula: "根据知识点选择公式或规则", inProject: "项目反馈体现知识点变化", deepUnderstanding: "让学生解释输入、规则、输出", commonMisunderstanding: "不要只关注效果，忽略规则" }, starterCodeCppLines: ["void setup() {}", "void loop() {", "  // read input and show feedback", "}"], starterCodePythonLines: ["while True:", "  x = read_sensor()", "  show_feedback(x)"] } };
+  }
+  return { practice: { masteryTraining: { basicPractice: { task: "解释输入和输出的关系", hint: "看反馈变化", answer: "能说出规则即可" }, variationChallenge: { task: "改变一个参数", hint: "观察结果", answer: "结果会随参数变化" }, reverseThinking: { task: "根据目标反推输入", hint: "倒着想", answer: "给出合理输入范围" }, comprehensiveApplication: { task: "迁移到生活场景", hint: "找类似系统", answer: "说明输入、处理、输出" }, transferQuestion: { task: "设计下一版", hint: "结合兴趣", answer: "提出一个可实现拓展" } }, extensions: ["增加关卡", "记录数据", "加入合作任务", "做展示海报"], faq: [{ question: "太难怎么办？", answer: "先保留一个输入和一个反馈。" }, { question: "太简单怎么办？", answer: "增加参数变化挑战。" }] } };
+}
+
+async function loadAuthorizedStudentProfile(request, env, studentId) {
+  if (!studentId) return { profile: null, response: null };
+  const auth = await requireUser(request, env);
+  if (auth.response) return { profile: null, response: auth.response };
+  if (auth.user.role !== "teacher") return { profile: null, response: json({ error: "只有教师可以基于学生画像生成项目" }, 403) };
+  const access = await assertStudentAccess(env, auth.user, studentId);
+  if (access.response) return { profile: null, response: access.response };
+  return { profile: await loadStudentProfile(env, studentId), response: null };
+}
+
+function formatStudentProfileForPrompt(profile) {
+  if (!profile?.student) return "无指定学生画像";
+  const student = profile.student;
+  const recent = (profile.recentSessions || []).map(item => ({
+    summary: item.structured_summary,
+    skills: item.skills_demonstrated,
+    score: item.understanding_score,
+    date: item.session_date
+  }));
+  return JSON.stringify({
+    name: student.name,
+    skillLevel: student.skill_level,
+    interestDirection: student.interest_direction,
+    personalityTraits: student.personality_traits,
+    learningStyle: student.learning_style,
+    learningGoal: student.learning_goal,
+    recentSessions: recent
+  }, null, 2);
+}
+
+async function loadStudentProfile(env, studentId) {
+  if (!studentId) return null;
+  const student = await env.DB.prepare(
+    `SELECT student_id, name, skill_level, interest_direction, personality_traits, learning_style, learning_goal
+     FROM students WHERE student_id = ?`
+  )
+    .bind(studentId)
+    .first();
+  if (!student) return null;
+
+  const { results } = await env.DB.prepare(
+    `SELECT structured_summary, skills_demonstrated, understanding_score, session_date
+     FROM sessions se
+     JOIN student_projects sp ON se.student_project_id = sp.id
+     WHERE sp.student_id = ?
+     ORDER BY se.session_date DESC
+     LIMIT 3`
+  )
+    .bind(studentId)
+    .all();
+
+  return { student, recentSessions: results || [] };
+}
+
+function buildStructureSessionPrompt(transcript, profile) {
+  const student = profile?.student || {};
+  const recent = (profile?.recentSessions || []).map(item => ({
+    summary: item.structured_summary,
+    skills: item.skills_demonstrated,
+    score: item.understanding_score,
+    date: item.session_date
+  }));
+
+  return `
+你是 MakerMind AI 的课堂记录结构化助手。
+
+请把老师的课堂语音转写，整理成可保存到 sessions 表的结构化 JSON，并提取可用于更新学生画像的信号。
+
+学生画像：
+${JSON.stringify({
+  name: student.name || "未指定",
+  skillLevel: student.skill_level || "",
+  interestDirection: student.interest_direction || "",
+  personalityTraits: student.personality_traits || "",
+  learningStyle: student.learning_style || "",
+  learningGoal: student.learning_goal || "",
+  recentSessions: recent
+})}
+
+课堂转写：
+${transcript}
+
+判断规则：
+- progressDelta 是本节课对当前项目进度的增量，范围 0 到 30；没有明显进展时给 0-5。
+- understandingScore 是 1 到 5 的整数，5 表示理解很好。
+- personalityTraits 和 interestSignals 只提取本节课真实体现出的观察，不要永久贴标签。
+- suggestedNextProject 要具体，能作为下一次项目生成的起点。
+
+必须只返回严格 JSON，不要 Markdown，不要代码块：
+{
+  "structuredSummary": "本节课学了...",
+  "topicsCovered": ["主题1"],
+  "skillsDemonstrated": ["技能1"],
+  "progressDelta": 15,
+  "understandingScore": 4,
+  "teacherNotes": "建议下节课...",
+  "personalityTraits": ["耐心"],
+  "interestSignals": ["对游戏化项目特别投入"],
+  "learningStyle": "更适合动手试错 + 即时反馈",
+  "suggestedNextProject": "建议下次做..."
+}`;
+}
+
+function mockStructuredSession(transcript) {
+  return {
+    structuredSummary: `本节课围绕${transcript.slice(0, 40)}进行了学习与实践。`,
+    topicsCovered: ["课堂实践", "项目调试"],
+    skillsDemonstrated: ["表达能力", "动手实践"],
+    progressDelta: 15,
+    understandingScore: 4,
+    teacherNotes: "下节课可继续强化学生对关键概念的解释。",
+    personalityTraits: ["愿意尝试", "主动表达"],
+    interestSignals: ["对互动项目投入"],
+    learningStyle: "适合动手试错和即时反馈",
+    suggestedNextProject: "基于本节课兴趣继续做一个带挑战关卡的互动装置"
+  };
+}
+
+function normalizeStructuredSession(data) {
+  const progressDelta = Math.max(0, Math.min(30, Number.parseInt(data.progressDelta ?? data.progress_delta ?? 0, 10) || 0));
+  const understandingScore = Math.max(1, Math.min(5, Number.parseInt(data.understandingScore ?? data.understanding_score ?? 3, 10) || 3));
+  return {
+    structuredSummary: cleanString(data.structuredSummary || data.structured_summary, "本节课完成了课堂学习记录。"),
+    topicsCovered: normalizeSessionArray(data.topicsCovered || data.topics_covered),
+    skillsDemonstrated: normalizeSessionArray(data.skillsDemonstrated || data.skills_demonstrated),
+    progressDelta,
+    understandingScore,
+    teacherNotes: cleanString(data.teacherNotes || data.teacher_notes, ""),
+    personalityTraits: normalizeSessionArray(data.personalityTraits || data.personality_traits),
+    interestSignals: normalizeSessionArray(data.interestSignals || data.interest_signals),
+    learningStyle: cleanString(data.learningStyle || data.learning_style, ""),
+    suggestedNextProject: cleanString(data.suggestedNextProject || data.suggested_next_project, "")
+  };
+}
+
+function normalizeSessionArray(value) {
+  const arr = Array.isArray(value) ? value : value ? [value] : [];
+  return arr.map(item => cleanString(item, "")).filter(Boolean).slice(0, 8);
+}
+
 function systemPrompt() {
   return `你是 MakerMind AI 的 STEAM 教育项目设计专家。
 
@@ -597,6 +797,7 @@ async function callTextModel(env, prompt, part) {
 
   const tokenByPart = {
     dialogue: 1600,
+    session: 2200,
     overview: 3600,
     build: 5000,
     practice: 4200

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>教师端｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Teacher workspace</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="generator.html">任务生成器</a><a href="dashboard.html">工作台</a></nav>
+  </header>
+
+  <main class="dashboard-wrap">
+    <div class="dash-header">
+      <div class="dash-greeting"><h1>教师端</h1><p>查看学员进度，录入反馈、课程记录和作品</p></div>
+      <a class="dash-new-btn" href="generator.html">+ 生成新方案</a>
+    </div>
+    <div class="dash-stats" id="stats"></div>
+    <section class="project-grid" id="students"><div class="loading-spin">加载中…</div></section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    if (window.MMAuth.requireAuth("teacher.html")) {
+      const user = window.MMAuth.getCurrentUser();
+      if (user.role !== "teacher") location.href = user.role === "parent" ? "parent.html" : "student.html";
+      const list = document.getElementById("students");
+      const stats = document.getElementById("stats");
+      function esc(t){const d=document.createElement("div");d.textContent=String(t||"");return d.innerHTML;}
+      function progressBar(n){return '<div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.max(0,Math.min(100,n||0))+'%;background:linear-gradient(135deg,#ff6b35,#ff8e53)"></span></div>';}
+      async function loadStudent(s){
+        const [pRes,fRes,wRes,cRes] = await Promise.all([
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/progress'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/feedbacks'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/works'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/courses')
+        ]);
+        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json(), c=await cRes.json();
+        const current=(p.progress||[])[0];
+        return Object.assign({}, s, { progress:p.progress||[], summary:p.summary||{}, feedbacks:f.feedbacks||[], works:w.works||[], courses:c.courses||[], current });
+      }
+      function card(s){
+        const pct=s.current?s.current.progressPercent:0;
+        return '<article class="project-card"><div class="project-card-body">'+
+          '<h3 class="project-card-title">'+esc(s.name)+'</h3>'+
+          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(s.skillLevel||'未设置画像')+'</span></div>'+
+          '<p class="project-card-meta">当前项目：'+esc(s.current?s.current.title:'暂无项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'% · 反馈 '+s.feedbacks.length+' · 作品 '+s.works.length+' · 课程 '+s.courses.length+'</p>'+
+          '<div class="project-card-actions"><a class="pc-btn primary" href="session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current?s.current.id:'')+'">录入课堂记录</a><button class="pc-btn" data-feedback="'+esc(s.studentId)+'">写反馈</button><button class="pc-btn" data-course="'+esc(s.studentId)+'">记课程</button></div>'+
+          '</div></article>';
+      }
+      async function createSimple(kind, studentId){
+        const text=prompt(kind==='feedback'?'请输入教师反馈':'请输入课程记录');
+        if(!text) return;
+        const url=kind==='feedback'?'/api/students/'+studentId+'/feedbacks':'/api/students/'+studentId+'/courses';
+        const body=kind==='feedback'?{content:text,courseName:'课堂反馈'}:{content:text,courseName:'课堂记录'};
+        const res=await window.MMAuth.authFetch(url,{method:'POST',body:JSON.stringify(body)});
+        if(!res.ok) alert('保存失败'); else load();
+      }
+      async function load(){
+        const res=await window.MMAuth.authFetch('/api/students');
+        const data=await res.json();
+        const students=await Promise.all((data.students||[]).map(loadStudent));
+        stats.innerHTML='<div class="dash-stat"><strong>'+students.length+'</strong><span>学员</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.progress.length,0)+'</strong><span>项目实例</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.feedbacks.length,0)+'</strong><span>反馈</span></div>';
+        list.innerHTML=students.length?students.map(card).join(''):'<div class="empty-state"><h3>暂无学员</h3><p>请先通过 API 或后续表单创建学员档案</p></div>';
+        list.querySelectorAll('[data-feedback]').forEach(b=>b.onclick=()=>createSimple('feedback',b.dataset.feedback));
+        list.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>createSimple('course',b.dataset.course));
+      }
+      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
+    }
+  </script>
+</body>
+</html>
