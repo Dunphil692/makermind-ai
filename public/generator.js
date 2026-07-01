@@ -500,11 +500,16 @@
       const headers = { "Content-Type": "application/json" };
       const token = window.MMAuth && window.MMAuth.getToken ? window.MMAuth.getToken() : "";
       if (token) headers.Authorization = "Bearer " + token;
-      const response = await fetch("/api/dialogue-task-brief", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ messages, brief, studentId: selectedStudentId || undefined })
-      });
+      let response;
+      try {
+        response = await fetch("/api/dialogue-task-brief", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ messages, brief, studentId: selectedStudentId || undefined })
+        });
+      } catch (error) {
+        throw new Error(formatFetchError(error));
+      }
       const text = await response.text();
       let data;
       try { data = JSON.parse(text); } catch { throw new Error(`接口返回非 JSON：${text.slice(0, 200)}`); }
@@ -677,6 +682,18 @@
       `;
     }
 
+    function getHealthLink() {
+      return `${window.location.origin}/api/health`;
+    }
+
+    function formatFetchError(error) {
+      const message = error?.message || String(error || "生成失败");
+      if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("Load failed")) {
+        return `${message}。当前页面没有连到 MakerMind Worker API，请打开 ${getHealthLink()} 检查是否返回 JSON；如果返回 404/HTML，说明你打开的是静态预览，不是同源 Worker。`;
+      }
+      return message;
+    }
+
     /* ===== Render error state ===== */
     function renderError(message) {
       matchTag.textContent = "生成失败";
@@ -685,12 +702,15 @@
       let errorType = "未知错误";
       let errorSuggestion = "请检查网络连接后重试，或联系管理员确认 API 配置。";
 
-      if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("network")) {
-        errorType = "网络连接失败";
-        errorSuggestion = "请检查网络连接是否正常，然后点击重新生成。如果问题持续，可能是服务器暂时不可用。";
-      } else if (message.includes("401") || message.includes("403") || message.includes("API key")) {
-        errorType = "API 密钥错误";
-        errorSuggestion = "服务器 API 配置可能有问题，请联系管理员检查 DeepSeek API 密钥。";
+      if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("network") || message.includes("静态预览")) {
+        errorType = "Worker API 未连通";
+        errorSuggestion = "请打开 /api/health 检查：如果不是 JSON，说明当前页面不是由 Cloudflare Worker 同源服务；如果 JSON 里 AI 配置为 false，请在 Cloudflare 配置 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
+      } else if (message.includes("401") || message.includes("403")) {
+        errorType = "权限不足";
+        errorSuggestion = "如果选择了学生画像，请确认当前账号是教师账号；学生和家长只能查看已布置项目，不能替教师生成画像方案。";
+      } else if (message.includes("AI_API_KEY") || message.includes("AI_BASE_URL") || message.includes("AI_MODEL") || message.includes("API key")) {
+        errorType = "AI 环境变量缺失";
+        errorSuggestion = "服务器 AI 配置可能有问题，请在 Cloudflare Worker 中设置 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
       } else if (message.includes("429") || message.includes("rate limit") || message.includes("quota")) {
         errorType = "请求过于频繁";
         errorSuggestion = "AI 生成请求已达上限，请等待 1 分钟后重试。";
@@ -725,11 +745,16 @@
       const headers = { "Content-Type": "application/json" };
       const token = window.MMAuth && window.MMAuth.getToken ? window.MMAuth.getToken() : "";
       if (token) headers.Authorization = "Bearer " + token;
-      const response = await fetch("/api/generate-instruction-part", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ ...payload, part })
-      });
+      let response;
+      try {
+        response = await fetch("/api/generate-instruction-part", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ ...payload, part })
+        });
+      } catch (error) {
+        throw new Error(formatFetchError(error));
+      }
       const text = await response.text();
       let data;
       try { data = JSON.parse(text); } catch { throw new Error(`接口返回非 JSON：${text.slice(0, 200)}`); }
@@ -815,7 +840,7 @@
         };
         saveHistory(historyItem);
 
-        // 已登录则自动保存到云端
+        // 已登录则自动保存到云端；教师选择学生时，同步布置到学生端任务板
         if (window.MMAuth && window.MMAuth.isLoggedIn()) {
           try {
             const cloudRes = await window.MMAuth.authFetch("/api/projects", {
@@ -825,16 +850,29 @@
             const cloudData = await cloudRes.json();
             if (cloudData && cloudData.id) {
               instruction._cloudId = cloudData.id;
+              if (selectedStudentId) {
+                const assignRes = await window.MMAuth.authFetch("/api/students/" + encodeURIComponent(selectedStudentId) + "/projects", {
+                  method: "POST",
+                  body: JSON.stringify({ projectId: cloudData.id })
+                });
+                if (assignRes.ok) {
+                  const assignData = await assignRes.json();
+                  instruction._studentProjectId = assignData.id;
+                  instruction._assignedStudentId = selectedStudentId;
+                } else {
+                  console.warn("项目已保存，但布置给学生失败：", await assignRes.text());
+                }
+              }
             }
           } catch (cloudErr) {
-            console.warn("云端保存失败，方案已保存到本地：", cloudErr);
+            console.warn("云端保存或布置失败，方案已保存到本地：", cloudErr);
           }
         }
 
         renderInstruction(instruction);
       } catch (error) {
         console.error(error);
-        try { renderError(error.message || "生成失败，请重试"); } catch(e) { console.error("渲染错误失败:", e); }
+        try { renderError(formatFetchError(error)); } catch(e) { console.error("渲染错误失败:", e); }
       } finally {
         isGenerating = false;
         if (generateBtn) {
@@ -881,6 +919,8 @@
           <!-- Action bar -->
           <div class="action-bar">
             <button type="button" class="btn primary small" id="saveBtn">收藏此方案</button>
+            ${instruction._assignedStudentId ? `<a class="btn primary small" href="teacher.html#student-${encodeURIComponent(instruction._assignedStudentId)}">已布置，回教师端</a>` : ""}
+            ${instruction._assignedStudentId ? `<a class="btn ghost small" href="session.html?studentId=${encodeURIComponent(instruction._assignedStudentId)}&studentProjectId=${encodeURIComponent(instruction._studentProjectId || "")}">录入本项目课堂</a>` : ""}
             <button type="button" class="btn ghost small" id="exportBtn">导出文本</button>
             <button type="button" class="btn ghost small" id="shareBtn">分享链接</button>
             <button type="button" class="btn ghost small" id="printBtn">打印</button>

@@ -78,6 +78,25 @@ export default {
       return method === "GET" ? handleMe(request, env) : methodNotAllowed();
     }
 
+    // ---------- 健康检查 ----------
+    if (pathname === "/api/health") {
+      if (method !== "GET") return methodNotAllowed();
+      return json({
+        ok: true,
+        worker: "makermind-ai",
+        ai: {
+          hasApiKey: Boolean(env.AI_API_KEY),
+          hasBaseUrl: Boolean(env.AI_BASE_URL),
+          hasModel: Boolean(env.AI_MODEL),
+          mockMode: env.AI_MOCK === "1"
+        },
+        bindings: {
+          db: Boolean(env.DB),
+          assets: Boolean(env.ASSETS)
+        }
+      });
+    }
+
     // ---------- AI 生成 ----------
     if (pathname === "/api/dialogue-task-brief") {
       return method === "POST" ? handleDialogueTaskBrief(request, env) : methodNotAllowed();

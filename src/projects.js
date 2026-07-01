@@ -136,9 +136,20 @@ export async function handleGetProject(request, env, id) {
 
   if (!row) return json({ error: "项目不存在" }, 404);
 
-  // 仅创建者或已发布项目可查看
+  // 仅创建者、已发布项目，或被布置到自己/孩子名下的项目可查看
   if (row.creator_id !== user.id && row.status !== "published") {
-    return json({ error: "无权查看此项目" }, 403);
+    const assigned = await env.DB.prepare(
+      `SELECT sp.id
+       FROM student_projects sp
+       JOIN students s ON sp.student_id = s.student_id
+       WHERE sp.project_id = ?
+         AND (s.user_id = ? OR s.parent_id = ?)
+       LIMIT 1`
+    )
+      .bind(id, user.id, user.id)
+      .first();
+
+    if (!assigned) return json({ error: "无权查看此项目" }, 403);
   }
 
   return json({ project: projectDetailRow(row) });

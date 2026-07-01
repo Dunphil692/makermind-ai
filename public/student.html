@@ -9,16 +9,27 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Student workspace</small></span></a>
-    <nav class="nav-links"><a href="index.html">首页</a><a href="dashboard.html">工作台</a></nav>
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Student mission board</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="student.html">我的任务</a><a href="generator.html">查看方案</a></nav>
   </header>
 
-  <main class="dashboard-wrap">
-    <div class="dash-header">
-      <div class="dash-greeting"><h1>学生端</h1><p>查看项目任务、提交作品、阅读教师反馈</p></div>
+  <main class="dashboard-wrap role-workspace student-workspace">
+    <div class="dash-header role-hero student-hero">
+      <div class="dash-greeting"><span class="eyebrow">STUDENT MISSION</span><h1>我的项目任务板</h1><p>老师布置的项目、课堂反馈、下一步行动和作品提交都在这里连起来。</p></div>
     </div>
+
+    <section class="student-focus" id="focusBox"><div class="loading-spin">加载中…</div></section>
     <div class="dash-stats" id="stats"></div>
-    <section class="project-grid" id="tasks"><div class="loading-spin">加载中…</div></section>
+
+    <section class="role-section">
+      <div class="section-heading"><div><span>MISSION CARDS</span><h2>项目任务</h2></div><p>完成任务 → 提交作品 → 老师反馈 → 下一次项目会更适合你。</p></div>
+      <div class="project-grid" id="tasks"><div class="loading-spin">加载中…</div></div>
+    </section>
+
+    <section class="role-section">
+      <div class="section-heading"><div><span>FEEDBACK LOOP</span><h2>老师反馈与课堂成长</h2></div><p>这里显示老师写给你的建议，以及课堂记录自动总结出的下一步。</p></div>
+      <div class="insight-grid" id="feedbackLoop"></div>
+    </section>
   </main>
 
   <script src="auth.js"></script>
@@ -28,42 +39,72 @@
       if (user.role !== "student") location.href = user.role === "teacher" ? "teacher.html" : "parent.html";
       const list=document.getElementById('tasks');
       const stats=document.getElementById('stats');
+      const focusBox=document.getElementById('focusBox');
+      const feedbackLoop=document.getElementById('feedbackLoop');
       let currentStudent=null;
       function esc(t){const d=document.createElement('div');d.textContent=String(t||'');return d.innerHTML;}
-      function progressBar(n){return '<div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.max(0,Math.min(100,n||0))+'%;background:linear-gradient(135deg,#2563eb,#38bdf8)"></span></div>';}
-      async function submitWork(studentId){
-        const name=prompt('请输入作品名称');
+      function progressBar(n){return '<div class="role-progress student-progress"><span style="width:'+Math.max(0,Math.min(100,n||0))+'%"></span></div>';}
+      function short(t,n){t=String(t||'');return t.length>n?t.slice(0,n)+'…':t;}
+      async function submitWork(studentId, project){
+        const name=prompt('作品名称', project ? (project.title + '作品') : '我的项目作品');
         if(!name) return;
         const url=prompt('作品链接或文件路径（可选）')||'';
-        const res=await window.MMAuth.authFetch('/api/students/'+studentId+'/works',{method:'POST',body:JSON.stringify({workName:name,workType:'project',sourceType:url?'url':'manual',sourceUrl:url,status:'submitted'})});
+        const reflection=prompt('这次你最想让老师看哪一点？（可选）')||'';
+        const res=await window.MMAuth.authFetch('/api/students/'+studentId+'/works',{method:'POST',body:JSON.stringify({workName:name,workType:'project',sourceType:url?'url':'manual',sourceUrl:url,description:reflection,status:'submitted'})});
         if(!res.ok) alert('提交失败'); else load();
       }
-      function card(p, feedbacks){
-        return '<article class="project-card"><div class="project-card-body">'+
+      function focus(projects, feedbacks, sessions){
+        const current=projects.find(p=>p.status!=='COMPLETED')||projects[0];
+        const latestFeedback=feedbacks[0];
+        const latestSession=sessions[0];
+        if(!current){
+          focusBox.innerHTML='<div class="empty-state"><h3>还没有任务</h3><p>老师布置项目后，这里会出现你的当前任务和下一步。</p></div>';
+          return;
+        }
+        const next=current.progressPercent>=80?'整理作品并提交给老师':current.progressPercent>=40?'继续完成制作步骤，并记录遇到的问题':'先打开项目方案，完成第一个小步骤';
+        focusBox.innerHTML='<article class="mission-hero-card"><div><span>当前主线任务</span><h2>'+esc(current.title||'未命名项目')+'</h2><p>'+esc(next)+'</p>'+progressBar(current.progressPercent)+'<strong>'+esc(current.progressPercent||0)+'%</strong></div><div class="mission-side"><p><b>老师最近说：</b>'+esc(short(latestFeedback?latestFeedback.content:'完成作品后老师会在这里给你反馈。',88))+'</p><p><b>课堂总结：</b>'+esc(short(latestSession?latestSession.structuredSummary:'课堂记录保存后，会自动同步到这里。',88))+'</p><div class="project-card-actions"><a class="pc-btn primary" href="generator.html?project='+encodeURIComponent(current.projectId)+'&studentId='+encodeURIComponent(currentStudent.studentId)+'">打开项目方案</a><button class="pc-btn" id="focusSubmit">提交作品</button></div></div></article>';
+        const btn=document.getElementById('focusSubmit');
+        if(btn) btn.onclick=()=>submitWork(currentStudent.studentId,current);
+      }
+      function card(p, feedbacks, works){
+        const mine=works.filter(w=>!w.projectId || w.projectId===p.projectId || String(w.description||'').includes(p.title));
+        const action=p.progressPercent>=80?'准备展示':'继续推进';
+        return '<article class="project-card connected-card"><div class="project-card-body">'+
+          '<div class="card-topline"><span>'+esc(action)+'</span><strong>'+esc(p.status||'进行中')+'</strong></div>'+
           '<h3 class="project-card-title">'+esc(p.title||'未命名项目')+'</h3>'+
           '<div class="project-card-tags"><span class="project-tag">'+esc(p.subject||'项目')+'</span><span class="project-tag concept">'+esc(p.concept||'任务')+'</span></div>'+
-          progressBar(p.progressPercent)+'<p class="project-card-meta">进度 '+(p.progressPercent||0)+'% · 状态 '+esc(p.status)+'</p>'+
-          '<p class="project-card-meta"><strong>教师反馈：</strong>'+esc(feedbacks[0]?feedbacks[0].content:'暂无反馈')+'</p>'+
-          '<div class="project-card-actions"><a class="pc-btn" href="generator.html?project='+encodeURIComponent(p.projectId)+'">查看任务</a><button class="pc-btn primary" data-work="'+esc(currentStudent.studentId)+'">提交作品</button></div>'+
+          progressBar(p.progressPercent)+'<p class="project-card-meta">进度 '+(p.progressPercent||0)+'% · 已提交作品 '+mine.length+' 个</p>'+
+          '<p class="project-card-meta"><strong>最近教师反馈：</strong>'+esc(feedbacks[0]?feedbacks[0].content:'暂无反馈，提交作品后老师会看到。')+'</p>'+
+          '<div class="project-card-actions"><a class="pc-btn primary" href="generator.html?project='+encodeURIComponent(p.projectId)+'&studentId='+encodeURIComponent(currentStudent.studentId)+'">查看老师方案</a><button class="pc-btn" data-work="'+esc(p.id)+'">提交作品</button></div>'+
           '</div></article>';
+      }
+      function renderFeedback(feedbacks,sessions,works){
+        const cards=[];
+        if(feedbacks[0]) cards.push('<article class="insight-card"><span>老师反馈</span><h3>下一步建议</h3><p>'+esc(feedbacks[0].content)+'</p></article>');
+        if(sessions[0]) cards.push('<article class="insight-card"><span>课堂记录</span><h3>本节课成长</h3><p>'+esc(sessions[0].structuredSummary||sessions[0].teacherNotes||'老师已保存课堂记录。')+'</p></article>');
+        if(works[0]) cards.push('<article class="insight-card"><span>作品状态</span><h3>'+esc(works[0].workName||'最新作品')+'</h3><p>已提交给老师，等待反馈或继续优化。</p></article>');
+        feedbackLoop.innerHTML=cards.length?cards.join(''):'<div class="empty-state"><h3>还没有反馈记录</h3><p>提交作品或上完课后，老师的反馈会同步到这里。</p></div>';
       }
       async function load(){
         const sRes=await window.MMAuth.authFetch('/api/students');
         const sData=await sRes.json();
         currentStudent=(sData.students||[])[0];
-        if(!currentStudent){list.innerHTML='<div class="empty-state"><h3>暂无学生档案</h3><p>请联系老师绑定学生账号</p></div>';return;}
-        const [pRes,fRes,wRes]=await Promise.all([
+        if(!currentStudent){list.innerHTML='<div class="empty-state"><h3>暂无学生档案</h3><p>请联系老师绑定学生账号</p></div>';focusBox.innerHTML='';return;}
+        const [pRes,fRes,wRes,seRes]=await Promise.all([
           window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/projects'),
           window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/feedbacks'),
-          window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/works')
+          window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/works'),
+          window.MMAuth.authFetch('/api/students/'+currentStudent.studentId+'/sessions')
         ]);
-        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json();
-        const projects=p.projects||[], feedbacks=f.feedbacks||[], works=w.works||[];
-        stats.innerHTML='<div class="dash-stat"><strong>'+projects.length+'</strong><span>任务</span></div><div class="dash-stat"><strong>'+works.length+'</strong><span>作品</span></div><div class="dash-stat"><strong>'+feedbacks.length+'</strong><span>反馈</span></div>';
-        list.innerHTML=projects.length?projects.map(x=>card(x,feedbacks)).join(''):'<div class="empty-state"><h3>暂无项目任务</h3><p>老师布置项目后会出现在这里</p></div>';
-        list.querySelectorAll('[data-work]').forEach(b=>b.onclick=()=>submitWork(b.dataset.work));
+        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json(), se=await seRes.json();
+        const projects=p.projects||[], feedbacks=f.feedbacks||[], works=w.works||[], sessions=se.sessions||[];
+        stats.innerHTML='<div class="dash-stat"><strong>'+projects.length+'</strong><span>任务</span></div><div class="dash-stat"><strong>'+works.length+'</strong><span>作品</span></div><div class="dash-stat"><strong>'+feedbacks.length+'</strong><span>老师反馈</span></div><div class="dash-stat"><strong>'+sessions.length+'</strong><span>课堂记录</span></div>';
+        focus(projects,feedbacks,sessions);
+        list.innerHTML=projects.length?projects.map(x=>card(x,feedbacks,works)).join(''):'<div class="empty-state"><h3>暂无项目任务</h3><p>老师布置项目后会出现在这里。</p></div>';
+        list.querySelectorAll('[data-work]').forEach(b=>b.onclick=()=>submitWork(currentStudent.studentId,projects.find(p=>p.id===b.dataset.work)));
+        renderFeedback(feedbacks,sessions,works);
       }
-      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
+      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';focusBox.innerHTML='';});
     }
   </script>
 </body>

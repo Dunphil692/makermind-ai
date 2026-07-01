@@ -148,8 +148,13 @@
         const res = await window.MMAuth.authFetch('/api/sessions', { method:'POST', body: JSON.stringify(payload) });
         const data = await res.json();
         if (!res.ok) return alert(data.error || '保存失败');
-        alert('已保存课堂记录，当前进度：' + data.progressPercent + '%');
-        location.href = 'teacher.html';
+        const action = confirm('已保存课堂记录，当前进度：' + data.progressPercent + '%。\n\n点击“确定”回教师端看反馈队列；点击“取消”基于本节课建议继续生成下个项目。');
+        if (action) {
+          location.href = 'teacher.html#student-' + encodeURIComponent(selectedStudentId());
+        } else {
+          const prefill = structured.suggestedNextProject || ('基于刚才课堂记录，为学生生成下一节适合的项目。');
+          location.href = 'generator.html?studentId=' + encodeURIComponent(selectedStudentId()) + '&prefill=' + encodeURIComponent(prefill);
+        }
       };
 
       setupSpeech();
