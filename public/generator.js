@@ -28,6 +28,8 @@
     let dialogueMessages = [];
     let taskBrief = createEmptyBrief();
     let selectedStudentId = "";
+    let activeDraftKey = "";
+    let activeDraftInfo = null;
 
     /* ===== Demo instruction ===== */
     const demoInstruction2 = {
@@ -606,6 +608,78 @@
     /* ===== LocalStorage helpers ===== */
     const HISTORY_KEY = "makermind_history";
     const SAVED_KEY = "makermind_saved";
+    const DRAFTS_KEY = "makermind_generation_drafts";
+    const DRAFT_TTL_MS = 24 * 60 * 60 * 1000;
+
+    function stableStringify(value) {
+      if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+      if (value && typeof value === "object") {
+        return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(",")}}`;
+      }
+      return JSON.stringify(value ?? "");
+    }
+
+    function hashText(text) {
+      let hash = 2166136261;
+      for (let i = 0; i < text.length; i += 1) {
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(36);
+    }
+
+    function getGenerationCacheKey(payload) {
+      return hashText(stableStringify({
+        concept: payload.concept,
+        subject: payload.subject,
+        level: payload.level,
+        interest: payload.interest,
+        kit: payload.kit,
+        duration: payload.duration,
+        materials: payload.materials,
+        studentId: payload.studentId || ""
+      }));
+    }
+
+    function getDraftStore() {
+      try { return JSON.parse(localStorage.getItem(DRAFTS_KEY)) || {}; } catch { return {}; }
+    }
+
+    function saveDraftStore(store) {
+      localStorage.setItem(DRAFTS_KEY, JSON.stringify(store));
+    }
+
+    function pruneGenerationDrafts() {
+      const store = getDraftStore();
+      const now = Date.now();
+      Object.keys(store).forEach(key => {
+        if (!store[key]?.updatedAt || now - store[key].updatedAt > DRAFT_TTL_MS) delete store[key];
+      });
+      saveDraftStore(store);
+    }
+
+    function loadGenerationDraft(key) {
+      const draft = getDraftStore()[key];
+      if (!draft || Date.now() - (draft.updatedAt || 0) > DRAFT_TTL_MS) return { parts: {}, degradedParts: [], warnings: [] };
+      return { parts: draft.parts || {}, degradedParts: draft.degradedParts || [], warnings: draft.warnings || [] };
+    }
+
+    function saveGenerationDraft(key, draft) {
+      const store = getDraftStore();
+      store[key] = { ...draft, updatedAt: Date.now() };
+      saveDraftStore(store);
+    }
+
+    function clearGenerationDraft(key) {
+      if (!key) return;
+      const store = getDraftStore();
+      delete store[key];
+      saveDraftStore(store);
+    }
+
+    function countDraftParts(draft) {
+      return ["overview", "build", "practice"].filter(part => draft?.parts?.[part]).length;
+    }
 
     function getHistory() {
       try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
@@ -659,10 +733,16 @@
     }
 
     /* ===== Render progress state ===== */
-    function renderProgress(step, total, title, desc) {
+    function renderProgress(step, total, title, desc, draft) {
       resultTitle.textContent = `${getCurrentConcept()} × ${getInterest()}｜STEAM 项目方案`;
       matchTag.textContent = `AI 生成中 ${step}/${total}`;
       updateTag.textContent = `生成中 ${getCurrentTimeText()}`;
+      const partLabels = { overview: "项目概述", build: "制作步骤", practice: "融会训练" };
+      const partStatus = ["overview", "build", "practice"].map(part => {
+        const done = Boolean(draft?.parts?.[part]);
+        const degraded = (draft?.degradedParts || []).includes(part);
+        return `<span class="brief-chip ${done ? "complete" : "missing"}"><strong>${partLabels[part]}</strong>${done ? (degraded ? "基础模板兜底" : "已完成") : "等待中"}</span>`;
+      }).join("");
 
       projectCards.innerHTML = `
         <article class="instruction-empty">
@@ -671,13 +751,14 @@
             <span class="badge">${safeText(step)} / ${safeText(total)}</span>
           </div>
           <p>${safeText(desc)}</p>
+          <div class="brief-status" style="margin:14px 0;">${partStatus}</div>
           <div class="project-meta">
             <div><span>知识点</span><strong>${safeText(getCurrentConcept())}</strong></div>
             <div><span>兴趣</span><strong>${safeText(getInterest())}</strong></div>
             <div><span>套件</span><strong>${safeText(getCurrentKitLabel())}</strong></div>
             <div><span>时长</span><strong>${safeText(getCurrentDuration())}</strong></div>
           </div>
-          <div class="tips-box">内容正在分段生成，请勿关闭页面。预计总耗时 30-60 秒。</div>
+          <div class="tips-box">已成功的分段会自动保留；如果中途失败，点击重试会从失败段继续。</div>
         </article>
       `;
     }
@@ -722,6 +803,8 @@
         errorSuggestion = "AI 生成耗时过长，请重试。如果持续超时，建议选择较短的课堂时长。";
       }
 
+      const retained = activeDraftInfo ? countDraftParts(activeDraftInfo) : 0;
+      const resumeHint = retained > 0 ? `<div class="tips-box">已保留成功生成的 ${retained}/3 段，点击重试会从失败段继续，不会浪费前面已生成内容。</div>` : "";
       projectCards.innerHTML = `
         <article class="instruction-empty demo-fallback-card">
           <div class="project-card-header">
@@ -730,7 +813,9 @@
           </div>
           <p style="font-size:16px;color:#e54612;font-weight:600;margin-bottom:12px;">${safeText(message)}</p>
           <p style="margin-top:12px;color:#64748b;">${safeText(errorSuggestion)}</p>
-          <button type="button" class="btn primary" id="retryBtn" style="margin-top:16px;">重新生成</button>
+          ${resumeHint}
+          <button type="button" class="btn primary" id="retryBtn" style="margin-top:16px;">${retained > 0 ? "继续生成剩余部分" : "重新生成"}</button>
+          ${retained > 0 ? '<button type="button" class="btn ghost" id="restartBtn" style="margin-top:16px;margin-left:8px;">清空草稿重新开始</button>' : ""}
         </article>
       `;
 
@@ -738,29 +823,66 @@
       if (retryBtn) {
         retryBtn.addEventListener("click", () => generate());
       }
+      const restartBtn = document.getElementById("restartBtn");
+      if (restartBtn) {
+        restartBtn.addEventListener("click", () => { clearGenerationDraft(activeDraftKey); activeDraftInfo = null; generate(); });
+      }
     }
 
     /* ===== API call ===== */
+    function isRetryablePartError(error) {
+      if (!error) return true;
+      if (error.status && [400, 401, 403, 404].includes(Number(error.status))) return false;
+      if (error.status && [408, 409, 429, 500, 502, 503, 504, 529].includes(Number(error.status))) return true;
+      return /Failed to fetch|NetworkError|Load failed|timeout|超时|接口返回非 JSON|500|502|503|504|429/i.test(error.message || "");
+    }
+
+    function clientRetryDelay(attempt) {
+      return 800 * attempt + ((attempt * 271) % 700);
+    }
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     async function requestPart(payload, part) {
       const headers = { "Content-Type": "application/json" };
       const token = window.MMAuth && window.MMAuth.getToken ? window.MMAuth.getToken() : "";
       if (token) headers.Authorization = "Bearer " + token;
-      let response;
-      try {
-        response = await fetch("/api/generate-instruction-part", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ ...payload, part })
-        });
-      } catch (error) {
-        throw new Error(formatFetchError(error));
+      const maxAttempts = 3;
+      let lastError = null;
+
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), part === "build" ? 170000 : 150000);
+        try {
+          const response = await fetch("/api/generate-instruction-part", {
+            method: "POST",
+            headers,
+            signal: controller.signal,
+            body: JSON.stringify({ ...payload, part })
+          });
+          const text = await response.text();
+          let data;
+          try { data = JSON.parse(text); } catch { throw new Error(`接口返回非 JSON：${text.slice(0, 200)}`); }
+          if (!response.ok) {
+            const error = new Error(data.detail || data.error || `${part} 生成失败`);
+            error.status = response.status;
+            throw error;
+          }
+          if (!data.data) throw new Error(`AI 未返回 ${part} 数据`);
+          return data;
+        } catch (error) {
+          lastError = error.name === "AbortError" ? new Error(`${part} 生成请求超时`) : error;
+          if (error.name === "AbortError") lastError.status = 408;
+          if (!isRetryablePartError(lastError) || attempt >= maxAttempts) break;
+          await wait(clientRetryDelay(attempt));
+        } finally {
+          clearTimeout(timeout);
+        }
       }
-      const text = await response.text();
-      let data;
-      try { data = JSON.parse(text); } catch { throw new Error(`接口返回非 JSON：${text.slice(0, 200)}`); }
-      if (!response.ok) throw new Error(data.detail || data.error || `${part} 生成失败`);
-      if (!data.data) throw new Error(`AI 未返回 ${part} 数据`);
-      return data.data;
+
+      throw new Error(formatFetchError(lastError));
     }
 
     /* ===== Merge parts ===== */
@@ -808,23 +930,30 @@
         };
 
         generateCount += 1;
+        const cacheKey = getGenerationCacheKey(payload);
+        activeDraftKey = cacheKey;
+        let draft = loadGenerationDraft(cacheKey);
+        activeDraftInfo = draft;
 
-        // Step 1/3: overview
-        generateBtn.innerHTML = '<span class="btn-icon">⏳</span>正在生成 1/3...';
-        renderProgress(1, 3, "正在生成 1/3：项目概述与交互设计", "正在生成项目标题、学习目标、交互流程和材料清单。");
-        const overview = await requestPart(payload, "overview");
+        async function ensurePart(part, step, title, desc) {
+          generateBtn.innerHTML = '<span class="btn-icon">⏳</span>' + (draft.parts[part] ? '恢复 ' : '正在生成 ') + step + '/3...';
+          renderProgress(step, 3, draft.parts[part] ? `已恢复 ${step}/3：${title}` : `正在生成 ${step}/3：${title}`, draft.parts[part] ? '这一段已从本地草稿恢复，将继续生成剩余内容。' : desc, draft);
+          if (draft.parts[part]) return draft.parts[part];
+          const result = await requestPart(payload, part);
+          draft.parts[part] = result.data;
+          if (result.degraded && !draft.degradedParts.includes(part)) draft.degradedParts.push(part);
+          if (result.warning) draft.warnings.push(result.warning);
+          saveGenerationDraft(cacheKey, draft);
+          activeDraftInfo = draft;
+          return result.data;
+        }
 
-        // Step 2/3: build
-        generateBtn.innerHTML = '<span class="btn-icon">⏳</span>正在生成 2/3...';
-        renderProgress(2, 3, "正在生成 2/3：制作步骤与知识讲解", "正在生成详细制作步骤、知识点讲解和代码思路。");
-        const build = await requestPart(payload, "build");
-
-        // Step 3/3: practice
-        generateBtn.innerHTML = '<span class="btn-icon">⏳</span>正在生成 3/3...';
-        renderProgress(3, 3, "正在生成 3/3：融会贯通训练与 FAQ", "正在生成基础练习、变化挑战、逆向思维、进阶方向和常见问题。");
-        const practice = await requestPart(payload, "practice");
+        const overview = await ensurePart("overview", 1, "项目概述与交互设计", "正在生成项目标题、学习目标、交互流程和材料清单。");
+        const build = await ensurePart("build", 2, "制作步骤与知识讲解", "正在生成详细制作步骤、知识点讲解和代码思路。");
+        const practice = await ensurePart("practice", 3, "融会贯通训练与 FAQ", "正在生成基础练习、变化挑战、逆向思维、进阶方向和常见问题。");
 
         const instruction = mergeParts(overview, build, practice);
+        instruction._degradedParts = draft.degradedParts || [];
         currentInstruction = instruction;
 
         // Save to history
@@ -870,6 +999,9 @@
         }
 
         renderInstruction(instruction);
+        renderDegradedNotice(instruction);
+        clearGenerationDraft(cacheKey);
+        activeDraftInfo = null;
       } catch (error) {
         console.error(error);
         try { renderError(formatFetchError(error)); } catch(e) { console.error("渲染错误失败:", e); }
@@ -1018,6 +1150,19 @@
 
       bindActionButtons(instruction);
       bindCopyButtons();
+    }
+
+    function renderDegradedNotice(instruction) {
+      const parts = instruction?._degradedParts || [];
+      if (!parts.length || !projectCards) return;
+      const labels = { overview: "项目概述", build: "制作步骤", practice: "融会训练" };
+      const notice = document.createElement("div");
+      notice.className = "tips-box";
+      notice.style.marginBottom = "16px";
+      notice.textContent = `AI 服务刚才不稳定，${parts.map(part => labels[part] || part).join("、")} 已使用基础模板兜底。当前方案可以先用，稍后可清空草稿重新生成优化。`;
+      const doc = projectCards.querySelector(".instruction-doc");
+      if (doc) doc.prepend(notice);
+      updateTag.textContent = `含基础兜底 · ${getCurrentTimeText()}`;
     }
 
     /* ===== Render sub-sections ===== */
@@ -1498,6 +1643,7 @@
     }
 
     /* ===== Init ===== */
+    pruneGenerationDrafts();
     appendDialogueMessage("assistant", "你好，我会像和你一起备课一样了解需求。请直接告诉我：学生最近喜欢什么？你想用什么硬件或材料？这节课最想让学生学会哪个知识点？");
     renderBriefStatus();
     loadFromUrlParams();

@@ -64,6 +64,16 @@ npx wrangler deploy
 
 线上排查：打开同源地址 `/api/health`。如果不是 JSON，说明当前页面不是由 Worker 同源服务；如果 JSON 中 `ai.hasApiKey / hasBaseUrl / hasModel` 为 `false`，说明 Cloudflare 预览或生产环境缺少 AI 配置。
 
+## 生成稳定性与兜底
+
+任务生成器保留三段式 `overview → build → practice` 流程，但增加了抗失败机制：
+
+- 后端对上游 AI 的 429、5xx、超时和偶发 JSON 解析失败做指数退避重试。
+- 前端对每个分段做独立重试；如果第 1 段成功、第 2 段失败，重试时会从第 2 段继续。
+- 已成功的分段会临时保存到浏览器本地草稿，刷新或重试不会浪费前面生成的内容。
+- 如果真实 AI 连续失败，后端会对失败分段返回可渲染的基础模板兜底，并在页面提示“部分内容使用基础模板生成”。
+- `/api/health` 只检查 Worker、D1、Assets 和 AI 环境变量是否存在，不代表上游 AI 服务一定稳定。
+
 ## 项目结构
 
 ```

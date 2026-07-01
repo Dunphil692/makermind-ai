@@ -94,7 +94,24 @@ export async function handleGenerateInstructionPart(request, env) {
 
     const part = normalizePartName(body.part || body.section || "overview");
     const prompt = buildPartPrompt(input, part, profileResult.profile);
-    const parsed = mockMode ? mockInstructionPart(part, input, profileResult.profile) : await generateParsedPartWithRetry(env, prompt, part);
+    let parsed;
+    let degraded = false;
+    let source = mockMode ? "mock" : "ai";
+    let warning = "";
+
+    if (mockMode) {
+      parsed = mockInstructionPart(part, input, profileResult.profile);
+    } else {
+      try {
+        parsed = await generateParsedPartWithRetry(env, prompt, part);
+      } catch (error) {
+        degraded = true;
+        source = "fallback";
+        warning = "AI 服务暂时不稳定，本段已使用基础模板生成，可稍后重新生成优化。";
+        console.warn(`[${part}] AI 多次失败，启用基础模板兜底：`, error?.message || error);
+        parsed = fallbackInstructionPart(part, input, profileResult.profile, error);
+      }
+    }
 
     const partData = parsed[part] || parsed.data || parsed;
 
@@ -113,6 +130,9 @@ export async function handleGenerateInstructionPart(request, env) {
     return json({
       part,
       data: normalized,
+      degraded,
+      source,
+      warning,
       elapsedMs: Date.now() - startedAt
     });
   } catch (error) {
@@ -128,30 +148,49 @@ export async function handleGenerateInstructionPart(request, env) {
 }
 
 async function generateParsedPartWithRetry(env, prompt, part) {
-  const maxAttempts = 2;
+  const maxAttempts = part === "dialogue" ? 3 : 4;
   let lastError = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    let rawText = "";
-
     try {
-      rawText = await callTextModel(env, prompt, part);
+      const rawText = await callTextModel(env, prompt, part);
       return parseAIJson(rawText);
     } catch (error) {
       lastError = error;
-
+      const retryable = isRetryableAIError(error);
       console.warn(
-        `[${part}] AI JSON 生成或解析失败，第 ${attempt}/${maxAttempts} 次：`,
+        `[${part}] AI 生成或解析失败，第 ${attempt}/${maxAttempts} 次，retryable=${retryable}：`,
         error?.message || error
       );
 
-      if (attempt < maxAttempts) {
-        await new Promise(resolve => setTimeout(resolve, 900));
-      }
+      if (!retryable || attempt >= maxAttempts) break;
+      await sleep(getRetryDelayMs(error, attempt));
     }
   }
 
   throw lastError || new Error(`${part} 生成失败，请稍后重试。`);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function isRetryableAIError(error) {
+  if (!error) return true;
+  if (error.nonRetryable) return false;
+  if (error.isParseFailure || error.isTimeout || error.name === "AbortError") return true;
+  if (error.status) return [408, 409, 429, 500, 502, 503, 504, 529].includes(Number(error.status));
+  const message = String(error.message || error).toLowerCase();
+  if (message.includes("missing variables")) return false;
+  if (message.includes("401") || message.includes("403") || message.includes("invalid api key")) return false;
+  return /fetch|network|timeout|timed out|econn|socket|json|parse|non-json|unexpected/.test(message);
+}
+
+function getRetryDelayMs(error, attempt) {
+  if (error?.retryAfterMs) return Math.min(error.retryAfterMs, 8000);
+  const base = Math.min(700 * (2 ** (attempt - 1)), 5000);
+  const jitter = ((attempt * 379) % 900) + 100;
+  return base + jitter;
 }
 
 function normalizePartName(value) {
@@ -603,6 +642,102 @@ answer 可以是参考答案、判断标准或示例答案。
 `;
 }
 
+function fallbackInstructionPart(part, input, profile, error) {
+  const profileHint = profile?.student?.interest_direction || input.interest;
+  const reason = cleanString(error?.message, "上游 AI 暂时不可用").slice(0, 160);
+  if (part === "overview") {
+    return {
+      overview: {
+        projectName: `${input.interest}中的${input.concept}挑战`,
+        subtitle: `用${input.kit}把${input.concept}变成可观察的互动任务`,
+        imageKey: chooseFallbackImageKey(input),
+        meta: {
+          studentLevel: input.level,
+          knowledgePoint: input.concept,
+          subject: input.subject,
+          interest: input.interest,
+          hardware: input.kit,
+          timeRequired: input.duration,
+          projectType: "STEAM 基础兜底项目"
+        },
+        overview: {
+          coreGoal: `让学生通过${input.interest}场景，观察输入变化如何影响${input.concept}相关结果。`,
+          projectIntro: `学生制作一个${input.interest}主题互动装置，用${input.kit}采集一个动作或环境输入，再把${input.concept}转化为屏幕、灯光或声音反馈。`,
+          whyFun: "它保留任务挑战、即时反馈和可展示成果，即使 AI 服务波动也能先用于课堂。",
+          learningReasons: [
+            `把${input.concept}从纸面公式变成可操作变量。`,
+            "学生能通过多次尝试观察输入、规则和输出。",
+            "硬件反馈能及时暴露理解是否正确。",
+            "后续 AI 恢复后还可以重新生成更精细版本。"
+          ]
+        },
+        interactionFlow: {
+          trigger: "学生按键、倾斜、拍手或改变环境数据作为输入。",
+          calculation: `把输入数值代入${input.concept}的规则，计算等级、得分或状态。`,
+          feedback: ["屏幕显示当前数值和任务状态", "RGB LED 用颜色提示成功/失败/等级", "扬声器或提示文字给出下一步建议"],
+          level: "Level 3 感知驱动",
+          levelReason: "它具备输入感知、知识规则计算和即时行动反馈三段闭环。"
+        },
+        materials: [
+          { name: input.kit, quantity: "1套", usage: "采集输入并输出反馈", note: "按现有课堂材料替换也可以" },
+          { name: "USB 数据线", quantity: "1根", usage: "供电和程序上传", note: "保持设备稳定供电" },
+          { name: "纸板/卡纸", quantity: "若干", usage: "制作任务场景和展示板", note: "用于增强代入感" },
+          { name: "记录表", quantity: "1张/人", usage: "记录输入、计算和输出", note: "帮助学生解释知识点" }
+        ]
+      }
+    };
+  }
+  if (part === "build") {
+    return {
+      build: {
+        steps: [
+          { title: `拆解${input.concept}规则`, duration: "8分钟", content: `老师先和学生一起找出${input.concept}里的输入变量、变化规则和输出结果。`, tips: "让学生先用自己的话解释规则。", warning: "注意先完成基础版，不要一开始做太复杂。" },
+          { title: "搭建最小互动原型", duration: "10分钟", content: `用${input.kit}完成一个输入和一个反馈，例如按键/倾斜/声音输入对应屏幕或灯光变化。`, tips: "先确认每个硬件模块能独立工作。", warning: "避免同时接入太多模块。" },
+          { title: "写入知识点计算", duration: "15分钟", content: `把输入值作为变量，按照${input.concept}规则计算得分、等级或状态。`, tips: "每改一次参数都让学生预测结果。", warning: "保留一个成功版本，方便回滚。" },
+          { title: "设计即时反馈", duration: "10分钟", content: "把计算结果变成屏幕文字、LED 颜色或声音提示，让学生立刻知道操作效果。", tips: "反馈语言要和任务目标对应。", warning: "反馈太多会干扰学生关注知识点。" },
+          { title: "挑战与讲解", duration: "12分钟", content: "学生完成三次挑战，记录输入和输出，并向同伴解释为什么结果会变化。", tips: "用展示讲解检验是否真正理解。", warning: "如果时间不足，只保留一次完整挑战。" }
+        ],
+        knowledgeExplanation: {
+          coreConcept: `${input.concept}关注的是变量之间的关系，以及规则变化如何影响结果。`,
+          keyFormula: `基础规则：输入 x → 根据${input.concept}处理 → 输出 y 或状态。`,
+          inProject: "项目中的传感器读数就是输入变量，程序规则就是知识点，屏幕/灯光/声音就是输出结果。",
+          deepUnderstanding: "学生通过改变输入和参数，能看到同一规则在不同情况下的结果变化。",
+          commonMisunderstanding: "学生容易只记住项目效果，而没有解释输入、规则、输出之间的因果关系。"
+        },
+        starterCodeCppLines: ["int inputValue = 0;", "float result = 0;", "void setup() {", "  Serial.begin(115200);", "}", "void loop() {", "  inputValue = readSensor();", "  result = inputValue * 1.0;", "  showFeedback(result);", "  delay(100);", "}"],
+        starterCodePythonLines: ["while True:", "  x = read_sensor()", "  y = x", "  show_feedback(y)", "  sleep(0.1)"]
+      }
+    };
+  }
+  return {
+    practice: {
+      masteryTraining: {
+        basicPractice: { task: `记录 3 组输入和输出，说明它们如何体现${input.concept}。`, hint: "先找输入变量，再看输出变化。", answer: "能说出输入、规则、输出的对应关系即可。" },
+        variationChallenge: { task: "改变一个参数，让结果更容易或更难达到目标。", hint: "一次只改一个参数。", answer: "参数变化会改变输出结果或达标难度。" },
+        reverseThinking: { task: "给定一个目标输出，反推输入应该大约是多少。", hint: "从目标结果倒推规则。", answer: "能给出合理输入范围，并用项目验证。" },
+        comprehensiveApplication: { task: `把${input.concept}应用到另一个${input.interest}相关场景中。`, hint: "保留规则，替换故事和任务。", answer: "能说明新场景中的输入、规则、输出。" },
+        transferQuestion: { task: "设计下一版项目，要求多一个反馈方式。", hint: "可以增加灯光、声音、分数或时间限制。", answer: "提出一个可实现拓展，并说明它如何帮助理解知识点。" }
+      },
+      extensions: ["加入计时挑战，比较不同策略的结果", "增加数据记录表，画出输入和输出关系", "让学生自己设计关卡参数", "AI 服务恢复后重新生成精细版并对比差异"],
+      faq: [
+        { question: "为什么这部分看起来像基础模板？", answer: `因为 AI 服务暂时不稳定，系统先用可上课的兜底方案保证不中断。原因：${reason}` },
+        { question: "后续还能优化吗？", answer: "可以。AI 恢复后重新生成同一知识点和兴趣场景，就能得到更个性化版本。" },
+        { question: "课堂时间不够怎么办？", answer: "先完成一个输入、一个规则、一个反馈，再做拓展。" }
+      ]
+    }
+  };
+}
+
+function chooseFallbackImageKey(input) {
+  const text = `${input.interest} ${input.concept}`;
+  if (/篮球|投篮/.test(text)) return "basketball-scoreboard";
+  if (/音乐|节奏|声音/.test(text)) return "rhythm-wall";
+  if (/宠物|喂食/.test(text)) return "pet-feeder";
+  if (/距离|雷达/.test(text)) return "distance-radar";
+  if (/直播|数据/.test(text)) return "livestream-dashboard";
+  return "reaction-trainer";
+}
+
 function mockInstructionPart(part, input, profile) {
   const profileHint = profile?.student?.interest_direction || input.interest;
   if (part === "overview") {
@@ -792,8 +927,9 @@ async function callTextModel(env, prompt, part) {
     ? base
     : `${base}/chat/completions`;
 
+  const timeoutMs = Number.parseInt(env.AI_TIMEOUT_MS || "120000", 10) || 120000;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 120000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   const tokenByPart = {
     dialogue: 1600,
@@ -823,7 +959,7 @@ async function callTextModel(env, prompt, part) {
             content: prompt
           }
         ],
-        temperature: 0.68,
+        temperature: 0.58,
         max_tokens: tokenByPart[part] || 4000
       })
     });
@@ -833,18 +969,32 @@ async function callTextModel(env, prompt, part) {
     let data;
     try {
       data = JSON.parse(text);
-    } catch (error) {
-      throw new Error(`Text AI returned non-JSON HTTP response: ${text.slice(0, 900)}`);
+    } catch (parseError) {
+      const error = new Error(`Text AI returned non-JSON HTTP response: ${text.slice(0, 900)}`);
+      error.status = response.status;
+      error.isParseFailure = true;
+      throw error;
     }
 
     if (!response.ok) {
-      throw new Error(`Text AI request failed: ${JSON.stringify(data).slice(0, 1200)}`);
+      const error = new Error(`Text AI request failed: ${JSON.stringify(data).slice(0, 1200)}`);
+      error.status = response.status;
+      error.responseSnippet = JSON.stringify(data).slice(0, 1200);
+      const retryAfter = response.headers.get("retry-after");
+      if (retryAfter) {
+        const seconds = Number.parseFloat(retryAfter);
+        error.retryAfterMs = Number.isFinite(seconds) ? seconds * 1000 : 0;
+      }
+      if ([400, 401, 403, 404].includes(response.status)) error.nonRetryable = true;
+      throw error;
     }
 
     return data.choices?.[0]?.message?.content || data.output_text || "";
   } catch (error) {
     if (error.name === "AbortError") {
-      throw new Error(`Text AI ${part} request timed out after 120 seconds`);
+      const timeoutError = new Error(`Text AI ${part} request timed out after ${timeoutMs}ms`);
+      timeoutError.isTimeout = true;
+      throw timeoutError;
     }
 
     throw error;
@@ -889,9 +1039,11 @@ function parseAIJson(rawText) {
     }
   }
 
-  throw new Error(
+  const error = new Error(
     `${lastError?.message || "AI returned non-JSON content"}。原始内容片段：${cleaned.slice(0, 1200)}`
   );
+  error.isParseFailure = true;
+  throw error;
 }
 
 function extractJsonObject(text) {
