@@ -1,16 +1,20 @@
 -- ============================================================
--- MakerMind AI 数据库 Schema
--- 数据库：Cloudflare D1 (SQLite)
--- 覆盖：用户认证、项目方案云端化、知识点图谱、项目关系、班级管理、学员追踪闭环
+-- MakerMind AI × SparkMinds 合并迁移（Loop 1）
+-- 目标：在保留 MakerMind 现有账号与项目模型的基础上，加入学员追踪闭环表
+-- 说明：本脚本可在空本地 D1 或已有 MakerMind 基础 schema 上执行
 -- ============================================================
 
--- ---------- 用户表 ----------
+PRAGMA foreign_keys = OFF;
+
+BEGIN TRANSACTION;
+
+-- ---------- MakerMind 基础表兜底：允许空本地 D1 直接执行本迁移 ----------
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   password_salt TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'teacher',        -- 'teacher' | 'student' | 'parent'
+  role TEXT NOT NULL DEFAULT 'teacher',
   display_name TEXT NOT NULL,
   avatar TEXT,
   created_at TEXT NOT NULL,
@@ -20,14 +24,12 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 
--- ---------- 学科表 ----------
 CREATE TABLE IF NOT EXISTS subjects (
   id TEXT PRIMARY KEY,
   name TEXT UNIQUE NOT NULL,
   created_at TEXT NOT NULL
 );
 
--- ---------- 知识点表 ----------
 CREATE TABLE IF NOT EXISTS knowledge_points (
   id TEXT PRIMARY KEY,
   subject_id TEXT,
@@ -40,7 +42,6 @@ CREATE TABLE IF NOT EXISTS knowledge_points (
 CREATE INDEX IF NOT EXISTS idx_kp_subject ON knowledge_points(subject_id);
 CREATE INDEX IF NOT EXISTS idx_kp_name ON knowledge_points(name);
 
--- ---------- 班级表（教师创建） ----------
 CREATE TABLE IF NOT EXISTS classes (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -53,7 +54,6 @@ CREATE TABLE IF NOT EXISTS classes (
 
 CREATE INDEX IF NOT EXISTS idx_classes_teacher ON classes(teacher_id);
 
--- ---------- 班级成员表（学生加入班级） ----------
 CREATE TABLE IF NOT EXISTS class_members (
   id TEXT PRIMARY KEY,
   class_id TEXT NOT NULL,
@@ -67,7 +67,6 @@ CREATE TABLE IF NOT EXISTS class_members (
 CREATE INDEX IF NOT EXISTS idx_cm_class ON class_members(class_id);
 CREATE INDEX IF NOT EXISTS idx_cm_user ON class_members(user_id);
 
--- ---------- 项目方案表（生成的 instruction 云端存储） ----------
 CREATE TABLE IF NOT EXISTS projects (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
@@ -81,14 +80,11 @@ CREATE TABLE IF NOT EXISTS projects (
   duration TEXT,
   level TEXT,
   image_key TEXT,
-  overview_data TEXT,                          -- JSON 字符串
-  build_data TEXT,                             -- JSON 字符串
-  practice_data TEXT,                          -- JSON 字符串
-  status TEXT NOT NULL DEFAULT 'draft',        -- 'draft' | 'published'
-  parent_project_id TEXT,                      -- 衍生/版本关系
-  is_template INTEGER DEFAULT 0,               -- 是否作为可布置模板
-  difficulty_level TEXT,                       -- 追踪系统使用的难度标签
-  expected_duration_hours REAL,                -- 预计完成时长
+  overview_data TEXT,
+  build_data TEXT,
+  practice_data TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  parent_project_id TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   FOREIGN KEY (creator_id) REFERENCES users(id),
@@ -97,26 +93,17 @@ CREATE TABLE IF NOT EXISTS projects (
   FOREIGN KEY (parent_project_id) REFERENCES projects(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_projects_creator ON projects(creator_id);
-CREATE INDEX IF NOT EXISTS idx_projects_kp ON projects(knowledge_point_id);
-CREATE INDEX IF NOT EXISTS idx_projects_class ON projects(class_id);
-CREATE INDEX IF NOT EXISTS idx_projects_parent ON projects(parent_project_id);
-CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
-CREATE INDEX IF NOT EXISTS idx_projects_template ON projects(is_template);
-
--- ---------- 项目方案关系表（衍生 / 变体 / 关联） ----------
 CREATE TABLE IF NOT EXISTS project_relations (
   id TEXT PRIMARY KEY,
   source_project_id TEXT NOT NULL,
   target_project_id TEXT NOT NULL,
-  relation_type TEXT NOT NULL,                 -- 'derived' | 'variant' | 'related'
+  relation_type TEXT NOT NULL,
   created_at TEXT NOT NULL,
   UNIQUE(source_project_id, target_project_id, relation_type),
   FOREIGN KEY (source_project_id) REFERENCES projects(id),
   FOREIGN KEY (target_project_id) REFERENCES projects(id)
 );
 
--- ---------- 收藏表 ----------
 CREATE TABLE IF NOT EXISTS favorites (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -129,6 +116,60 @@ CREATE TABLE IF NOT EXISTS favorites (
 
 CREATE INDEX IF NOT EXISTS idx_fav_user ON favorites(user_id);
 CREATE INDEX IF NOT EXISTS idx_fav_project ON favorites(project_id);
+
+-- ---------- projects 向前兼容扩展 ----------
+-- SQLite/D1 当前环境不支持 ALTER TABLE ADD COLUMN IF NOT EXISTS，
+-- 因此用重建表方式确保空库、旧库和重复执行都不报错。
+DROP TABLE IF EXISTS projects_next;
+
+CREATE TABLE projects_next (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  creator_id TEXT NOT NULL,
+  class_id TEXT,
+  knowledge_point_id TEXT,
+  subject TEXT,
+  concept TEXT,
+  interest TEXT,
+  kit TEXT,
+  duration TEXT,
+  level TEXT,
+  image_key TEXT,
+  overview_data TEXT,
+  build_data TEXT,
+  practice_data TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  parent_project_id TEXT,
+  is_template INTEGER DEFAULT 0,
+  difficulty_level TEXT,
+  expected_duration_hours REAL,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  FOREIGN KEY (creator_id) REFERENCES users(id),
+  FOREIGN KEY (class_id) REFERENCES classes(id),
+  FOREIGN KEY (knowledge_point_id) REFERENCES knowledge_points(id),
+  FOREIGN KEY (parent_project_id) REFERENCES projects(id)
+);
+
+INSERT OR IGNORE INTO projects_next (
+  id, title, creator_id, class_id, knowledge_point_id, subject, concept, interest, kit, duration, level, image_key,
+  overview_data, build_data, practice_data, status, parent_project_id, is_template, difficulty_level,
+  expected_duration_hours, created_at, updated_at
+)
+SELECT
+  id, title, creator_id, class_id, knowledge_point_id, subject, concept, interest, kit, duration, level, image_key,
+  overview_data, build_data, practice_data, status, parent_project_id, 0, NULL, NULL, created_at, updated_at
+FROM projects;
+
+DROP TABLE projects;
+ALTER TABLE projects_next RENAME TO projects;
+
+CREATE INDEX IF NOT EXISTS idx_projects_creator ON projects(creator_id);
+CREATE INDEX IF NOT EXISTS idx_projects_kp ON projects(knowledge_point_id);
+CREATE INDEX IF NOT EXISTS idx_projects_class ON projects(class_id);
+CREATE INDEX IF NOT EXISTS idx_projects_parent ON projects(parent_project_id);
+CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
+CREATE INDEX IF NOT EXISTS idx_projects_template ON projects(is_template);
 
 -- ---------- 学员档案表 ----------
 CREATE TABLE IF NOT EXISTS students (
@@ -167,7 +208,7 @@ CREATE TABLE IF NOT EXISTS student_projects (
   student_id TEXT NOT NULL,
   project_id TEXT NOT NULL,
   teacher_id TEXT,
-  status TEXT DEFAULT 'NOT_STARTED',           -- 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED'
+  status TEXT DEFAULT 'NOT_STARTED',
   progress_percent INTEGER DEFAULT 0,
   started_at TEXT,
   completed_at TEXT,
@@ -191,8 +232,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   duration_minutes INTEGER,
   raw_transcript TEXT,
   structured_summary TEXT,
-  topics_covered TEXT,                         -- JSON 字符串
-  skills_demonstrated TEXT,                    -- JSON 字符串
+  topics_covered TEXT,
+  skills_demonstrated TEXT,
   progress_delta INTEGER DEFAULT 0,
   understanding_score INTEGER DEFAULT 3,
   teacher_notes TEXT,
@@ -324,3 +365,10 @@ CREATE TABLE IF NOT EXISTS works (
 CREATE INDEX IF NOT EXISTS idx_works_student_id ON works(student_id);
 CREATE INDEX IF NOT EXISTS idx_works_type ON works(work_type);
 CREATE INDEX IF NOT EXISTS idx_works_created_date ON works(created_date);
+
+-- 旧进度表由 student_projects + progress_events 替代；历史数据迁移不在本次范围内
+DROP TABLE IF EXISTS student_progress;
+
+COMMIT;
+
+PRAGMA foreign_keys = ON;

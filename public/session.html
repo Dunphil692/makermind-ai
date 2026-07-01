@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>课堂记录｜MakerMind AI</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Session recorder</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="teacher.html">教师端</a><a href="generator.html">任务生成器</a></nav>
+  </header>
+
+  <main class="dashboard-wrap">
+    <div class="dash-header">
+      <div class="dash-greeting"><h1>课堂记录</h1><p>语音转写、AI 结构化，并保存为学生项目进度事件</p></div>
+      <a class="dash-new-btn" href="teacher.html">返回教师端</a>
+    </div>
+
+    <section class="project-card" style="padding:24px;">
+      <div class="advanced-fields-grid">
+        <label>选择学生<select id="studentSelect"></select></label>
+        <label>选择项目实例<select id="projectSelect"></select></label>
+        <label>课堂时长（分钟）<input id="durationInput" type="number" min="0" placeholder="例如 45" /></label>
+      </div>
+
+      <div class="form-section-title" style="margin-top:24px;"><span>VOICE / TEXT</span><h2>课堂转写</h2><p id="speechHint">Chrome 可使用语音识别；不支持时可直接手动输入。</p></div>
+      <div class="chat-input-row" style="align-items:stretch;">
+        <textarea id="transcriptInput" class="dialogue-input" rows="8" placeholder="点击开始录音，或手动输入课堂记录：今天小明完成了..." style="min-height:180px;"></textarea>
+      </div>
+      <div class="project-card-actions" style="margin-top:12px;">
+        <button class="pc-btn" id="startBtn" type="button">开始录音</button>
+        <button class="pc-btn" id="stopBtn" type="button" disabled>停止录音</button>
+        <button class="pc-btn primary" id="structureBtn" type="button">AI 结构化</button>
+      </div>
+    </section>
+
+    <section class="project-card" style="padding:24px;margin-top:18px;">
+      <div class="form-section-title"><span>STRUCTURED JSON</span><h2>结构化结果</h2><p>教师确认后保存，系统会自动写入进度事件并更新学生画像。</p></div>
+      <pre id="resultBox" style="white-space:pre-wrap;background:#0f172a;color:#e2e8f0;border-radius:16px;padding:16px;min-height:220px;overflow:auto;">尚未结构化</pre>
+      <div id="nextProjectBox" class="empty-state" style="display:none;margin-top:12px;"></div>
+      <div class="project-card-actions" style="margin-top:12px;">
+        <button class="pc-btn primary" id="saveBtn" type="button" disabled>保存记录</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script>
+    if (window.MMAuth.requireAuth('session.html')) {
+      const user = window.MMAuth.getCurrentUser();
+      if (user.role !== 'teacher') location.href = user.role === 'parent' ? 'parent.html' : 'student.html';
+
+      const params = new URLSearchParams(location.search);
+      const studentSelect = document.getElementById('studentSelect');
+      const projectSelect = document.getElementById('projectSelect');
+      const transcriptInput = document.getElementById('transcriptInput');
+      const resultBox = document.getElementById('resultBox');
+      const nextProjectBox = document.getElementById('nextProjectBox');
+      const startBtn = document.getElementById('startBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const structureBtn = document.getElementById('structureBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const durationInput = document.getElementById('durationInput');
+      let structured = null;
+      let recognition = null;
+
+      function esc(t){const d=document.createElement('div');d.textContent=String(t||'');return d.innerHTML;}
+      function selectedStudentId(){return studentSelect.value;}
+      function selectedProjectId(){return projectSelect.value;}
+
+      async function loadStudents(){
+        const res = await window.MMAuth.authFetch('/api/students');
+        const data = await res.json();
+        const students = data.students || [];
+        studentSelect.innerHTML = students.map(s => '<option value="'+esc(s.studentId)+'">'+esc(s.name)+'</option>').join('');
+        const target = params.get('studentId');
+        if (target) studentSelect.value = target;
+        await loadProjects();
+      }
+
+      async function loadProjects(){
+        const sid = selectedStudentId();
+        if (!sid) { projectSelect.innerHTML = ''; return; }
+        const res = await window.MMAuth.authFetch('/api/students/' + encodeURIComponent(sid) + '/projects');
+        const data = await res.json();
+        const projects = data.projects || [];
+        projectSelect.innerHTML = projects.map(p => '<option value="'+esc(p.id)+'">'+esc(p.title || p.projectId)+' · '+(p.progressPercent||0)+'%</option>').join('');
+        const target = params.get('studentProjectId');
+        if (target) projectSelect.value = target;
+      }
+
+      function setupSpeech(){
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          document.getElementById('speechHint').textContent = '当前浏览器不支持原生语音识别，请手动输入课堂记录文本。';
+          startBtn.disabled = true;
+          return;
+        }
+        recognition = new SpeechRecognition();
+        recognition.lang = 'zh-CN';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        let finalText = '';
+        recognition.onresult = function(event){
+          let interim = '';
+          for (let i = event.resultIndex; i < event.results.length; i += 1) {
+            const text = event.results[i][0].transcript;
+            if (event.results[i].isFinal) finalText += text + '。'; else interim += text;
+          }
+          transcriptInput.value = finalText + interim;
+        };
+        recognition.onend = function(){ startBtn.disabled = false; stopBtn.disabled = true; };
+      }
+
+      startBtn.onclick = function(){ if (!recognition) return; startBtn.disabled = true; stopBtn.disabled = false; recognition.start(); };
+      stopBtn.onclick = function(){ if (recognition) recognition.stop(); };
+      studentSelect.onchange = loadProjects;
+
+      structureBtn.onclick = async function(){
+        const rawTranscript = transcriptInput.value.trim();
+        if (!rawTranscript) return alert('请先输入或录入课堂文本');
+        structureBtn.disabled = true;
+        resultBox.textContent = 'AI 正在结构化…';
+        const res = await window.MMAuth.authFetch('/api/sessions/structure', { method:'POST', body: JSON.stringify({ studentId: selectedStudentId(), rawTranscript }) });
+        const data = await res.json();
+        structureBtn.disabled = false;
+        if (!res.ok) { resultBox.textContent = JSON.stringify(data, null, 2); return; }
+        structured = data.structured;
+        resultBox.textContent = JSON.stringify(structured, null, 2);
+        saveBtn.disabled = !selectedProjectId();
+        if (structured.suggestedNextProject) {
+          nextProjectBox.style.display = 'block';
+          nextProjectBox.innerHTML = '<h3>建议下个项目</h3><p>'+esc(structured.suggestedNextProject)+'</p><a href="generator.html?studentId='+encodeURIComponent(selectedStudentId())+'&prefill='+encodeURIComponent(structured.suggestedNextProject)+'">去生成</a>';
+        }
+      };
+
+      saveBtn.onclick = async function(){
+        if (!structured) return alert('请先 AI 结构化');
+        const payload = Object.assign({}, structured, {
+          studentProjectId: selectedProjectId(),
+          rawTranscript: transcriptInput.value.trim(),
+          durationMinutes: Number(durationInput.value || 0) || null,
+          inputMethod: 'VOICE_OR_MANUAL'
+        });
+        const res = await window.MMAuth.authFetch('/api/sessions', { method:'POST', body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (!res.ok) return alert(data.error || '保存失败');
+        alert('已保存课堂记录，当前进度：' + data.progressPercent + '%');
+        location.href = 'teacher.html';
+      };
+
+      setupSpeech();
+      loadStudents().catch(function(){ resultBox.textContent = '加载学生或项目失败，请返回教师端重试。'; });
+    }
+  </script>
+</body>
+</html>

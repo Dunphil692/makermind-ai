@@ -17,6 +17,8 @@
     const dialogueInput = document.querySelector("#dialogueInput");
     const dialogueSendBtn = document.querySelector("#dialogueSendBtn");
     const briefStatus = document.querySelector("#briefStatus");
+    const studentGenerateField = document.querySelector("#studentGenerateField");
+    const studentSelectForGenerate = document.querySelector("#studentSelectForGenerate");
 
     /* ===== State ===== */
     let isGenerating = false;
@@ -25,6 +27,7 @@
     let generateCount = 0;
     let dialogueMessages = [];
     let taskBrief = createEmptyBrief();
+    let selectedStudentId = "";
 
     /* ===== Demo instruction ===== */
     const demoInstruction2 = {
@@ -494,10 +497,13 @@
     }
 
     async function requestDialogueTurn(messages, brief) {
+      const headers = { "Content-Type": "application/json" };
+      const token = window.MMAuth && window.MMAuth.getToken ? window.MMAuth.getToken() : "";
+      if (token) headers.Authorization = "Bearer " + token;
       const response = await fetch("/api/dialogue-task-brief", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages, brief })
+        headers,
+        body: JSON.stringify({ messages, brief, studentId: selectedStudentId || undefined })
       });
       const text = await response.text();
       let data;
@@ -568,6 +574,28 @@
         }
       });
       renderBriefStatus();
+    }
+
+    async function loadStudentsForGeneration() {
+      if (!studentGenerateField || !studentSelectForGenerate || !window.MMAuth || !window.MMAuth.isLoggedIn()) return;
+      const user = window.MMAuth.getCurrentUser();
+      if (!user || user.role !== "teacher") return;
+      try {
+        const res = await window.MMAuth.authFetch("/api/students");
+        if (!res.ok) return;
+        const data = await res.json();
+        const students = data.students || [];
+        if (!students.length) return;
+        studentGenerateField.style.display = "block";
+        studentSelectForGenerate.innerHTML = '<option value="">不指定学生画像</option>' + students.map(s => `<option value="${safeText(s.studentId)}">${safeText(s.name)}${s.interestDirection ? " · " + safeText(Array.isArray(s.interestDirection) ? s.interestDirection.join("/") : s.interestDirection) : ""}</option>`).join("");
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("studentId")) {
+          studentSelectForGenerate.value = params.get("studentId");
+          selectedStudentId = studentSelectForGenerate.value;
+        }
+      } catch (error) {
+        console.warn("加载学生画像列表失败：", error);
+      }
     }
 
     /* ===== LocalStorage helpers ===== */
@@ -694,9 +722,12 @@
 
     /* ===== API call ===== */
     async function requestPart(payload, part) {
+      const headers = { "Content-Type": "application/json" };
+      const token = window.MMAuth && window.MMAuth.getToken ? window.MMAuth.getToken() : "";
+      if (token) headers.Authorization = "Bearer " + token;
       const response = await fetch("/api/generate-instruction-part", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ ...payload, part })
       });
       const text = await response.text();
@@ -747,7 +778,8 @@
           interest: getInterest(),
           kit: getCurrentKitLabel(),
           duration: getCurrentDuration(),
-          materials: getCurrentMaterials()
+          materials: getCurrentMaterials(),
+          studentId: selectedStudentId || undefined
         };
 
         generateCount += 1;
@@ -1361,6 +1393,13 @@
       dialogueSendBtn.addEventListener("click", sendDialogueMessage);
     }
 
+    if (studentSelectForGenerate) {
+      studentSelectForGenerate.addEventListener("change", () => {
+        selectedStudentId = studentSelectForGenerate.value;
+        renderBriefStatus();
+      });
+    }
+
     if (dialogueInput) {
       dialogueInput.addEventListener("keydown", event => {
         if (event.key === "Enter" && !event.shiftKey) {
@@ -1407,7 +1446,13 @@
       }
       if (params.has("k")) kitSelect.value = params.get("k");
       if (params.has("d")) durationSelect.value = params.get("d");
-      if (params.has("c") || params.has("i") || params.has("k") || params.has("d")) {
+      if (params.has("prefill")) {
+        const val = params.get("prefill");
+        if (dialogueInput) dialogueInput.value = val;
+        if (interestInput && !interestInput.value.trim()) interestInput.value = val;
+      }
+      if (params.has("studentId")) selectedStudentId = params.get("studentId");
+      if (params.has("c") || params.has("i") || params.has("k") || params.has("d") || params.has("prefill")) {
         seedDialogueFromFields();
       }
     }
@@ -1416,6 +1461,7 @@
     appendDialogueMessage("assistant", "你好，我会像和你一起备课一样了解需求。请直接告诉我：学生最近喜欢什么？你想用什么硬件或材料？这节课最想让学生学会哪个知识点？");
     renderBriefStatus();
     loadFromUrlParams();
+    loadStudentsForGeneration();
     const params = new URLSearchParams(window.location.search);
     const projectId = params.get("project");
     const forceDemo = params.has("demo");
