@@ -9,14 +9,22 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Parent view</small></span></a>
-    <nav class="nav-links"><a href="index.html">首页</a><a href="dashboard.html">工作台</a></nav>
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Parent growth report</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="parent.html">成长报告</a><a href="dashboard.html">工作台</a></nav>
   </header>
 
-  <main class="dashboard-wrap">
-    <div class="dash-header">
-      <div class="dash-greeting"><h1>家长端</h1><p>查看孩子的项目进度、课堂记录、教师反馈与作品</p></div>
+  <main class="dashboard-wrap role-workspace parent-workspace">
+    <div class="dash-header role-hero parent-hero">
+      <div class="dash-greeting"><span class="eyebrow">PARENT REPORT</span><h1>孩子成长报告</h1><p>家长端不是另一个工作台，而是同步老师端和学生端的结果：项目进度、课堂总结、老师反馈和作品展示。</p></div>
     </div>
+
+    <section class="loop-rail parent-rail" aria-label="家校同步流程">
+      <div><strong>老师布置</strong><span>项目进入学生任务板</span></div>
+      <div><strong>学生提交</strong><span>作品同步给老师</span></div>
+      <div><strong>课堂记录</strong><span>进度和画像自动更新</span></div>
+      <div><strong>家长查看</strong><span>只读成长报告</span></div>
+    </section>
+
     <div class="dash-stats" id="stats"></div>
     <section class="project-grid" id="children"><div class="loading-spin">加载中…</div></section>
   </main>
@@ -29,7 +37,9 @@
       const list = document.getElementById("children");
       const stats = document.getElementById("stats");
       function esc(t){const d=document.createElement("div");d.textContent=String(t||"");return d.innerHTML;}
-      function progressBar(n){return '<div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.max(0,Math.min(100,n||0))+'%;background:linear-gradient(135deg,#16a34a,#22c55e)"></span></div>';}
+      function text(v, fallback){return Array.isArray(v)?v.join("、"):(v||fallback||"");}
+      function progressBar(n){return '<div class="role-progress parent-progress"><span style="width:'+Math.max(0,Math.min(100,n||0))+'%"></span></div>';}
+      function short(t,n){t=String(t||'');return t.length>n?t.slice(0,n)+'…':t;}
       async function loadChild(s){
         const [pRes,seRes,fRes,wRes]=await Promise.all([
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/progress'),
@@ -40,26 +50,33 @@
         const p=await pRes.json(), se=await seRes.json(), f=await fRes.json(), w=await wRes.json();
         return Object.assign({},s,{progress:p.progress||[],summary:p.summary||{},sessions:se.sessions||[],feedbacks:f.feedbacks||[],works:w.works||[]});
       }
+      function renderTimeline(s){
+        const items=[];
+        if(s.feedbacks[0]) items.push(['老师反馈',s.feedbacks[0].content]);
+        if(s.sessions[0]) items.push(['课堂总结',s.sessions[0].structuredSummary||s.sessions[0].teacherNotes]);
+        if(s.works[0]) items.push(['学生作品',s.works[0].workName||'最新作品已提交']);
+        if(!items.length) return '<div class="empty-state mini"><h3>等待更新</h3><p>老师录入课堂或学生提交作品后会同步到这里。</p></div>';
+        return '<div class="growth-timeline">'+items.map(i=>'<div><span>'+esc(i[0])+'</span><p>'+esc(short(i[1],96))+'</p></div>').join('')+'</div>';
+      }
       function card(s){
         const current=s.progress[0];
         const pct=current?current.progressPercent:0;
-        const latestSession=s.sessions[0];
-        const latestFeedback=s.feedbacks[0];
-        return '<article class="project-card"><div class="project-card-body">'+
-          '<h3 class="project-card-title">'+esc(s.name)+'</h3>'+
-          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(s.interestDirection||'暂无兴趣画像')+'</span></div>'+
-          '<p class="project-card-meta">当前项目：'+esc(current?current.title:'暂无项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'%</p>'+
-          '<p class="project-card-meta"><strong>最近课堂：</strong>'+esc(latestSession?latestSession.structuredSummary:'暂无课堂记录')+'</p>'+
-          '<p class="project-card-meta"><strong>教师反馈：</strong>'+esc(latestFeedback?latestFeedback.content:'暂无反馈')+'</p>'+
-          '<p class="project-card-meta"><strong>作品：</strong>'+esc(s.works.length?s.works.map(w=>w.workName||'未命名作品').join('、'):'暂无作品')+'</p>'+
+        return '<article class="project-card connected-card parent-report-card"><div class="project-card-body">'+
+          '<div class="card-topline"><span>成长报告</span><strong>'+esc(s.name)+'</strong></div>'+
+          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(text(s.interestDirection,'暂无兴趣画像'))+'</span></div>'+
+          '<div class="profile-strip"><div><span>能力</span><strong>'+esc(text(s.skillLevel,'待评估'))+'</strong></div><div><span>性格</span><strong>'+esc(text(s.personalityTraits,'课堂后生成'))+'</strong></div><div><span>风格</span><strong>'+esc(s.learningStyle||'待观察')+'</strong></div></div>'+
+          '<p class="project-card-meta"><strong>当前项目：</strong>'+esc(current?current.title:'暂无项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'% · 课堂 '+s.sessions.length+' · 反馈 '+s.feedbacks.length+' · 作品 '+s.works.length+'</p>'+
+          renderTimeline(s)+
+          '<div class="project-card-actions">'+(current?'<a class="pc-btn" href="generator.html?project='+encodeURIComponent(current.projectId)+'&studentId='+encodeURIComponent(s.studentId)+'">查看项目方案</a>':'')+'<span class="readonly-note">家长端只读，反馈由老师端同步。</span></div>'+
           '</div></article>';
       }
       async function load(){
         const res=await window.MMAuth.authFetch('/api/students');
         const data=await res.json();
         const children=await Promise.all((data.students||[]).map(loadChild));
-        stats.innerHTML='<div class="dash-stat"><strong>'+children.length+'</strong><span>孩子</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.sessions.length,0)+'</strong><span>课堂记录</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.works.length,0)+'</strong><span>作品</span></div>';
-        list.innerHTML=children.length?children.map(card).join(''):'<div class="empty-state"><h3>暂无孩子档案</h3><p>请联系老师绑定家长账号</p></div>';
+        const avg=children.length?Math.round(children.reduce((a,s)=>a+(s.summary.averageProgress||0),0)/children.length):0;
+        stats.innerHTML='<div class="dash-stat"><strong>'+children.length+'</strong><span>孩子</span></div><div class="dash-stat"><strong>'+avg+'%</strong><span>平均进度</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.sessions.length,0)+'</strong><span>课堂记录</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.works.length,0)+'</strong><span>作品</span></div>';
+        list.innerHTML=children.length?children.map(card).join(''):'<div class="empty-state"><h3>暂无孩子档案</h3><p>请联系老师绑定家长账号。</p></div>';
       }
       load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
     }

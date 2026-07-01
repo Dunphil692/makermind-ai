@@ -9,17 +9,35 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Teacher workspace</small></span></a>
-    <nav class="nav-links"><a href="index.html">首页</a><a href="generator.html">任务生成器</a><a href="dashboard.html">工作台</a></nav>
+    <a class="brand" href="index.html"><span class="brand-mark">MM</span><span><strong>MakerMind AI</strong><small>Teacher loop console</small></span></a>
+    <nav class="nav-links"><a href="index.html">首页</a><a href="generator.html">个性化生成</a><a href="session.html">课堂记录</a><a href="dashboard.html">项目库</a></nav>
   </header>
 
-  <main class="dashboard-wrap">
-    <div class="dash-header">
-      <div class="dash-greeting"><h1>教师端</h1><p>查看学员进度，录入反馈、课程记录和作品</p></div>
-      <a class="dash-new-btn" href="generator.html">+ 生成新方案</a>
+  <main class="dashboard-wrap role-workspace teacher-workspace">
+    <div class="dash-header role-hero">
+      <div class="dash-greeting"><span class="eyebrow">TEACHER CONTROL LOOP</span><h1>教师闭环工作台</h1><p>从“给学生生成项目”开始，串起布置任务、学生提交、课堂记录、可视化反馈和家长同步。</p></div>
+      <a class="dash-new-btn" href="generator.html">+ 为学生生成新任务</a>
     </div>
+
+    <section class="loop-rail" aria-label="正循环流程">
+      <div><strong>1 生成</strong><span>选学生画像生成项目</span></div>
+      <div><strong>2 布置</strong><span>自动进入学生任务</span></div>
+      <div><strong>3 学生做</strong><span>提交作品和疑问</span></div>
+      <div><strong>4 课堂记录</strong><span>语音/文本更新进度</span></div>
+      <div><strong>5 反馈同步</strong><span>学生和家长同时看到</span></div>
+    </section>
+
     <div class="dash-stats" id="stats"></div>
-    <section class="project-grid" id="students"><div class="loading-spin">加载中…</div></section>
+
+    <section class="role-section">
+      <div class="section-heading"><div><span>VISUAL FEEDBACK</span><h2>待处理反馈队列</h2></div><p>这里把学生提交、低进度和缺反馈自动汇总，教师不需要在三个端之间来回找。</p></div>
+      <div class="insight-grid" id="actionQueue"><div class="loading-spin">加载中…</div></div>
+    </section>
+
+    <section class="role-section">
+      <div class="section-heading"><div><span>STUDENTS</span><h2>学生画像与项目进度</h2></div><p>每张卡片都连到生成器、课堂记录、反馈和学生/家长可见的数据。</p></div>
+      <div class="project-grid" id="students"><div class="loading-spin">加载中…</div></div>
+    </section>
   </main>
 
   <script src="auth.js"></script>
@@ -29,33 +47,56 @@
       if (user.role !== "teacher") location.href = user.role === "parent" ? "parent.html" : "student.html";
       const list = document.getElementById("students");
       const stats = document.getElementById("stats");
+      const queue = document.getElementById("actionQueue");
       function esc(t){const d=document.createElement("div");d.textContent=String(t||"");return d.innerHTML;}
-      function progressBar(n){return '<div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden"><span style="display:block;height:100%;width:'+Math.max(0,Math.min(100,n||0))+'%;background:linear-gradient(135deg,#ff6b35,#ff8e53)"></span></div>';}
+      function text(v, fallback){return Array.isArray(v)?v.join("、"):(v||fallback||"");}
+      function progressBar(n){return '<div class="role-progress"><span style="width:'+Math.max(0,Math.min(100,n||0))+'%"></span></div>';}
+      function short(t,n){t=String(t||'');return t.length>n?t.slice(0,n)+'…':t;}
       async function loadStudent(s){
-        const [pRes,fRes,wRes,cRes] = await Promise.all([
+        const [pRes,fRes,wRes,cRes,seRes] = await Promise.all([
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/progress'),
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/feedbacks'),
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/works'),
-          window.MMAuth.authFetch('/api/students/'+s.studentId+'/courses')
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/courses'),
+          window.MMAuth.authFetch('/api/students/'+s.studentId+'/sessions')
         ]);
-        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json(), c=await cRes.json();
-        const current=(p.progress||[])[0];
-        return Object.assign({}, s, { progress:p.progress||[], summary:p.summary||{}, feedbacks:f.feedbacks||[], works:w.works||[], courses:c.courses||[], current });
+        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json(), c=await cRes.json(), se=await seRes.json();
+        const progress=p.progress||[];
+        return Object.assign({}, s, { progress, summary:p.summary||{}, feedbacks:f.feedbacks||[], works:w.works||[], courses:c.courses||[], sessions:se.sessions||[], current:progress[0] });
       }
       function card(s){
         const pct=s.current?s.current.progressPercent:0;
-        return '<article class="project-card"><div class="project-card-body">'+
-          '<h3 class="project-card-title">'+esc(s.name)+'</h3>'+
-          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(s.skillLevel||'未设置画像')+'</span></div>'+
-          '<p class="project-card-meta">当前项目：'+esc(s.current?s.current.title:'暂无项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'% · 反馈 '+s.feedbacks.length+' · 作品 '+s.works.length+' · 课程 '+s.courses.length+'</p>'+
-          '<div class="project-card-actions"><a class="pc-btn primary" href="session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current?s.current.id:'')+'">录入课堂记录</a><button class="pc-btn" data-feedback="'+esc(s.studentId)+'">写反馈</button><button class="pc-btn" data-course="'+esc(s.studentId)+'">记课程</button></div>'+
+        const latestWork=s.works[0];
+        const latestSession=s.sessions[0];
+        const latestFeedback=s.feedbacks[0];
+        const prefill='请基于'+s.name+'的画像，生成一个适合下一节课的项目：兴趣 '+text(s.interestDirection,'待观察')+'，能力 '+text(s.skillLevel,'待评估')+'，目标 '+text(s.learningGoal,'待设置');
+        return '<article class="project-card connected-card" id="student-'+esc(s.studentId)+'"><div class="project-card-body">'+
+          '<div class="card-topline"><span>学生画像</span><strong>'+esc(s.name)+'</strong></div>'+
+          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(text(s.interestDirection,'暂无兴趣画像'))+'</span></div>'+
+          '<div class="profile-strip"><div><span>能力</span><strong>'+esc(text(s.skillLevel,'待评估'))+'</strong></div><div><span>性格</span><strong>'+esc(text(s.personalityTraits,'课堂后自动提取'))+'</strong></div><div><span>风格</span><strong>'+esc(s.learningStyle||'待观察')+'</strong></div></div>'+
+          '<p class="project-card-meta"><strong>当前任务：</strong>'+esc(s.current?s.current.title:'还没有布置项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'% · 课堂 '+s.sessions.length+' · 反馈 '+s.feedbacks.length+' · 作品 '+s.works.length+'</p>'+
+          '<div class="teacher-visual-grid"><div><span>最近课堂</span><p>'+esc(short(latestSession?latestSession.structuredSummary:'还没有课堂记录',72))+'</p></div><div><span>学生作品</span><p>'+esc(latestWork?(latestWork.workName||'未命名作品'):'暂无提交')+'</p></div><div><span>上次反馈</span><p>'+esc(short(latestFeedback?latestFeedback.content:'还没有给反馈',72))+'</p></div></div>'+
+          '<div class="project-card-actions"><a class="pc-btn primary" href="generator.html?studentId='+encodeURIComponent(s.studentId)+'&prefill='+encodeURIComponent(prefill)+'">按画像生成</a><a class="pc-btn" href="session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current?s.current.id:'')+'">录课堂</a><button class="pc-btn" data-feedback="'+esc(s.studentId)+'">写可视化反馈</button><button class="pc-btn" data-course="'+esc(s.studentId)+'">记课程</button></div>'+
           '</div></article>';
       }
+      function queueItem(type,s,msg,href){
+        return '<article class="insight-card"><span>'+esc(type)+'</span><h3>'+esc(s.name)+'</h3><p>'+esc(msg)+'</p><a class="pc-btn primary" href="'+href+'">处理</a></article>';
+      }
+      function renderQueue(students){
+        const items=[];
+        students.forEach(s=>{
+          const pct=s.current?s.current.progressPercent:0;
+          if(!s.current) items.push(queueItem('待布置',s,'还没有项目任务，先用画像生成并布置。','generator.html?studentId='+encodeURIComponent(s.studentId)));
+          if(s.current && pct<40) items.push(queueItem('进度预警',s,'当前项目只有 '+pct+'%，建议录入课堂记录定位卡点。','session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current.id)));
+          if(s.works.length && !s.feedbacks.length) items.push(queueItem('待反馈',s,'学生已提交作品，但还没有教师反馈。','#student-'+encodeURIComponent(s.studentId)));
+        });
+        queue.innerHTML=items.length?items.slice(0,6).join(''):'<div class="empty-state"><h3>目前没有紧急待办</h3><p>学生提交作品、进度偏低或缺少反馈时，会自动出现在这里。</p></div>';
+      }
       async function createSimple(kind, studentId){
-        const text=prompt(kind==='feedback'?'请输入教师反馈':'请输入课程记录');
+        const text=prompt(kind==='feedback'?'请输入给学生和家长都能看到的可视化反馈：建议包含“亮点 / 卡点 / 下一步”。':'请输入课程记录');
         if(!text) return;
         const url=kind==='feedback'?'/api/students/'+studentId+'/feedbacks':'/api/students/'+studentId+'/courses';
-        const body=kind==='feedback'?{content:text,courseName:'课堂反馈'}:{content:text,courseName:'课堂记录'};
+        const body=kind==='feedback'?{content:text,courseName:'项目反馈'}:{content:text,courseName:'课堂记录'};
         const res=await window.MMAuth.authFetch(url,{method:'POST',body:JSON.stringify(body)});
         if(!res.ok) alert('保存失败'); else load();
       }
@@ -63,12 +104,14 @@
         const res=await window.MMAuth.authFetch('/api/students');
         const data=await res.json();
         const students=await Promise.all((data.students||[]).map(loadStudent));
-        stats.innerHTML='<div class="dash-stat"><strong>'+students.length+'</strong><span>学员</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.progress.length,0)+'</strong><span>项目实例</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.feedbacks.length,0)+'</strong><span>反馈</span></div>';
-        list.innerHTML=students.length?students.map(card).join(''):'<div class="empty-state"><h3>暂无学员</h3><p>请先通过 API 或后续表单创建学员档案</p></div>';
+        const avg=students.length?Math.round(students.reduce((a,s)=>a+(s.summary.averageProgress||0),0)/students.length):0;
+        stats.innerHTML='<div class="dash-stat"><strong>'+students.length+'</strong><span>学员</span></div><div class="dash-stat"><strong>'+avg+'%</strong><span>平均进度</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.works.length,0)+'</strong><span>学生作品</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.sessions.length,0)+'</strong><span>课堂记录</span></div>';
+        renderQueue(students);
+        list.innerHTML=students.length?students.map(card).join(''):'<div class="empty-state"><h3>暂无学员</h3><p>先创建学生档案，再从生成器给学生布置项目。</p></div>';
         list.querySelectorAll('[data-feedback]').forEach(b=>b.onclick=()=>createSimple('feedback',b.dataset.feedback));
         list.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>createSimple('course',b.dataset.course));
       }
-      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
+      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>'; queue.innerHTML='';});
     }
   </script>
 </body>
