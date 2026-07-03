@@ -81,8 +81,6 @@ makermind-ai/
 ├── public/              # 前端静态文件
 │   ├── index.html       # 首页
 │   ├── generator.html   # 任务生成器（核心页面）
-│   ├── gallery.html     # 任务案例库
-│   ├── rules.html       # 课堂痛点
 │   ├── students.html    # 学生分层
 │   ├── about.html       # 关于我们
 │   ├── faq.html         # 常见问题
