@@ -1161,66 +1161,6 @@ textarea:focus {
   font-weight: 750;
 }
 
-.instruction-quick-summary {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.instruction-quick-summary div {
-  padding: 16px;
-  border: 1px solid rgba(255, 107, 53, 0.14);
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(255, 247, 237, 0.88), rgba(255,255,255,0.88));
-}
-
-.instruction-quick-summary span {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--primary-dark);
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.instruction-quick-summary strong {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.55;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
-.instruction-quick-nav {
-  position: sticky;
-  top: 10px;
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 10px;
-  border: 1px solid rgba(15,23,42,0.07);
-  border-radius: 18px;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(10px);
-}
-
-.instruction-quick-nav a {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(248,250,252,0.9);
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 850;
-  text-decoration: none;
-}
-
-.instruction-quick-nav a:hover {
-  background: rgba(255, 107, 53, 0.1);
-  color: var(--primary-dark);
-}
-
 .instruction-visual {
   overflow: hidden;
   margin: 0;
@@ -1638,49 +1578,6 @@ pre,
 .brief-chip.missing {
   border-color: rgba(255, 107, 53, 0.18);
   background: rgba(255, 107, 53, 0.07);
-}
-
-.brief-action-hint {
-  grid-column: 1 / -1;
-  padding: 10px 12px;
-  border-radius: 14px;
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.brief-action-hint.warning {
-  border: 1px solid rgba(255, 107, 53, 0.18);
-  background: rgba(255, 107, 53, 0.07);
-  color: #c2410c;
-}
-
-.brief-action-hint.success {
-  border: 1px solid rgba(0, 212, 170, 0.16);
-  background: rgba(0, 212, 170, 0.075);
-  color: #0f766e;
-}
-
-.error-details {
-  margin: 12px 0;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 14px;
-  background: rgba(248, 250, 252, 0.78);
-  overflow: hidden;
-}
-
-.error-details summary {
-  cursor: pointer;
-  padding: 11px 13px;
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 850;
-}
-
-.error-details p {
-  margin: 0;
-  padding: 0 13px 12px;
-  color: var(--muted);
-  font-size: 13px;
 }
 
 .chat-input-row {
@@ -3143,8 +3040,7 @@ button:disabled {
   .about-grid,
   .student-grid,
   .dimension-grid,
-  .memory-grid,
-  .instruction-quick-summary {
+  .memory-grid {
     grid-template-columns: 1fr;
   }
 
