@@ -64,6 +64,48 @@ npx wrangler deploy
 
 线上排查：打开同源地址 `/api/health`。如果不是 JSON，说明当前页面不是由 Worker 同源服务；如果 JSON 中 `ai.hasApiKey / hasBaseUrl / hasModel` 为 `false`，说明 Cloudflare 预览或生产环境缺少 AI 配置。
 
+## 任务生成器故障排查
+
+### `Failed to fetch` / `Worker API 未连通`
+
+任务生成器前端调用的是同源相对路径 `/api/...`，所以页面必须由 Cloudflare Worker 同源服务。只打开 `public/generator.html`、只预览 `public/` 静态目录，或打开错误的预览域名，都会导致 `/api/dialogue-task-brief`、`/api/generate-instruction-part`、`/api/health` 失败。
+
+优先检查当前页面同源的健康检查地址：
+
+```text
+<当前页面域名>/api/health
+```
+
+例如：
+
+```text
+https://makermind.cloud/api/health
+```
+
+| `/api/health` 结果 | 说明 | 处理方式 |
+|---|---|---|
+| 返回 JSON，且 `ok: true` | Worker API 同源可用 | 继续看 AI 配置和生成接口日志 |
+| 返回 HTML | 当前页面大概率是静态预览，不是 Worker 同源页面 | 改用 Worker 部署域名或 Wrangler 输出地址 |
+| 返回 404 | 当前域名没有正确绑定 Worker API | 检查 Cloudflare Worker 路由、部署和自定义域名 |
+| JSON 中 `ai.hasApiKey / hasBaseUrl / hasModel` 有 `false` | Worker 已连通，但 AI 环境变量缺失 | 在 Cloudflare 配置 `AI_API_KEY`、`AI_BASE_URL`、`AI_MODEL` |
+| JSON 正常但生成仍 429/5xx/超时 | Worker 已连通，上游 AI 或模型配置异常 | 查看 Worker logs、模型名、额度、Base URL 和返回 JSON 格式 |
+
+本地必须用 Worker 预览：
+
+```bash
+cd /Users/rita/Desktop/projects/makermind-ai
+npx wrangler dev --local
+```
+
+然后打开 Wrangler 输出的地址，例如：
+
+```text
+http://127.0.0.1:<port>/generator.html
+http://127.0.0.1:<port>/api/health
+```
+
+不要用 `file://` 或普通静态服务器直接打开 `public/generator.html` 来测试生成器。
+
 ## 生成稳定性与兜底
 
 任务生成器保留三段式 `overview → build → practice` 流程，但增加了抗失败机制：

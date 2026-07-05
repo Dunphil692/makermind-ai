@@ -767,10 +767,14 @@
       return `${window.location.origin}/api/health`;
     }
 
+    function isWorkerConnectivityError(message = "") {
+      return /Failed to fetch|NetworkError|Load failed|network|静态预览|Worker API/i.test(message);
+    }
+
     function formatFetchError(error) {
       const message = error?.message || String(error || "生成失败");
-      if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("Load failed")) {
-        return `${message}。当前页面没有连到 MakerMind Worker API，请打开 ${getHealthLink()} 检查是否返回 JSON；如果返回 404/HTML，说明你打开的是静态预览，不是同源 Worker。`;
+      if (isWorkerConnectivityError(message)) {
+        return `${message}。当前页面没有连到 MakerMind Worker API。请先打开同源 /api/health：返回 JSON 表示 Worker 已连通；返回 404 或 HTML 表示你打开的是静态预览或错误域名。`;
       }
       return message;
     }
@@ -782,22 +786,26 @@
 
       let errorType = "未知错误";
       let errorSuggestion = "请检查网络连接后重试，或联系管理员确认 API 配置。";
+      let showHealthCheck = false;
 
-      if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("network") || message.includes("静态预览")) {
+      if (isWorkerConnectivityError(message)) {
         errorType = "Worker API 未连通";
-        errorSuggestion = "请打开 /api/health 检查：如果不是 JSON，说明当前页面不是由 Cloudflare Worker 同源服务；如果 JSON 里 AI 配置为 false，请在 Cloudflare 配置 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
+        showHealthCheck = true;
+        errorSuggestion = "先点下面的“打开 API 健康检查”：如果看到 JSON，说明 Worker 已连通，再看 ai.hasApiKey / hasBaseUrl / hasModel 是否为 true；如果看到 404 或 HTML，说明当前页面不是 Cloudflare Worker 同源服务，本地请用 npx wrangler dev --local，不要只打开 public 静态目录。";
       } else if (message.includes("401") || message.includes("403")) {
         errorType = "权限不足";
         errorSuggestion = "如果选择了学生画像，请确认当前账号是教师账号；学生和家长只能查看已布置项目，不能替教师生成画像方案。";
       } else if (message.includes("AI_API_KEY") || message.includes("AI_BASE_URL") || message.includes("AI_MODEL") || message.includes("API key")) {
         errorType = "AI 环境变量缺失";
-        errorSuggestion = "服务器 AI 配置可能有问题，请在 Cloudflare Worker 中设置 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
+        showHealthCheck = true;
+        errorSuggestion = "Worker 已响应，但服务器 AI 配置可能缺失。请打开 /api/health，确认 ai.hasApiKey、ai.hasBaseUrl、ai.hasModel 都是 true，并在 Cloudflare Worker 中配置 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
       } else if (message.includes("429") || message.includes("rate limit") || message.includes("quota")) {
         errorType = "请求过于频繁";
         errorSuggestion = "AI 生成请求已达上限，请等待 1 分钟后重试。";
       } else if (message.includes("500") || message.includes("502") || message.includes("503")) {
         errorType = "服务器错误";
-        errorSuggestion = "服务器暂时不可用，请稍后重试。";
+        showHealthCheck = true;
+        errorSuggestion = "服务器暂时不可用。请先打开 /api/health：如果健康检查正常，再查看 Cloudflare Worker 日志和上游 AI 服务状态。";
       } else if (message.includes("timeout") || message.includes("超时")) {
         errorType = "请求超时";
         errorSuggestion = "AI 生成耗时过长，请重试。如果持续超时，建议选择较短的课堂时长。";
@@ -805,6 +813,7 @@
 
       const retained = activeDraftInfo ? countDraftParts(activeDraftInfo) : 0;
       const resumeHint = retained > 0 ? `<div class="tips-box">已保留成功生成的 ${retained}/3 段，点击重试会从失败段继续，不会浪费前面已生成内容。</div>` : "";
+      const healthCheckLink = showHealthCheck ? `<a class="btn ghost" href="${safeText(getHealthLink())}" target="_blank" rel="noopener noreferrer" style="margin-top:16px;margin-left:8px;">打开 API 健康检查</a>` : "";
       projectCards.innerHTML = `
         <article class="instruction-empty demo-fallback-card">
           <div class="project-card-header">
@@ -815,6 +824,7 @@
           <p style="margin-top:12px;color:#64748b;">${safeText(errorSuggestion)}</p>
           ${resumeHint}
           <button type="button" class="btn primary" id="retryBtn" style="margin-top:16px;">${retained > 0 ? "继续生成剩余部分" : "重新生成"}</button>
+          ${healthCheckLink}
           ${retained > 0 ? '<button type="button" class="btn ghost" id="restartBtn" style="margin-top:16px;margin-left:8px;">清空草稿重新开始</button>' : ""}
         </article>
       `;
