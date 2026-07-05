@@ -370,6 +370,15 @@ basketball-scoreboard,
 livestream-dashboard,
 milk-tea-console
 
+内容质量要求：
+- 宁可生成慢一点，也不要为了速度压缩内容。
+- 输出要像老师可直接上课的 instruction，不要像项目摘要或点子清单。
+- 每个字段都要写具体课堂内容，不要写“可根据情况调整”“略”“待补充”。
+- 要体现老师怎么讲、学生怎么做、学生如何发现知识规律。
+- 要把${input.concept}拆成学生能观察、能操作、能解释的变量、规则和反馈。
+- 每一段都要服务学习目标，不要只追求硬件效果。
+- 如果内容需要更长才能说清楚，就生成更长；不要主动缩短。
+
 输出要求：
 - 只返回严格 JSON。
 - 不要 Markdown。
@@ -391,11 +400,12 @@ ${baseDesignRules(input)}
 这一部分要完成：
 1. 项目名和副标题
 2. 项目元信息
-3. 项目概述
-4. 为什么学生会想玩
-5. 为什么它能帮助理解知识点
-6. 交互流程预览
-7. 材料清单
+3. 老师开场白 / 课堂导入 hook
+4. 项目概述
+5. 为什么学生会想玩
+6. 为什么它能帮助理解知识点
+7. 交互流程预览
+8. 材料清单
 
 项目名字不能像教材标题。
 不要写：
@@ -433,6 +443,7 @@ ${baseDesignRules(input)}
     },
     "overview": {
       "coreGoal": "",
+      "teacherHook": "",
       "projectIntro": "",
       "whyFun": "",
       "learningReasons": []
@@ -459,15 +470,16 @@ ${baseDesignRules(input)}
 - projectName：要有吸引力，像一个任务、游戏或生活装置。
 - subtitle：一句话说明"通过什么项目理解什么知识点"。
 - coreGoal：必须强调学习目标，不只是项目目标。
-- projectIntro：讲清楚学生要做什么，硬件如何互动。
-- whyFun：说明学生为什么会想玩。
-- learningReasons：至少 4 条，解释项目如何帮助理解 ${input.concept}。
-- trigger：学生动作或传感器输入。
-- calculation：知识点如何参与计算或判断。
-- feedback：至少 3 条，说明屏幕、灯光、声音或实体动作如何反馈。
+- teacherHook：一句老师可以直接对学生说的开场白，要有画面感和任务感。
+- projectIntro：至少 80 字，讲清楚学生要做什么、硬件如何互动、最后能看到什么结果。
+- whyFun：至少 60 字，说明学生为什么会想玩，必须结合 ${input.interest} 的具体情境。
+- learningReasons：至少 5 条，每条都要解释项目如何帮助理解 ${input.concept}，不要只写短词。
+- trigger：学生动作或传感器输入，要写得像课堂操作说明。
+- calculation：知识点如何参与计算或判断，要点出变量、规则和输出之间的关系。
+- feedback：至少 4 条，说明屏幕、灯光、声音或实体动作如何反馈，每条要对应一种学习观察。
 - level：Level 3 / Level 4 / Level 5。
-- levelReason：说明为什么达到这个等级。
-- materials：4 到 8 项，优先使用可用材料：${input.materials}
+- levelReason：说明为什么达到这个等级，也说明它比单纯显示数据更适合学习。
+- materials：5 到 8 项，优先使用可用材料：${input.materials}，每项 note 要写课堂注意事项。
 `;
 }
 
@@ -486,13 +498,14 @@ ${baseDesignRules(input)}
 
 内容要求：
 - 这部分一定要体现"学习"，不能只是做项目。
-- 制作步骤要具体，适合老师照着讲。
-- 知识讲解要适合中小学生，不要太学术。
-- 代码只需要体现核心逻辑，不要写特别长。
+- 制作步骤要具体，适合老师照着讲，每一步都要写学生做什么、老师提醒什么、如何判断成功。
+- 知识讲解要适合中小学生，不要太学术，但必须讲清楚为什么。
+- 代码可以比以前更完整，至少要体现变量、输入、计算规则、反馈输出和一个可修改参数。
 - C++ 版本适合 Arduino / ESP32。
 - MicroPython 版本适合 UNIHIKER K10 / micro:bit / Python 风格硬件。
 - 两种代码都必须体现：读取传感器输入 → 根据知识点计算或判断 → 输出屏幕、灯光、声音反馈。
 - 代码应该尽量像标准代码，而不是全部靠左的说明文字。
+- 不要只给代码骨架；每段代码至少要有 12 行，包含注释、变量和主循环。
 
 非常重要：
 为了避免 JSON 出错，不要把代码写成一个大字符串。
@@ -550,19 +563,19 @@ starterCodeCppLines 和 starterCodePythonLines 必须都是字符串数组。
 }
 
 字段要求：
-- steps：5 到 7 步。
+- steps：6 到 8 步。
 - 步骤顺序必须体现：
-  理解知识点 → 搭建原型 → 设置输入 → 建立知识规则 → 设置反馈 → 测试挑战 → 总结知识。
-- 每一步 content 要具体，不能只写一句空话。
-- tips：给老师或学生的提示。
-- warning：如果没有危险，也要写"注意先完成基础版，不要一开始做太复杂"。
-- coreConcept：解释 ${input.concept} 的核心概念。
-- keyFormula：如果有公式，写公式；如果没有公式，写核心规则。
-- inProject：解释项目如何体现知识点。
-- deepUnderstanding：帮助学生从现象理解本质。
-- commonMisunderstanding：指出学生容易误解的地方。
-- starterCodeCppLines：C++ / Arduino 风格，每一项是一行代码。
-- starterCodePythonLines：MicroPython / K10 风格，每一项是一行代码。
+  理解知识点 → 搭建原型 → 设置输入 → 建立知识规则 → 设置反馈 → 测试挑战 → 调参优化 → 总结知识。
+- 每一步 content 至少 70 字，必须包含学生动作、教师提问或引导、成功检查方式。
+- tips：给老师或学生的提示，要能直接用于课堂提醒。
+- warning：写常见错误或课堂风险；如果没有危险，也要写"注意先完成基础版，不要一开始做太复杂"。
+- coreConcept：用学生能听懂的话解释 ${input.concept} 的核心概念。
+- keyFormula：如果有公式，写公式并解释变量含义；如果没有公式，写核心规则。
+- inProject：解释项目如何体现知识点，必须对应输入、计算、输出三环节。
+- deepUnderstanding：帮助学生从现象理解本质，说明为什么输入变化会导致反馈变化。
+- commonMisunderstanding：指出学生容易误解的地方，并给教师纠正话术。
+- starterCodeCppLines：C++ / Arduino 风格，每一项是一行代码，至少 12 行。
+- starterCodePythonLines：MicroPython / K10 风格，每一项是一行代码，至少 12 行。
 `;
 }
 
@@ -589,6 +602,9 @@ ${baseDesignRules(input)}
 不能写成普通项目扩展。
 每个训练都要有 task、hint、answer。
 answer 可以是参考答案、判断标准或示例答案。
+每个 task 都要像课堂任务，而不是一句题目；要让学生观察、修改、预测、解释或迁移。
+hint 要提示思考路径，不要直接给答案。
+answer 要包含判断标准，让老师知道学生答到什么程度算理解。
 
 必须返回这个 JSON 结构：
 
@@ -632,13 +648,14 @@ answer 可以是参考答案、判断标准或示例答案。
 }
 
 字段要求：
-- basicPractice：检验学生是否理解基础知识点。
-- variationChallenge：改变参数或条件，让学生观察结果变化。
-- reverseThinking：给定目标结果，反推输入或参数。
-- comprehensiveApplication：把知识点放进真实应用题或生活情境。
-- transferQuestion：举一反三，迁移到新场景。
-- extensions：4 到 6 条，必须兼顾项目拓展和知识拓展。
-- faq：3 到 5 条，包含硬件问题、学习问题、课堂时间问题。
+- basicPractice：检验学生是否理解基础知识点，task 要让学生说出输入、规则、输出。
+- variationChallenge：改变参数或条件，让学生先预测再观察结果变化。
+- reverseThinking：给定目标结果，反推输入或参数，训练逆向思维。
+- comprehensiveApplication：把知识点放进真实应用题或生活情境，要求学生解释原因。
+- transferQuestion：举一反三，迁移到新场景，必须和 ${input.interest} 之外的新情境有关。
+- 每个 answer 至少包含“参考答案/判断标准/教师追问”三层信息。
+- extensions：5 到 7 条，必须兼顾基础学生、进阶学生、展示作品、家庭延伸和下一节课继续深化。
+- faq：5 到 7 条，包含硬件问题、学习问题、课堂时间问题、学生答不出来怎么办、项目太简单/太难怎么办。
 `;
 }
 
@@ -932,11 +949,11 @@ async function callTextModel(env, prompt, part) {
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   const tokenByPart = {
-    dialogue: 1600,
+    dialogue: 1800,
     session: 2200,
-    overview: 3600,
-    build: 5000,
-    practice: 4200
+    overview: 5200,
+    build: 7200,
+    practice: 6200
   };
 
   try {
@@ -1212,6 +1229,10 @@ function normalizeOverviewPart(data, input) {
       coreGoal: cleanString(
         data.overview?.coreGoal,
         `通过真实互动理解${input.concept}，而不是只在纸上记公式。`
+      ),
+      teacherHook: cleanString(
+        data.overview?.teacherHook,
+        `今天我们不直接背${input.concept}，而是把它藏进一个${input.interest}挑战里，看看谁能用数据和反馈完成任务。`
       ),
       projectIntro: cleanString(
         data.overview?.projectIntro,

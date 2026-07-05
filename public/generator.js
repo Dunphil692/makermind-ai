@@ -1063,6 +1063,7 @@
             <div class="highlight-box">
               <strong>核心目标：</strong>${safeText(instruction.overview?.coreGoal)}
             </div>
+            ${instruction.overview?.teacherHook ? `<p><strong>老师开场白：</strong>${safeText(instruction.overview.teacherHook)}</p>` : ""}
             <p><strong>项目简介：</strong>${safeText(instruction.overview?.projectIntro)}</p>
             <p><strong>为什么学生会想玩：</strong>${safeText(instruction.overview?.whyFun)}</p>
             ${renderList("为什么这个项目能帮助学习", instruction.overview?.learningReasons)}
