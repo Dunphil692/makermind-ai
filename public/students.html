@@ -48,40 +48,54 @@
     <section class="dashboard-section">
       <aside class="dashboard-card">
         <span class="eyebrow">Class 7A</span>
-        <h2>学生画像</h2>
-        <div id="studentList" class="student-list">
-          <button class="student" disabled style="opacity:0.5">加载中...</button>
+        <h2>学生画像示例</h2>
+        <div class="student-list">
+          <button class="student active" data-name="林一鸣" data-level="需要项目带着学" data-interests="游戏、运动、短视频" data-risk="容易跳过解释，只关注作品能不能玩">
+            <strong>林一鸣</strong>
+            <span>喜欢游戏和运动，愿意动手，理论解释偏弱</span>
+          </button>
+          <button class="student" data-name="陈小雨" data-level="理解快，需要挑战" data-interests="动漫、编程、解谜" data-risk="基础版太简单时会失去耐心">
+            <strong>陈小雨</strong>
+            <span>理解速度快，适合开放式优化任务</span>
+          </button>
+          <button class="student" data-name="周可" data-level="兴趣低，需要强反馈" data-interests="音乐、短视频、美食" data-risk="如果前 10 分钟没有效果，容易退出任务">
+            <strong>周可</strong>
+            <span>需要先看到灯光、声音或动作反馈</span>
+          </button>
+          <button class="student" data-name="王小明" data-level="理解快，需要挑战" data-interests="机器人、编程、竞赛" data-risk="觉得基础任务太简单，容易分心去挑战更复杂的功能">
+            <strong>王小明</strong>
+            <span>喜欢机器人编程，对竞赛有热情，需要更有挑战性的任务</span>
+          </button>
+          <button class="student" data-name="张小华" data-level="兴趣低，需要强反馈" data-interests="绘画、手工、故事" data-risk="对纯技术内容不感兴趣，需要从美学和故事角度切入">
+            <strong>张小华</strong>
+            <span>喜欢绘画和手工，对美有追求，需要从创作角度进入项目</span>
+          </button>
         </div>
-        <div id="studentMeta" style="color:#94a3b8;font-size:13px;margin-top:8px;"></div>
       </aside>
 
       <article class="dashboard-card detail-card">
         <span class="eyebrow">Selected student</span>
-        <h2 id="studentName">--</h2>
+        <h2 id="studentName">林一鸣</h2>
         <div class="metric-grid">
           <div>
             <span>学习状态</span>
-            <strong id="studentLevel">--</strong>
+            <strong id="studentLevel">需要项目带着学</strong>
           </div>
           <div>
             <span>兴趣偏向</span>
-            <strong id="studentInterests">--</strong>
-          </div>
-          <div>
-            <span>学习风格</span>
-            <strong id="studentStyle">--</strong>
+            <strong id="studentInterests">游戏、运动、短视频</strong>
           </div>
           <div class="full">
             <span>可能卡点</span>
-            <strong id="studentRisk">--</strong>
+            <strong id="studentRisk">容易跳过解释，只关注作品能不能玩</strong>
           </div>
         </div>
         <div class="ai-box">
           <span>AI 给老师的建议</span>
-          <p id="teacherSuggestion">请先选择一个学生查看 AI 分析</p>
+          <p id="teacherSuggestion">推荐用反应训练舱或直播热度仪表盘作为入口，先让学生做出可玩的反馈，再要求他解释一次参数修改怎样影响分数、速度或灯效</p>
         </div>
         <div class="profile-actions">
-          <a class="btn primary" href="generator.html" id="generatorLink">用这个画像生成项目</a>
+          <a class="btn primary" href="generator.html">用这个画像生成项目</a>
         </div>
       </article>
     </section>
@@ -100,133 +114,7 @@
     </div>
   </footer>
 
+  <script src="app.js"></script>
   <script src="auth.js"></script>
-  <script>
-  // ---- 学生画像：动态加载 + AI 分层建议 ----
-  // 基于 student-growth-tracker 提示词生成的画像分析逻辑
-
-  const DEMO_STUDENTS = [
-    { name:'林一鸣', grade:'初一', skillLevel:'需要项目带着学', interestDirection:['游戏','运动','短视频'], personalityTraits:['动手能力强','理论偏弱'], learningStyle:'体验式', riskNote:'容易跳过解释，只关注作品能不能玩' },
-    { name:'陈小雨', grade:'初二', skillLevel:'理解快，需要挑战', interestDirection:['动漫','编程','解谜'], personalityTraits:['理解力强','求知欲高'], learningStyle:'探索式', riskNote:'基础版太简单时会失去耐心' },
-    { name:'周可', grade:'初一', skillLevel:'兴趣低，需要强反馈', interestDirection:['音乐','短视频','美食'], personalityTraits:['需要即时反馈','感官驱动'], learningStyle:'互动式', riskNote:'如果前10分钟没有效果，容易退出任务' },
-    { name:'王小明', grade:'初二', skillLevel:'理解快，需要挑战', interestDirection:['机器人','编程','竞赛'], personalityTraits:['自驱力强','竞赛倾向'], learningStyle:'挑战式', riskNote:'觉得基础任务太简单，容易分心去挑战更复杂的功能' },
-    { name:'张小华', grade:'初一', skillLevel:'兴趣低，需要强反馈', interestDirection:['绘画','手工','故事'], personalityTraits:['艺术倾向','创作驱动'], learningStyle:'创作式', riskNote:'对纯技术内容不感兴趣，需要从美学和故事角度切入' }
-  ];
-
-  // 基于 student-growth-tracker 的画像提示词 logic 生成教学建议
-  function generateSuggestion(s) {
-    const traits = s.personalityTraits || [];
-    const interests = s.interestDirection || [];
-    const level = s.skillLevel || '';
-    const parts = [];
-
-    // 分层建议（来自 growth-tracker 反馈模板的"学生表现 + 学习建议"部分）
-    if (level.includes('需要项目带着学')) {
-      parts.push('推荐用"闯关、升级、角色成长"作为项目入口，把抽象知识转化成等级、经验值、金币变化的规则');
-    } else if (level.includes('兴趣低') || level.includes('强反馈')) {
-      parts.push('推荐先做能马上看到效果的项目（如灯光、声音、动作反馈），先让学生产生参与感，再回到知识点总结');
-    } else if (level.includes('挑战') || level.includes('理解快')) {
-      parts.push('推荐给开放式挑战任务，不要给太基础的步骤。可以要求学生反向设计规则，并证明为什么这个规则成立');
-    }
-
-    // 兴趣场景匹配（来自 growth-tracker 培养方案"学生画像 → 学习路径"映射）
-    const interestStr = interests.join(' ');
-    if (interestStr.includes('游戏') || interestStr.includes('运动')) {
-      parts.push('可优先使用游戏化或体育竞技类项目场景（如计分板、反应挑战、数据对比）');
-    } else if (interestStr.includes('音乐') || interestStr.includes('绘画') || interestStr.includes('手工') || interestStr.includes('故事')) {
-      parts.push('可从艺术创作角度切入（节奏灯光、绘画机器人、故事交互装置），用视觉/声音反馈降低技术门槛');
-    } else if (interestStr.includes('编程') || interestStr.includes('机器人')) {
-      parts.push('可直接给技术挑战型项目，用代码或硬件复杂度作为项目核心驱动');
-    } else if (interestStr.includes('短视频') || interestStr.includes('美食')) {
-      parts.push('可用"数据分析 + 可视化"型项目（如热度仪表盘、配方比例计算器），把生活场景转化成数据模型');
-    }
-
-    // 性格节奏建议（来自 growth-tracker 的"课程记录 → 学习风格 → 节奏调整"）
-    if (traits.some(t => t.includes('耐心') || t.includes('容易'))) {
-      parts.push('缩短单步时长（5-10分钟一个可见反馈），避免长步骤消磨耐心');
-    }
-    if (traits.some(t => t.includes('竞赛') || t.includes('自驱'))) {
-      parts.push('可引入竞赛标准或排行榜机制，利用学生自驱力推动深度学习');
-    }
-    if (traits.some(t => t.includes('艺术') || t.includes('创作'))) {
-      parts.push('项目最终交付物应强调视觉/体验品质，让学生在"做出好看的东西"中获得成就感');
-    }
-
-    return parts.length ? parts.join('。') + '。' : '根据学生当前阶段和兴趣方向，生成符合其学习风格的个性化项目方案。';
-  }
-
-  // 渲染学生列表
-  function renderStudentList(students, source) {
-    const container = document.getElementById('studentList');
-    const meta = document.getElementById('studentMeta');
-    if (!container) return;
-
-    container.innerHTML = students.map((s, i) => {
-      const desc = [s.grade, (s.interestDirection||[]).slice(0,2).join('、')].filter(Boolean).join(' · ');
-      return `<button class="student${i===0?' active':''}" data-index="${i}">
-        <strong>${hesc(s.name)}</strong>
-        <span>${hesc(desc || '未设置')}</span>
-      </button>`;
-    }).join('');
-
-    if (meta) meta.textContent = source + ' · 共 ' + students.length + ' 名学生';
-
-    // 绑定点击事件
-    container.querySelectorAll('.student').forEach(btn => {
-      btn.addEventListener('click', () => {
-        container.querySelectorAll('.student').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        showStudent(students[parseInt(btn.dataset.index, 10)]);
-      });
-    });
-
-    // 默认展示第一个学生
-    if (students.length > 0) showStudent(students[0]);
-  }
-
-  function showStudent(s) {
-    document.getElementById('studentName').textContent = s.name || '--';
-    document.getElementById('studentLevel').textContent = s.skillLevel || '未评估';
-    document.getElementById('studentInterests').textContent = (s.interestDirection || []).join('、') || '未设置';
-    document.getElementById('studentStyle').textContent = s.learningStyle || '未评估';
-    document.getElementById('studentRisk').textContent = s.riskNote || (s.personalityTraits || []).join('、') || '暂无数据';
-    document.getElementById('teacherSuggestion').textContent = generateSuggestion(s);
-    // 更新生成器链接（带 studentId 参数，对应 Loop 5 的画像驱动生成）
-    const link = document.getElementById('generatorLink');
-    if (link && s.studentId) link.href = 'generator.html?studentId=' + encodeURIComponent(s.studentId);
-  }
-
-  function hesc(v) { return String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  // 从 API 加载学生数据
-  async function loadStudents() {
-    const token = localStorage.getItem('token');
-    if (!token) { renderStudentList(DEMO_STUDENTS, '演示数据'); return; }
-
-    try {
-      const res = await fetch('/api/students', { headers: { 'Authorization': 'Bearer ' + token } });
-      if (!res.ok) throw new Error('API ' + res.status);
-      const data = await res.json();
-      const raw = Array.isArray(data.students) ? data.students : (Array.isArray(data) ? data : []);
-      const students = raw.map(s => ({
-        studentId: s.studentId,
-        name: s.name,
-        grade: s.grade,
-        skillLevel: Array.isArray(s.skillLevel) ? s.skillLevel.join('、') : (s.skillLevel || '未评估'),
-        interestDirection: s.interestDirection || [],
-        personalityTraits: s.personalityTraits || [],
-        learningStyle: s.learningStyle || '未评估',
-        riskNote: s.notes || null
-      }));
-      if (students.length === 0) { renderStudentList(DEMO_STUDENTS, '暂无学生，展示演示数据'); return; }
-      renderStudentList(students, '已连接数据库');
-    } catch (e) {
-      console.warn('学生数据加载失败，使用演示数据:', e.message);
-      renderStudentList(DEMO_STUDENTS, '演示数据（离线）');
-    }
-  }
-
-  loadStudents();
-  </script>
 </body>
 </html>
