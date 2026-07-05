@@ -269,3 +269,34 @@ export async function handleMe(request, env) {
   }
   return json({ user: publicUser(user) });
 }
+
+// ---------- 用户列表（仅教师可访问）----------
+
+export async function handleListUsers(request, env) {
+  const user = await getUser(request, env);
+  if (!user) {
+    return json({ error: "未登录或登录已过期" }, 401);
+  }
+  if (user.role !== "teacher") {
+    return json({ error: "仅教师可查看用户列表" }, 403);
+  }
+
+  try {
+    const { results } = await env.DB.prepare(
+      "SELECT id, email, role, display_name, avatar, created_at FROM users ORDER BY created_at DESC"
+    ).all();
+
+    const users = (results || []).map(row => ({
+      id: row.id,
+      email: row.email,
+      role: row.role,
+      displayName: row.display_name,
+      avatar: row.avatar || null,
+      createdAt: row.created_at
+    }));
+
+    return json({ users, total: users.length });
+  } catch (error) {
+    return json({ error: "获取用户列表失败", detail: error.message }, 500);
+  }
+}
