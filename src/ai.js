@@ -148,10 +148,7 @@ export async function handleGenerateInstructionPart(request, env) {
 }
 
 async function generateParsedPartWithRetry(env, prompt, part) {
-  const configuredAttempts = Number.parseInt(env.AI_MAX_ATTEMPTS || "", 10);
-  const maxAttempts = Number.isFinite(configuredAttempts) && configuredAttempts > 0
-    ? Math.min(configuredAttempts, 4)
-    : 2;
+  const maxAttempts = part === "dialogue" ? 3 : 4;
   let lastError = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -211,8 +208,8 @@ function checkEnv(env) {
 
   if (!env.AI_API_KEY) missing.push("AI_API_KEY");
   if (!env.AI_BASE_URL) missing.push("AI_BASE_URL");
+  if (!env.AI_MODEL) missing.push("AI_MODEL");
 
-  // AI_MODEL 有默认值 deepseek-v4-flash，不强制要求
   if (missing.length > 0) {
     throw new Error(`Missing variables: ${missing.join(", ")}`);
   }
@@ -930,7 +927,7 @@ async function callTextModel(env, prompt, part) {
     ? base
     : `${base}/chat/completions`;
 
-  const timeoutMs = Number.parseInt(env.AI_TIMEOUT_MS || "60000", 10) || 60000;
+  const timeoutMs = Number.parseInt(env.AI_TIMEOUT_MS || "120000", 10) || 120000;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -951,7 +948,7 @@ async function callTextModel(env, prompt, part) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: env.AI_MODEL || "deepseek-v4-flash",
+        model: env.AI_MODEL,
         messages: [
           {
             role: "system",
