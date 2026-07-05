@@ -2,7 +2,7 @@
 // 路由分发：认证 / 项目存储 / AI 生成 / 静态资源
 
 import { json, serveStatic } from "./utils.js";
-import { handleRegister, handleLogin, handleMe } from "./auth.js";
+import { handleRegister, handleLogin, handleMe, handleListUsers } from "./auth.js";
 import {
   handleCreateProject,
   handleListProjects,
@@ -78,6 +78,10 @@ export default {
       return method === "GET" ? handleMe(request, env) : methodNotAllowed();
     }
 
+    if (pathname === "/api/users") {
+      return method === "GET" ? handleListUsers(request, env) : methodNotAllowed();
+    }
+
     // ---------- 健康检查 ----------
     if (pathname === "/api/health") {
       if (method !== "GET") return methodNotAllowed();
@@ -87,7 +91,8 @@ export default {
         ai: {
           hasApiKey: Boolean(env.AI_API_KEY),
           hasBaseUrl: Boolean(env.AI_BASE_URL),
-          hasModel: Boolean(env.AI_MODEL),
+          hasModel: Boolean(env.AI_MODEL || "deepseek-v4-flash"),
+          model: env.AI_MODEL || "deepseek-v4-flash",
           mockMode: env.AI_MOCK === "1"
         },
         bindings: {

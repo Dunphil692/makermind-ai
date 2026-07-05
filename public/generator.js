@@ -430,6 +430,10 @@
       }[key] || key;
     }
 
+    function getMissingBriefLabels(brief = taskBrief) {
+      return (brief?.missingFields || []).map(fieldLabel).filter(Boolean);
+    }
+
     function renderDialogueMessages() {
       if (!dialogueMessagesEl) return;
       dialogueMessagesEl.innerHTML = dialogueMessages.map(message => `
@@ -459,10 +463,21 @@
         ["hardwareKit", taskBrief.hardwareKit],
         ["knowledgeGoal", taskBrief.knowledgeGoal]
       ];
-      briefStatus.innerHTML = items.map(([key, value]) => {
+      const missingLabels = getMissingBriefLabels(taskBrief);
+      const chips = items.map(([key, value]) => {
         const complete = Boolean(value);
-        return `<div class="brief-chip ${complete ? "complete" : "missing"}"><span>${fieldLabel(key)}</span><strong>${safeText(value || "待了解")}</strong></div>`;
+        return `<div class="brief-chip ${complete ? "complete" : "missing"}"><span>${fieldLabel(key)}</span><strong title="${safeText(value || "待了解")}">${safeText(value || "待了解")}</strong></div>`;
       }).join("");
+      let hint = "";
+      if (missingLabels.length) {
+        hint = `<div class="brief-action-hint warning">还缺：<strong>${safeText(missingLabels.join("、"))}</strong>。可以直接在聊天框补一句，例如“用纸电路，让学生学串并联”。</div>`;
+      } else {
+        const draftInfo = getCurrentDraftInfo();
+        hint = draftInfo?.retained
+          ? `<div class="brief-action-hint success">发现本地草稿：已完成 <strong>${draftInfo.retained}/3</strong> 段。点击“生成 STEAM 项目方案”会从剩余部分继续，不会浪费已生成内容。</div>`
+          : `<div class="brief-action-hint success">三项核心信息已齐，可以生成；也可以继续补充学生基础、课堂时长或材料限制。</div>`;
+      }
+      briefStatus.innerHTML = chips + hint;
       updateGenerateButtonState();
     }
 
@@ -471,9 +486,10 @@
       const ready = canGenerateFromBrief(taskBrief);
       generateBtn.disabled = isGenerating || !ready;
       if (!isGenerating) {
+        const missingLabels = getMissingBriefLabels(taskBrief);
         generateBtn.innerHTML = ready
           ? '<span class="btn-icon">⚡</span>生成 STEAM 项目方案'
-          : '<span class="btn-icon">💬</span>请先补全三项信息';
+          : `<span class="btn-icon">💬</span>还缺：${safeText(missingLabels.join("、") || "核心信息")}`;
       }
     }
 
@@ -495,7 +511,6 @@
       if (durationSelect && brief.duration) durationSelect.value = brief.duration;
       if (kitSelect && brief.hardwareKit) kitSelect.value = inferKitValue(brief.hardwareKit);
       interestChips.forEach(chip => chip.classList.toggle("active", chip.dataset.interest === getInterest()));
-      renderWaitingState();
     }
 
     async function requestDialogueTurn(messages, brief) {
@@ -681,6 +696,24 @@
       return ["overview", "build", "practice"].filter(part => draft?.parts?.[part]).length;
     }
 
+    function getCurrentDraftInfo() {
+      if (!canGenerateFromBrief(taskBrief)) return null;
+      const payload = {
+        concept: taskBrief.knowledgeGoal || getCurrentConcept(),
+        subject: taskBrief.subject || getCurrentSubject(),
+        level: taskBrief.level || getCurrentLevel(),
+        interest: taskBrief.studentInterest || getInterest(),
+        kit: getCurrentKitLabel(),
+        duration: taskBrief.duration || getCurrentDuration(),
+        materials: getCurrentMaterials(),
+        studentId: selectedStudentId || ""
+      };
+      const key = getGenerationCacheKey(payload);
+      const draft = loadGenerationDraft(key);
+      const retained = countDraftParts(draft);
+      return retained ? { key, draft, retained } : null;
+    }
+
     function getHistory() {
       try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; } catch { return []; }
     }
@@ -789,23 +822,23 @@
       let showHealthCheck = false;
 
       if (isWorkerConnectivityError(message)) {
-        errorType = "Worker API 未连通";
+        errorType = "生成接口没有连上";
         showHealthCheck = true;
-        errorSuggestion = "先点下面的“打开 API 健康检查”：如果看到 JSON，说明 Worker 已连通，再看 ai.hasApiKey / hasBaseUrl / hasModel 是否为 true；如果看到 404 或 HTML，说明当前页面不是 Cloudflare Worker 同源服务，本地请用 npx wrangler dev --local，不要只打开 public 静态目录。";
+        errorSuggestion = "建议先点“打开 API 健康检查”。如果打开后不是 JSON，说明现在看的页面不是正式 Worker 页面；如果是 JSON，再请管理员检查 AI 配置。";
       } else if (message.includes("401") || message.includes("403")) {
         errorType = "权限不足";
         errorSuggestion = "如果选择了学生画像，请确认当前账号是教师账号；学生和家长只能查看已布置项目，不能替教师生成画像方案。";
       } else if (message.includes("AI_API_KEY") || message.includes("AI_BASE_URL") || message.includes("AI_MODEL") || message.includes("API key")) {
-        errorType = "AI 环境变量缺失";
+        errorType = "AI 配置还没准备好";
         showHealthCheck = true;
-        errorSuggestion = "Worker 已响应，但服务器 AI 配置可能缺失。请打开 /api/health，确认 ai.hasApiKey、ai.hasBaseUrl、ai.hasModel 都是 true，并在 Cloudflare Worker 中配置 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
+        errorSuggestion = "服务器已经连上，但 AI 模型配置可能缺失。请先打开 API 健康检查，再让管理员确认 AI_API_KEY、AI_BASE_URL、AI_MODEL。";
       } else if (message.includes("429") || message.includes("rate limit") || message.includes("quota")) {
         errorType = "请求过于频繁";
         errorSuggestion = "AI 生成请求已达上限，请等待 1 分钟后重试。";
       } else if (message.includes("500") || message.includes("502") || message.includes("503")) {
-        errorType = "服务器错误";
+        errorType = "服务器暂时不稳定";
         showHealthCheck = true;
-        errorSuggestion = "服务器暂时不可用。请先打开 /api/health：如果健康检查正常，再查看 Cloudflare Worker 日志和上游 AI 服务状态。";
+        errorSuggestion = "可以先点击“重新生成”再试一次；如果连续失败，再打开 API 健康检查并查看 Worker 日志。";
       } else if (message.includes("timeout") || message.includes("超时")) {
         errorType = "请求超时";
         errorSuggestion = "AI 生成耗时过长，请重试。如果持续超时，建议选择较短的课堂时长。";
@@ -813,6 +846,7 @@
 
       const retained = activeDraftInfo ? countDraftParts(activeDraftInfo) : 0;
       const resumeHint = retained > 0 ? `<div class="tips-box">已保留成功生成的 ${retained}/3 段，点击重试会从失败段继续，不会浪费前面已生成内容。</div>` : "";
+      const technicalDetails = showHealthCheck ? `<details class="error-details"><summary>展开技术排查信息</summary><p>${safeText(message)}</p><p>健康检查地址：${safeText(getHealthLink())}</p></details>` : "";
       const healthCheckLink = showHealthCheck ? `<a class="btn ghost" href="${safeText(getHealthLink())}" target="_blank" rel="noopener noreferrer" style="margin-top:16px;margin-left:8px;">打开 API 健康检查</a>` : "";
       projectCards.innerHTML = `
         <article class="instruction-empty demo-fallback-card">
@@ -820,8 +854,8 @@
             <h4>AI 生成失败：${safeText(errorType)}</h4>
             <span class="badge">错误</span>
           </div>
-          <p style="font-size:16px;color:#e54612;font-weight:600;margin-bottom:12px;">${safeText(message)}</p>
-          <p style="margin-top:12px;color:#64748b;">${safeText(errorSuggestion)}</p>
+          <p style="font-size:16px;color:#e54612;font-weight:600;margin-bottom:12px;">${safeText(errorSuggestion)}</p>
+          ${technicalDetails || `<p style="margin-top:12px;color:#64748b;">${safeText(message)}</p>`}
           ${resumeHint}
           <button type="button" class="btn primary" id="retryBtn" style="margin-top:16px;">${retained > 0 ? "继续生成剩余部分" : "重新生成"}</button>
           ${healthCheckLink}
@@ -1068,7 +1102,30 @@
             <button type="button" class="btn ghost small" id="printBtn">打印</button>
           </div>
 
-          <section class="instruction-section">
+          <section class="instruction-quick-summary" aria-label="方案快速浏览">
+            <div>
+              <span>10 秒看懂</span>
+              <strong>${safeText(instruction.overview?.coreGoal || instruction.subtitle)}</strong>
+            </div>
+            <div>
+              <span>课堂玩法</span>
+              <strong>${safeText(instruction.interactionFlow?.trigger || "学生动作触发项目反馈")}</strong>
+            </div>
+            <div>
+              <span>核心反馈</span>
+              <strong>${safeText((instruction.interactionFlow?.feedback || [])[0] || "屏幕、灯光或声音即时反馈")}</strong>
+            </div>
+          </section>
+
+          <nav class="instruction-quick-nav" aria-label="方案章节导航">
+            <a href="#project-overview">概述</a>
+            <a href="#project-flow">流程</a>
+            <a href="#project-materials">材料</a>
+            <a href="#project-steps">步骤</a>
+            <a href="#project-code">代码</a>
+          </nav>
+
+          <section class="instruction-section" id="project-overview">
             <h3>项目概述</h3>
             <div class="highlight-box">
               <strong>核心目标：</strong>${safeText(instruction.overview?.coreGoal)}
@@ -1078,7 +1135,7 @@
             ${renderList("为什么这个项目能帮助学习", instruction.overview?.learningReasons)}
           </section>
 
-          <section class="instruction-section">
+          <section class="instruction-section" id="project-flow">
             <h3>交互流程预览</h3>
             <div class="flow-grid">
               <div><span>触发</span><strong>${safeText(instruction.interactionFlow?.trigger)}</strong></div>
@@ -1089,12 +1146,12 @@
             <div class="tips-box">${safeText(instruction.interactionFlow?.levelReason)}</div>
           </section>
 
-          <section class="instruction-section">
+          <section class="instruction-section" id="project-materials">
             <h3>材料清单</h3>
             ${renderMaterialsTable(instruction.materials)}
           </section>
 
-          <section class="instruction-section">
+          <section class="instruction-section" id="project-steps">
             <h3>制作步骤</h3>
             ${renderSteps(instruction.steps)}
           </section>
@@ -1109,7 +1166,7 @@
             ${renderMastery(instruction.masteryTraining)}
           </section>
 
-          <section class="instruction-section code-thought-section">
+          <section class="instruction-section code-thought-section" id="project-code">
             <div class="code-section-title">
               <div>
                 <h3>代码思路</h3>
@@ -1624,7 +1681,6 @@
         appendDialogueMessage("user", `我想做${chip.dataset.interest}，使用${getCurrentKitLabel()}，让学生学习${chip.dataset.concept}。`);
         appendDialogueMessage("assistant", "这组信息已经够了，我已整理成项目简报。你可以继续补充学生基础，或直接点击生成方案。");
         renderBriefStatus();
-        renderWaitingState();
       });
     });
 

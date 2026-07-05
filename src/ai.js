@@ -211,8 +211,8 @@ function checkEnv(env) {
 
   if (!env.AI_API_KEY) missing.push("AI_API_KEY");
   if (!env.AI_BASE_URL) missing.push("AI_BASE_URL");
-  if (!env.AI_MODEL) missing.push("AI_MODEL");
 
+  // AI_MODEL 有默认值 deepseek-v4-flash，不强制要求
   if (missing.length > 0) {
     throw new Error(`Missing variables: ${missing.join(", ")}`);
   }
@@ -298,49 +298,133 @@ JSON 结构必须是：
 }`;
 }
 
-function fastGenerationSkill(input, part) {
-  const partLabel = {
-    overview: "项目概述 + 交互流程 + 材料清单",
-    build: "制作步骤 + 知识讲解 + 代码骨架",
-    practice: "融会训练 + 拓展 + FAQ"
-  }[part] || part;
-
+function baseDesignRules(input) {
   return `
-你正在执行 MakerMind 任务生成 skill。不要长时间推理，不要解释过程，直接按模板生成 ${partLabel}。
+你是 MakerMind AI 的 STEAM 项目 instruction 生成器。
 
-输入：
+当前目标：
+根据老师输入的知识点、学生兴趣、学习状态、硬件条件，生成一份"学习型项目 instruction"的其中一部分。
+
+产品定位：
+最终目的不是"做一个项目"，而是"通过项目真正学会一个知识点"。
+项目只是学习载体，知识理解、迁移练习、举一反三才是核心。
+
+输入信息：
 - 知识点：${input.concept}
-- 学科：${input.subject}
+- 学科方向：${input.subject}
 - 学生状态：${input.level}
-- 兴趣场景：${input.interest}
-- 硬件/材料：${input.kit}；${input.materials}
+- 学生兴趣：${input.interest}
+- 可用套件：${input.kit}
 - 课堂时长：${input.duration}
-- 学生画像：${input.studentProfileBlock || "无"}
+- 可用材料：${input.materials}
 
-生成规则：
-1. 只生成当前这一段，不要生成其他段。
-2. 直接输出严格 JSON，不要 Markdown，不要代码块，不要解释。
-3. 内容要短、完整、可上课；不要追求复杂和宏大。
-4. 每个字段都要填，不要留空，不要写“待补充”。
-5. 项目必须围绕“${input.concept}”，兴趣场景必须贴合“${input.interest}”。
-6. 硬件必须优先使用老师给定的“${input.kit} / ${input.materials}”，不要额外假设昂贵设备。
-7. 交互必须是：学生动作或传感器输入 → 知识点规则计算/判断 → 屏幕/灯光/声音/实体反馈。
-8. 不要做电子试卷式项目，不要只显示公式或答案。
-9. 如果不确定，选择最稳妥的课堂基础版，而不是继续思考。
-10. JSON 字符串必须单行；代码必须用字符串数组逐行返回。
+学生画像（如为空则按普通班级项目生成）：
+${input.studentProfileBlock || "无指定学生画像"}
+
+个性化要求：
+- 如果画像显示基础弱，要降低代码复杂度，增加图形化、动作化和即时反馈。
+- 如果画像显示能力强，要增加变式挑战、参数调优和开放探索。
+- 场景选择优先贴合兴趣方向与近期课堂中的投入点。
+- 如果性格特点显示耐心不足或容易放弃，步骤要更短，反馈更即时。
+- 避免把画像当作永久标签，用“本次更适合”来设计。
+
+核心设计理念：
+1. 让知识"活"起来，而不是"展示"知识。
+2. 不要生成电子试卷式项目。
+3. 不要只是屏幕显示公式、按钮输入答案、传感器显示数字。
+4. 学生要通过身体动作、声音、距离、光照、温湿度、倾斜、按钮等输入参与项目。
+5. 传感器不只是读数据，而是感知世界。
+6. 执行器不只是输出结果，而是改变世界。
+7. 每个项目必须有任务感、游戏感、生活场景或真实工程意义。
+8. 项目必须围绕知识点：${input.concept}。
+9. 项目必须结合学生兴趣：${input.interest}。
+10. 项目要能在 ${input.duration} 内完成基础版。
+
+硬件交互等级：
+Level 1：被动展示，只显示数据。不要生成。
+Level 2：按钮切换，屏幕反馈。尽量不要生成。
+Level 3：感知驱动，传感器触发行动，有即时反馈。最低要求。
+Level 4：生态闭环，多传感器协同，形成系统。推荐。
+Level 5：物理实体，控制舵机、电机、水泵、灯带等真实物体。最佳。
+
+每个项目必须满足：
+触发条件（传感器或学生动作）
+→ 计算逻辑（知识点中的变量、公式、规则、判断）
+→ 行动反馈（屏幕、RGB、扬声器、灯带、舵机、电机、水泵、实体装置）
+
+如果可用套件是 UNIHIKER K10，要优先使用：
+- 2.8寸屏幕：显示角色状态、数据条、仪表盘、动画、曲线、任务进度
+- 麦克风：声音大小、拍手、节奏、口令、噪音检测
+- 扬声器：提示音、警报、语音反馈、成功/失败音效
+- A/B 按钮：开始、确认、切换挑战、抢答、游戏输入
+- 温湿度传感器：舒适度、环境变化、生态系统
+- 光敏传感器：光照变化、追光、护眼、昼夜变化
+- 加速度传感器：倾斜、摇晃、姿态控制、平衡、身体参与
+- RGB LED：状态提示、成功失败、等级变化、警戒强度、情绪反馈
+
+固定参考图 imageKey 只能从下面选择一个：
+reaction-trainer,
+character-energy-core,
+distance-radar,
+rhythm-wall,
+pet-house,
+pet-feeder,
+basketball-scoreboard,
+livestream-dashboard,
+milk-tea-console
+
+输出要求：
+- 只返回严格 JSON。
+- 不要 Markdown。
+- 不要 HTML。
+- 不要代码块。
+- 不要在 JSON 外写任何文字。
+- JSON 字符串内部不要出现没有转义的英文双引号。
+- 所有字符串必须是单行字符串，字符串内部禁止真实换行、Tab 等控制字符。
+- 如果需要多行内容，必须使用数组拆成多行，例如 starterCodeLines。
 `;
 }
 
 function buildOverviewPrompt(input) {
   return `
-${fastGenerationSkill(input, "overview")}
+${baseDesignRules(input)}
 
-只返回以下 JSON 结构：
+现在只生成 instruction 的第 1 部分：项目概述、交互流程、材料清单。
+
+这一部分要完成：
+1. 项目名和副标题
+2. 项目元信息
+3. 项目概述
+4. 为什么学生会想玩
+5. 为什么它能帮助理解知识点
+6. 交互流程预览
+7. 材料清单
+
+项目名字不能像教材标题。
+不要写：
+- 距离测量仪
+- 函数计算器
+- 温度显示器
+- 声音检测器
+- 数据记录仪
+
+要写成：
+- 停车挑战雷达
+- 节奏光墙：速度挑战
+- 宠物舒适度小屋
+- 自动投喂小管家
+- 角色能量核心
+- 奶茶配方调参台
+- 直播热度看板
+- 方程探索器
+
+必须返回这个 JSON 结构：
+
 {
   "overview": {
     "projectName": "",
     "subtitle": "",
-    "imageKey": "reaction-trainer",
+    "imageKey": "",
     "meta": {
       "studentLevel": "",
       "knowledgePoint": "",
@@ -348,7 +432,7 @@ ${fastGenerationSkill(input, "overview")}
       "interest": "",
       "hardware": "",
       "timeRequired": "",
-      "projectType": "STEAM 项目课"
+      "projectType": ""
     },
     "overview": {
       "coreGoal": "",
@@ -360,30 +444,71 @@ ${fastGenerationSkill(input, "overview")}
       "trigger": "",
       "calculation": "",
       "feedback": [],
-      "level": "Level 3 感知驱动",
+      "level": "",
       "levelReason": ""
     },
     "materials": [
-      { "name": "", "quantity": "", "usage": "", "note": "" }
+      {
+        "name": "",
+        "quantity": "",
+        "usage": "",
+        "note": ""
+      }
     ]
   }
 }
 
 字段要求：
-- projectName 像任务或游戏名，不要像教材标题。
-- imageKey 只能选：reaction-trainer、character-energy-core、distance-radar、rhythm-wall、pet-house、pet-feeder、basketball-scoreboard、livestream-dashboard、milk-tea-console。
-- learningReasons 写 3-4 条。
-- feedback 写 3 条。
-- materials 写 4-6 项。
-- 所有内容控制在课堂可执行范围内。
+- projectName：要有吸引力，像一个任务、游戏或生活装置。
+- subtitle：一句话说明"通过什么项目理解什么知识点"。
+- coreGoal：必须强调学习目标，不只是项目目标。
+- projectIntro：讲清楚学生要做什么，硬件如何互动。
+- whyFun：说明学生为什么会想玩。
+- learningReasons：至少 4 条，解释项目如何帮助理解 ${input.concept}。
+- trigger：学生动作或传感器输入。
+- calculation：知识点如何参与计算或判断。
+- feedback：至少 3 条，说明屏幕、灯光、声音或实体动作如何反馈。
+- level：Level 3 / Level 4 / Level 5。
+- levelReason：说明为什么达到这个等级。
+- materials：4 到 8 项，优先使用可用材料：${input.materials}
 `;
 }
 
 function buildBuildPrompt(input) {
   return `
-${fastGenerationSkill(input, "build")}
+${baseDesignRules(input)}
 
-只返回以下 JSON 结构：
+现在只生成 instruction 的第 2 部分：制作步骤、知识点讲解、代码思路。
+
+这一部分要完成：
+1. 详细制作步骤
+2. 知识点讲解
+3. 项目中如何体现知识点
+4. 常见误区
+5. 两种语言的代码思路：C++ / Arduino 和 MicroPython / K10
+
+内容要求：
+- 这部分一定要体现"学习"，不能只是做项目。
+- 制作步骤要具体，适合老师照着讲。
+- 知识讲解要适合中小学生，不要太学术。
+- 代码只需要体现核心逻辑，不要写特别长。
+- C++ 版本适合 Arduino / ESP32。
+- MicroPython 版本适合 UNIHIKER K10 / micro:bit / Python 风格硬件。
+- 两种代码都必须体现：读取传感器输入 → 根据知识点计算或判断 → 输出屏幕、灯光、声音反馈。
+- 代码应该尽量像标准代码，而不是全部靠左的说明文字。
+
+非常重要：
+为了避免 JSON 出错，不要把代码写成一个大字符串。
+starterCodeCppLines 和 starterCodePythonLines 必须都是字符串数组。
+每一行代码作为数组中的一个字符串。
+可以用两个空格或四个空格表示缩进，形成标准代码结构。
+每个字符串必须是一行，不能包含真实换行。
+每个字符串内部不要再使用英文双引号 "。
+如果需要字符串，请使用中文描述或单引号。
+不要返回 starterCode 字符串，只返回 starterCodeCppLines 和 starterCodePythonLines 数组。
+
+必须返回这个 JSON 结构：
+
 {
   "build": {
     "steps": [
@@ -402,49 +527,123 @@ ${fastGenerationSkill(input, "build")}
       "deepUnderstanding": "",
       "commonMisunderstanding": ""
     },
-    "starterCodeCppLines": [],
-    "starterCodePythonLines": []
-  }
-}
-
-字段要求：
-- steps 写 4-5 步，顺序是：理解知识点 → 搭建输入 → 建立规则 → 设置反馈 → 测试讲解。
-- 每步 content 1-2 句话，适合老师照着讲。
-- 代码只写核心骨架，8-14 行，不要写完整大型程序。
-- C++ / Arduino 和 MicroPython / K10 都要体现：读取输入 → 计算/判断 → 输出反馈。
-- 代码行里尽量用单引号，避免英文双引号造成 JSON 解析失败。
-`;
-}
-
-function buildPracticePrompt(input) {
-  return `
-${fastGenerationSkill(input, "practice")}
-
-只返回以下 JSON 结构：
-{
-  "practice": {
-    "masteryTraining": {
-      "basicPractice": { "task": "", "hint": "", "answer": "" },
-      "variationChallenge": { "task": "", "hint": "", "answer": "" },
-      "reverseThinking": { "task": "", "hint": "", "answer": "" },
-      "comprehensiveApplication": { "task": "", "hint": "", "answer": "" },
-      "transferQuestion": { "task": "", "hint": "", "answer": "" }
-    },
-    "extensions": [],
-    "faq": [
-      { "question": "", "answer": "" }
+    "starterCodeCppLines": [
+      "#include <Servo.h>",
+      "Servo myServo;",
+      "const int trigPin = 5;",
+      "const int echoPin = 6;",
+      "void setup() {",
+      "  myServo.attach(9);",
+      "}",
+      "void loop() {",
+      "  float x = readSensor();",
+      "  float y = 1.5 * x + 10;",
+      "  outputFeedback(y);",
+      "}"
+    ],
+    "starterCodePythonLines": [
+      "k = 1.5",
+      "b = 10",
+      "while True:",
+      "  x = read_sensor()",
+      "  y = k * x + b",
+      "  show_feedback(y)"
     ]
   }
 }
 
 字段要求：
-- 每个训练都围绕 ${input.concept}，不要写成普通项目扩展。
-- 每个 task/hint/answer 都短一点，便于课堂直接使用。
-- extensions 写 3-4 条。
-- faq 写 3 条，覆盖硬件、学习理解、课堂时间。
+- steps：5 到 7 步。
+- 步骤顺序必须体现：
+  理解知识点 → 搭建原型 → 设置输入 → 建立知识规则 → 设置反馈 → 测试挑战 → 总结知识。
+- 每一步 content 要具体，不能只写一句空话。
+- tips：给老师或学生的提示。
+- warning：如果没有危险，也要写"注意先完成基础版，不要一开始做太复杂"。
+- coreConcept：解释 ${input.concept} 的核心概念。
+- keyFormula：如果有公式，写公式；如果没有公式，写核心规则。
+- inProject：解释项目如何体现知识点。
+- deepUnderstanding：帮助学生从现象理解本质。
+- commonMisunderstanding：指出学生容易误解的地方。
+- starterCodeCppLines：C++ / Arduino 风格，每一项是一行代码。
+- starterCodePythonLines：MicroPython / K10 风格，每一项是一行代码。
 `;
 }
 
+
+function buildPracticePrompt(input) {
+  return `
+${baseDesignRules(input)}
+
+现在只生成 instruction 的第 3 部分：融会贯通训练、进阶方向、FAQ。
+
+这一部分是最重要的学习收尾：
+它要证明学生不是只做完项目，而是真的理解了知识点。
+
+必须包含：
+1. 基础练习
+2. 变化挑战
+3. 逆向思维
+4. 综合应用
+5. 举一反三
+6. 进阶方向
+7. 常见问题 FAQ
+
+训练任务必须围绕知识点：${input.concept}
+不能写成普通项目扩展。
+每个训练都要有 task、hint、answer。
+answer 可以是参考答案、判断标准或示例答案。
+
+必须返回这个 JSON 结构：
+
+{
+  "practice": {
+    "masteryTraining": {
+      "basicPractice": {
+        "task": "",
+        "hint": "",
+        "answer": ""
+      },
+      "variationChallenge": {
+        "task": "",
+        "hint": "",
+        "answer": ""
+      },
+      "reverseThinking": {
+        "task": "",
+        "hint": "",
+        "answer": ""
+      },
+      "comprehensiveApplication": {
+        "task": "",
+        "hint": "",
+        "answer": ""
+      },
+      "transferQuestion": {
+        "task": "",
+        "hint": "",
+        "answer": ""
+      }
+    },
+    "extensions": [],
+    "faq": [
+      {
+        "question": "",
+        "answer": ""
+      }
+    ]
+  }
+}
+
+字段要求：
+- basicPractice：检验学生是否理解基础知识点。
+- variationChallenge：改变参数或条件，让学生观察结果变化。
+- reverseThinking：给定目标结果，反推输入或参数。
+- comprehensiveApplication：把知识点放进真实应用题或生活情境。
+- transferQuestion：举一反三，迁移到新场景。
+- extensions：4 到 6 条，必须兼顾项目拓展和知识拓展。
+- faq：3 到 5 条，包含硬件问题、学习问题、课堂时间问题。
+`;
+}
 
 function fallbackInstructionPart(part, input, profile, error) {
   const profileHint = profile?.student?.interest_direction || input.interest;
@@ -694,7 +893,35 @@ function normalizeSessionArray(value) {
 }
 
 function systemPrompt() {
-  return `你是 MakerMind AI 的快速 JSON 生成器。直接执行用户给出的模板，不要展示思考过程，不要解释，不要 Markdown。只返回严格 JSON；不确定时选课堂基础版并立即输出。`;
+  return `你是 MakerMind AI 的 STEAM 教育项目设计专家。
+
+你的核心使命：
+不是"做一个炫酷的硬件项目"，而是"通过一个项目让学生真正理解一个知识点"。
+项目是学习的载体，知识理解、迁移练习、举一反三才是最终目的。
+
+核心设计原则：
+1. 知识优先：项目必须围绕知识点展开，硬件是学习工具不是炫技道具。
+2. 拒绝电子试卷：不要做"屏幕显示公式、按钮输入答案、传感器显示数字"这类被动展示项目。
+3. 身体参与：学生要通过动作、声音、距离、光照、温度、倾斜、按钮等身体方式参与。
+4. 感知世界：传感器不只是读数据，而是感知环境变化、人的行为、物理规律。
+5. 改变世界：执行器不只是输出结果，而是驱动实体动作、改变环境状态、产生真实反馈。
+6. 任务驱动：每个项目要有任务感、游戏感、生活场景或真实工程意义。
+7. 即时反馈：输入→计算→输出的链路要清晰可见，学生马上能看到结果。
+8. 分层递进：从基础版到进阶版，先理解知识再拓展创意。
+
+硬件交互等级（从低到高）：
+- Level 1：被动展示，只显示数据 → 绝对不要生成
+- Level 2：按钮切换，屏幕反馈 → 尽量不要生成
+- Level 3：感知驱动，传感器触发行动，有即时反馈 → 最低要求
+- Level 4：生态闭环，多传感器协同，形成系统 → 推荐
+- Level 5：物理实体，控制舵机、电机、水泵、灯带等真实物体 → 最佳
+
+输出纪律：
+- 只返回严格 JSON，不返回 Markdown，不返回 HTML，不返回代码块。
+- 不在 JSON 外写任何解释文字。
+- JSON 字符串内不要出现未转义的英文双引号。
+- 所有字符串是单行的，不要真实换行，需要多行请用数组。
+- 如果你不确定某个字段怎么写，按照要求合理生成，不要留空。`;
 }
 
 async function callTextModel(env, prompt, part) {
@@ -724,7 +951,7 @@ async function callTextModel(env, prompt, part) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: env.AI_MODEL,
+        model: env.AI_MODEL || "deepseek-v4-flash",
         messages: [
           {
             role: "system",
