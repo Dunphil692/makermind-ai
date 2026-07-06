@@ -44,6 +44,9 @@ body {
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
   color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   background:
     radial-gradient(circle at 12% 8%, rgba(255, 92, 26, 0.08), transparent 30rem),
     radial-gradient(circle at 82% 16%, rgba(91, 141, 239, 0.07), transparent 26rem),
@@ -451,8 +454,9 @@ main,
   margin: 18px 0 24px;
   max-width: 920px;
   font-size: clamp(48px, 6.7vw, 88px);
-  line-height: 0.98;
-  letter-spacing: -0.078em;
+  font-weight: 950;
+  line-height: 1.04;
+  letter-spacing: -0.045em;
 }
 
 .hero-title-line {
@@ -2079,9 +2083,9 @@ button:disabled {
 .about-hero {
   margin-bottom: 28px;
   padding: clamp(34px, 6vw, 58px);
-  border: 1px solid rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.1);
   border-radius: var(--radius-xl);
-  background: rgba(255,255,255,0.9);
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.9));
   box-shadow: var(--shadow-md);
 }
 
@@ -2090,6 +2094,7 @@ button:disabled {
   margin: 16px 0 22px;
   color: var(--text);
   font-size: clamp(38px, 5.4vw, 68px);
+  font-weight: 950;
   line-height: 1.08;
   letter-spacing: -0.052em;
 }
@@ -2098,7 +2103,8 @@ button:disabled {
   max-width: 900px;
   color: var(--text-secondary);
   font-size: 20px;
-  line-height: 1.75;
+  font-weight: 600;
+  line-height: 1.78;
 }
 
 .about-tag-row,
@@ -2111,9 +2117,9 @@ button:disabled {
 
 .about-tag-row span {
   padding: 9px 13px;
-  border: 1px solid rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.09);
   border-radius: 999px;
-  background: rgba(248,250,252,0.9);
+  background: var(--surface-soft);
   color: var(--text-secondary);
   font-size: 14px;
   font-weight: 850;
@@ -2141,8 +2147,8 @@ button:disabled {
 .about-card p,
 .about-card li {
   color: var(--text-secondary);
-  font-size: 16px;
-  line-height: 1.78;
+  font-size: 17px;
+  line-height: 1.82;
 }
 
 .about-card ul,
@@ -2156,10 +2162,11 @@ button:disabled {
   padding: 20px;
   border-left: 5px solid var(--blue);
   border-radius: 20px;
-  background: rgba(239,246,255,0.9);
-  color: #1e3a8a;
+  background: rgba(239, 246, 255, 0.92);
+  color: #152c70;
   font-weight: 850;
-  line-height: 1.75;
+  font-size: 16px;
+  line-height: 1.78;
 }
 
 .compact-quote {
@@ -2193,12 +2200,13 @@ button:disabled {
 }
 
 .compare-table th {
-  background: #0f172a;
+  background: var(--text);
   color: #fff;
+  font-weight: 800;
 }
 
 .compare-table tr:nth-child(even) td {
-  background: rgba(248,250,252,0.9);
+  background: var(--surface-soft);
 }
 
 .feature-list {
@@ -2211,9 +2219,9 @@ button:disabled {
 .student-card,
 .dimension-card {
   padding: 18px;
-  border: 1px solid rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.09);
   border-radius: 20px;
-  background: rgba(248,250,252,0.86);
+  background: var(--surface-soft);
 }
 
 .feature-item strong,
@@ -2255,11 +2263,11 @@ button:disabled {
 
 .memory-pill {
   padding: 16px 12px;
-  border: 1px solid rgba(0, 212, 170, 0.22);
+  border: 1px solid rgba(0, 200, 150, 0.26);
   border-radius: 20px;
-  background: rgba(236, 254, 255, 0.86);
+  background: rgba(236, 254, 250, 0.88);
   text-align: center;
-  color: #155e75;
+  color: #0c5e56;
   font-weight: 900;
 }
 
@@ -2267,22 +2275,25 @@ button:disabled {
   margin: 24px 0 40px;
   padding: 42px;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #111827 0%, #312e81 100%);
+  background: linear-gradient(135deg, #0d1525 0%, #1e1b5e 50%, #312e81 100%);
   color: #fff;
   box-shadow: var(--shadow-lg);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .summary-banner h2 {
   margin-bottom: 14px;
   color: #fff;
   font-size: 34px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 .summary-banner p {
   max-width: 920px;
-  color: rgba(255,255,255,0.88);
+  color: rgba(255,255,255,0.92);
   font-size: 20px;
   line-height: 1.8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .contact-item {
@@ -2291,12 +2302,14 @@ button:disabled {
   gap: 10px;
   padding: 14px 20px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.18);
   color: #fff;
+  font-weight: 780;
+  transition: background 0.2s ease;
 }
 
 .contact-item:hover {
-  background: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.28);
 }
 
 .contact-item span {
@@ -4533,6 +4546,166 @@ button:disabled {
 
   /* Hamburger button */
   .hamburger-btn { color: #f0f4ff; }
+
+  /* ===== About page dark mode ===== */
+  .about-hero {
+    background: rgba(22, 38, 58, 0.9);
+    border-color: rgba(200, 210, 230, 0.14);
+  }
+  .about-hero h1 {
+    color: #f0f4ff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  .about-hero p {
+    color: #b4c0d8;
+  }
+  .about-tag-row span {
+    background: rgba(22, 38, 58, 0.85);
+    border-color: rgba(200, 210, 230, 0.16);
+    color: #b4c0d8;
+  }
+
+  .about-card h2 { color: #f0f4ff; }
+  .about-card h3 { color: #e8ecf4; }
+  .about-card p,
+  .about-card li {
+    color: #b4c0d8;
+  }
+  .about-card ul,
+  .about-card ol {
+    color: #b4c0d8;
+  }
+
+  /* Quote box in dark mode */
+  .quote-box {
+    background: rgba(30, 50, 90, 0.7);
+    border-left-color: var(--blue);
+    color: #c8d8f8;
+  }
+  .quote-source { color: #8a9ab8; }
+
+  /* Compare table */
+  .compare-table th {
+    background: rgba(22, 38, 58, 0.9);
+    color: #e8ecf4;
+    border-bottom-color: rgba(200, 210, 230, 0.2);
+  }
+  .compare-table td {
+    border-color: rgba(200, 210, 230, 0.1);
+    color: #b4c0d8;
+  }
+  .compare-table tr:nth-child(even) td {
+    background: rgba(22, 38, 58, 0.5);
+  }
+
+  /* Student & dimension cards */
+  .student-card,
+  .dimension-card,
+  .feature-item {
+    background: rgba(22, 38, 58, 0.8);
+    border-color: rgba(200, 210, 230, 0.12);
+  }
+  .student-card strong,
+  .dimension-card strong,
+  .feature-item strong {
+    color: #e8ecf4;
+  }
+  .student-card p,
+  .dimension-card p,
+  .feature-item p {
+    color: #b4c0d8;
+  }
+
+  /* Memory pills */
+  .memory-pill {
+    background: rgba(77, 127, 245, 0.18);
+    border-color: rgba(107, 154, 248, 0.3);
+    color: #8db5ff;
+    font-weight: 850;
+  }
+
+  /* Summary banner */
+  .summary-banner {
+    background: linear-gradient(135deg, #0d1525 0%, #1a1650 50%, #2d2888 100%);
+    color: #fff;
+  }
+  .summary-banner h2 {
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  .summary-banner p {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Contact items */
+  .contact-item {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+  .contact-item:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  /* Particle canvas — reduce in dark mode */
+  #particleCanvas {
+    opacity: 0.06 !important;
+  }
+
+  /* Feature list items */
+  .feature-list .feature-item {
+    border-color: rgba(200, 210, 230, 0.1);
+  }
+
+  /* ===== Index hero dark mode ===== */
+  .clarity-hero {
+    background:
+      linear-gradient(135deg, rgba(22, 38, 58, 0.94), rgba(35, 20, 12, 0.86)),
+      radial-gradient(circle at 82% 20%, rgba(107, 154, 248, 0.15), transparent 30%),
+      radial-gradient(circle at 8% 88%, rgba(255, 106, 46, 0.14), transparent 28%) !important;
+    border-color: rgba(200, 210, 230, 0.14);
+  }
+  .clarity-hero::before {
+    background: radial-gradient(circle, rgba(107, 154, 248, 0.2), transparent 68%);
+  }
+  .hero-overlay {
+    background: linear-gradient(90deg, rgba(8, 14, 26, 0.15), transparent 60%);
+  }
+  .hero-title-line {
+    color: #f0f4ff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  }
+  .clarity-hero-copy p {
+    color: #b4c0d8;
+  }
+  .hero-decor {
+    background: rgba(22, 38, 58, 0.85);
+    border-color: rgba(200, 210, 230, 0.16);
+    color: #b4c0d8;
+  }
+  .hero-trust-row {
+    color: #b4c0d8;
+  }
+
+  /* ===== FAQ dark mode overrides ===== */
+  .faq-category h2 {
+    border-bottom-color: rgba(200, 210, 230, 0.12);
+    color: #f0f4ff;
+  }
+  .faq-item {
+    background: rgba(22, 38, 58, 0.8);
+    border-color: rgba(200, 210, 230, 0.12);
+  }
+  .faq-item summary {
+    color: #e8ecf4;
+  }
+  .faq-item p {
+    color: #b4c0d8;
+  }
+  .faq-search input {
+    background: rgba(22, 38, 58, 0.85);
+    border-color: rgba(200, 210, 230, 0.2);
+    color: #f0f4ff;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
