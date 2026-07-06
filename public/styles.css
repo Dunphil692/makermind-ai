@@ -4,8 +4,8 @@
   --surface: rgba(255, 255, 255, 0.92);
   --surface-soft: rgba(248, 250, 252, 0.82);
   --text: #0a0f1f;
-  --text-secondary: #3b4458;
-  --muted: #7b89a3;
+  --text-secondary: #1e293b;
+  --muted: #5b6a80;
   --card: rgba(255, 255, 255, 0.92);
   --card-hover: rgba(255, 255, 255, 1);
   --line: rgba(15, 23, 42, 0.1);
@@ -2275,17 +2275,15 @@ button:disabled {
   margin: 24px 0 40px;
   padding: 42px;
   border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #0d1525 0%, #1e1b5e 50%, #312e81 100%);
+  background: linear-gradient(135deg, #111827 0%, #312e81 100%);
   color: #fff;
   box-shadow: var(--shadow-lg);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .summary-banner h2 {
   margin-bottom: 14px;
   color: #fff;
   font-size: 34px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
 .summary-banner p {
@@ -2293,7 +2291,6 @@ button:disabled {
   color: rgba(255,255,255,0.92);
   font-size: 20px;
   line-height: 1.8;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .contact-item {
@@ -4154,8 +4151,8 @@ button:disabled {
     --surface: rgba(22, 32, 50, 0.94);
     --surface-soft: rgba(8, 14, 26, 0.84);
     --text: #f0f4ff;
-    --text-secondary: #b4c0d8;
-    --muted: #7d8ba8;
+    --text-secondary: #c8d4e8;
+    --muted: #9aabc8;
     --card: rgba(22, 38, 58, 0.92);
     --card-hover: rgba(28, 45, 68, 1);
     --line: rgba(200, 210, 230, 0.12);
@@ -4260,7 +4257,7 @@ button:disabled {
   }
 
   .loop-rail strong { color: #f0f4ff; }
-  .loop-rail span { color: #b4c0d8; }
+  .loop-rail span { color: #c8d4e8; }
 
   .section-heading span,
   .card-topline span,
@@ -4273,7 +4270,7 @@ button:disabled {
   }
 
   .section-heading h2 { color: #f0f4ff; }
-  .section-heading p { color: #b4c0d8; }
+  .section-heading p { color: #c8d4e8; }
 
   /* Profile/grid sub-cells */
   .profile-strip div,
@@ -4283,7 +4280,7 @@ button:disabled {
   }
 
   .profile-strip strong { color: #f0f4ff; }
-  .teacher-visual-grid p { color: #b4c0d8; }
+  .teacher-visual-grid p { color: #c8d4e8; }
 
   .card-topline strong { color: var(--primary); }
 
@@ -4303,7 +4300,7 @@ button:disabled {
     border-color: rgba(200, 210, 230, 0.16);
   }
   .mission-hero-card h2 { color: #f0f4ff; }
-  .mission-hero-card p { color: #b4c0d8; }
+  .mission-hero-card p { color: #c8d4e8; }
 
   /* Tags & pills */
   .tag, .pill, .badge {
@@ -4333,7 +4330,7 @@ button:disabled {
 
   /* Insight cards */
   .insight-card h3 { color: #f0f4ff; }
-  .insight-card p { color: #b4c0d8; }
+  .insight-card p { color: #c8d4e8; }
 
   /* Code & instruction */
   .instruction-code {
@@ -4435,7 +4432,7 @@ button:disabled {
 
   /* Dashboard welcome */
   .dash-greeting h1 { color: #f0f4ff; }
-  .dash-greeting p { color: #b4c0d8; }
+  .dash-greeting p { color: #c8d4e8; }
 
   .dash-new-btn {
     background: linear-gradient(135deg, #ff6a2e, #ff5000);
@@ -4444,7 +4441,7 @@ button:disabled {
 
   /* Empty & error states */
   .empty-state h3 { color: #f0f4ff; }
-  .empty-state p { color: #b4c0d8; }
+  .empty-state p { color: #c8d4e8; }
 
   .loading-spin { color: var(--text-secondary); }
 
@@ -4557,23 +4554,23 @@ button:disabled {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
   .about-hero p {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
   .about-tag-row span {
     background: rgba(22, 38, 58, 0.85);
     border-color: rgba(200, 210, 230, 0.16);
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
 
   .about-card h2 { color: #f0f4ff; }
   .about-card h3 { color: #e8ecf4; }
   .about-card p,
   .about-card li {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
   .about-card ul,
   .about-card ol {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
 
   /* Quote box in dark mode */
@@ -4592,7 +4589,7 @@ button:disabled {
   }
   .compare-table td {
     border-color: rgba(200, 210, 230, 0.1);
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
   .compare-table tr:nth-child(even) td {
     background: rgba(22, 38, 58, 0.5);
@@ -4613,7 +4610,7 @@ button:disabled {
   .student-card p,
   .dimension-card p,
   .feature-item p {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
 
   /* Memory pills */
@@ -4626,16 +4623,11 @@ button:disabled {
 
   /* Summary banner */
   .summary-banner {
-    background: linear-gradient(135deg, #0d1525 0%, #1a1650 50%, #2d2888 100%);
+    background: linear-gradient(135deg, #111827 0%, #312e81 100%);
     color: #fff;
   }
-  .summary-banner h2 {
-    color: #fff;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  .summary-banner p {
-    color: rgba(255, 255, 255, 0.9);
-  }
+  .summary-banner h2 { color: #fff; }
+  .summary-banner p { color: rgba(255, 255, 255, 0.9); }
 
   /* Contact items */
   .contact-item {
@@ -4675,15 +4667,15 @@ button:disabled {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
   }
   .clarity-hero-copy p {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
   .hero-decor {
     background: rgba(22, 38, 58, 0.85);
     border-color: rgba(200, 210, 230, 0.16);
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
   .hero-trust-row {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
 
   /* ===== FAQ dark mode overrides ===== */
@@ -4699,7 +4691,7 @@ button:disabled {
     color: #e8ecf4;
   }
   .faq-item p {
-    color: #b4c0d8;
+    color: #c8d4e8;
   }
   .faq-search input {
     background: rgba(22, 38, 58, 0.85);
