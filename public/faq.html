@@ -42,6 +42,10 @@
       <p>以下是教师在使用 MakerMind AI 时最常问到的问题。如果没有找到你的问题，欢迎联系我们。</p>
     </section>
 
+    <div class="faq-search" style="margin-bottom:28px;">
+      <input type="search" id="faqSearch" placeholder="🔍 搜索常见问题...（例如：硬件、代码、时间）" style="width:100%;padding:14px 18px;border:1px solid rgba(15,23,42,0.1);border-radius:999px;font-size:15px;background:rgba(255,255,255,0.78);box-shadow:var(--shadow-sm);transition:border-color 0.18s,box-shadow 0.18s;" />
+      <p id="faqNoResults" style="display:none;text-align:center;color:var(--muted);margin-top:16px;">没有找到匹配的问题，试试其他关键词？</p>
+    </div>
     <div class="faq-grid">
       <div class="faq-category">
         <h2>开始使用</h2>
@@ -206,5 +210,30 @@
     </div>
   </footer>
   <script src="auth.js"></script>
+  <script>
+    (function () {
+      var searchInput = document.getElementById("faqSearch");
+      var noResults = document.getElementById("faqNoResults");
+      if (!searchInput) return;
+      searchInput.addEventListener("input", function () {
+        var query = searchInput.value.trim().toLowerCase();
+        var categories = document.querySelectorAll(".faq-category");
+        var foundAny = false;
+        categories.forEach(function (cat) {
+          var items = cat.querySelectorAll(".faq-item");
+          var catVisible = false;
+          items.forEach(function (item) {
+            var text = item.textContent.toLowerCase();
+            var match = !query || text.includes(query);
+            item.style.display = match ? "" : "none";
+            if (match) catVisible = true;
+          });
+          cat.style.display = catVisible ? "" : "none";
+          if (catVisible) foundAny = true;
+        });
+        noResults.style.display = foundAny || !query ? "none" : "block";
+      });
+    })();
+  </script>
 </body>
 </html>

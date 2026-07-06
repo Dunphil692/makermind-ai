@@ -104,10 +104,27 @@
 
       function emptyState(tab) {
         const isFav = tab === "favorites";
-        return '<div class="empty-state">' +
-          '<h3>' + (isFav ? "还没有收藏任何方案" : "还没有保存过项目方案") + '</h3>' +
-          '<p>' + (isFav ? "在项目列表中点击收藏，即可在这里查看" : "生成你的第一个项目方案，保存后就会出现在这里") + '</p>' +
-          '<a href="generator.html">去生成方案</a>' +
+        if (isFav) {
+          return '<div class="empty-state">' +
+            '<h3>还没有收藏任何方案</h3>' +
+            '<p>在生成方案后，点击「⭐ 收藏此方案」按钮，<br>收藏的方案就会出现在这里，方便你快速回顾。</p>' +
+            '<a class="btn primary small" href="generator.html">🎯 去生成第一个方案</a>' +
+          '</div>';
+        }
+        return '<div class="empty-state welcome-empty">' +
+          '<div style="font-size:64px;margin-bottom:16px;">🚀</div>' +
+          '<h3>欢迎来到 MakerMind AI！</h3>' +
+          '<p>从这里开始你的第一堂 AI 驱动的 STEAM 项目课：<br>输入知识点 → 选择学生兴趣 → AI 自动生成完整方案</p>' +
+          '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;">' +
+            '<a class="btn primary" href="generator.html">⚡ 生成新方案</a>' +
+            '<a class="btn ghost" href="generator.html?demo=1">👀 先看示例</a>' +
+          '</div>' +
+          '<div class="onboarding-steps" style="margin-top:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;text-align:left;">' +
+            '<div style="padding:14px;border-radius:16px;background:rgba(255,255,255,0.7);border:1px solid rgba(15,23,42,0.06);"><strong>1. 输入知识点</strong><p style="font-size:13px;color:var(--text-secondary);margin:4px 0 0;">比如：一次函数、声波、浮力</p></div>' +
+            '<div style="padding:14px;border-radius:16px;background:rgba(255,255,255,0.7);border:1px solid rgba(15,23,42,0.06);"><strong>2. 选择兴趣场景</strong><p style="font-size:13px;color:var(--text-secondary);margin:4px 0 0;">足球、音乐、赛车、环保…</p></div>' +
+            '<div style="padding:14px;border-radius:16px;background:rgba(255,255,255,0.7);border:1px solid rgba(15,23,42,0.06);"><strong>3. 选硬件和时间</strong><p style="font-size:13px;color:var(--text-secondary);margin:4px 0 0;">K10 / Arduino / 纸电路</p></div>' +
+            '<div style="padding:14px;border-radius:16px;background:rgba(255,255,255,0.7);border:1px solid rgba(15,23,42,0.06);"><strong>4. AI 生成完整方案</strong><p style="font-size:13px;color:var(--text-secondary);margin:4px 0 0;">60秒输出可执行的教案</p></div>' +
+          '</div>' +
         '</div>';
       }
 
@@ -164,7 +181,7 @@
       }
 
       load().catch(function () {
-        document.getElementById("projectList").innerHTML = '<div class="empty-state"><h3>加载失败</h3><p>请刷新页面重试</p></div>';
+        document.getElementById("projectList").innerHTML = '<div class="error-state"><div class="error-icon">⚠️</div><h3>加载失败</h3><p>可能是网络问题或服务暂时不可用</p><button class="btn ghost small" onclick="location.reload()">重新加载</button></div>';
       });
     }
   </script>

@@ -432,18 +432,59 @@
 
     function renderDialogueMessages() {
       if (!dialogueMessagesEl) return;
-      dialogueMessagesEl.innerHTML = dialogueMessages.map(message => `
-        <div class="chat-message ${message.role === "user" ? "user" : "assistant"}">
-          <span>${message.role === "user" ? "老师" : "AI"}</span>
-          <p>${safeText(message.content)}</p>
-        </div>
-      `).join("") + (isDialogueThinking ? `
+      if (dialogueMessages.length === 0) {
+        dialogueMessagesEl.innerHTML = `
+          <div class="chat-welcome">
+            <div class="chat-welcome-icon">💬</div>
+            <h4>开始和 AI 一起备课吧</h4>
+            <p>告诉 AI 你的课堂想法，比如学生喜欢什么、想用什么材料、要学什么知识。AI 会像备课助手一样帮你整理需求。</p>
+            <div class="chat-quick-replies" id="chatQuickReplies">
+              <button type="button" class="quick-reply-chip" data-text="我们班学生喜欢足球点球，我想用 K10，让他们学一次函数。">⚽ 数学 × 点球大战</button>
+              <button type="button" class="quick-reply-chip" data-text="学生喜欢音乐和灯光效果，想用 K10 学习声音与振动。">🎵 科学 × 音乐节奏灯</button>
+              <button type="button" class="quick-reply-chip" data-text="学生对环保有兴趣，想用纸板和电子模块做一个环保监测项目。">🌿 科学 × 环保监测</button>
+              <button type="button" class="quick-reply-chip" data-text="学生喜欢篮球，想做一个投篮计分器，学习数据统计。">🏀 数学 × 投篮计分</button>
+            </div>
+          </div>
+        `;
+        bindQuickReplyChips();
+        return;
+      }
+      dialogueMessagesEl.innerHTML = dialogueMessages.map(function (message) {
+        return '<div class="chat-message ' + (message.role === "user" ? "user" : "assistant") + '">' +
+          '<span>' + (message.role === "user" ? "老师" : "AI") + '</span>' +
+          '<p>' + safeText(message.content) + '</p>' +
+          '</div>';
+      }).join("") + (isDialogueThinking ? `
         <div class="chat-message assistant chat-thinking">
           <span>AI</span>
-          <p>正在整理课堂需求...</p>
+          <p><span class="typing-dots"><span>.</span><span>.</span><span>.</span></span> 正在整理课堂需求</p>
         </div>
       ` : "");
       dialogueMessagesEl.scrollTop = dialogueMessagesEl.scrollHeight;
+    }
+
+    // Keyboard shortcut: Enter to send, Shift+Enter for newline
+    function setupChatKeyboard() {
+      if (!dialogueInput) return;
+      dialogueInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendDialogueMessage();
+        }
+      });
+    }
+
+    function bindQuickReplyChips() {
+      var chips = document.querySelectorAll("#chatQuickReplies .quick-reply-chip");
+      chips.forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          var text = chip.dataset.text;
+          if (dialogueInput) {
+            dialogueInput.value = text;
+            dialogueInput.focus();
+          }
+        });
+      });
     }
 
     function appendDialogueMessage(role, content) {
@@ -767,6 +808,39 @@
       return `${window.location.origin}/api/health`;
     }
 
+    function celebrateSuccess(instruction) {
+      try {
+        // Toast message
+        const overlay = document.createElement("div");
+        overlay.className = "celebration-overlay";
+        overlay.innerHTML = '<div class="celebration-toast">🎉 方案生成完成！</div>';
+        document.body.appendChild(overlay);
+        setTimeout(function () { overlay.remove(); }, 2800);
+
+        // Simple confetti
+        const colors = ["#ff6b35", "#5b8def", "#00d4aa", "#ffc83f", "#ff5b5b", "#fb923c"];
+        for (var i = 0; i < 40; i++) {
+          var piece = document.createElement("div");
+          piece.className = "confetti-piece";
+          piece.style.left = Math.random() * 100 + "%";
+          piece.style.top = -(Math.random() * 40 + 10) + "px";
+          piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+          piece.style.width = (Math.random() * 8 + 6) + "px";
+          piece.style.height = (Math.random() * 8 + 6) + "px";
+          piece.style.animationDelay = Math.random() * 0.6 + "s";
+          piece.style.animationDuration = (Math.random() * 1.2 + 2.2) + "s";
+          document.body.appendChild(piece);
+          setTimeout(function () { piece.remove(); }, 3200);
+        }
+
+        // Scroll result into view smoothly
+        var resultPanel = document.querySelector(".generator-result-panel");
+        if (resultPanel) {
+          resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      } catch (e) { /* celebration is non-critical */ }
+    }
+
     function formatFetchError(error) {
       const message = error?.message || String(error || "生成失败");
       if (message.includes("Failed to fetch") || message.includes("NetworkError") || message.includes("Load failed")) {
@@ -1000,6 +1074,7 @@
 
         renderInstruction(instruction);
         renderDegradedNotice(instruction);
+        celebrateSuccess(instruction);
         clearGenerationDraft(cacheKey);
         activeDraftInfo = null;
       } catch (error) {
@@ -1018,24 +1093,42 @@
     /* ===== Render full instruction ===== */
     function renderInstruction(instruction) {
       const imageInfo = getImageInfo(instruction);
+      const isRealGeneration = generateCount > 0;
 
       resultTitle.textContent = instruction.projectName || `${getCurrentConcept()} 学习方案`;
       matchTag.textContent = "完整方案";
       updateTag.textContent = generateCount === 0 ? `示例方案 · ${getCurrentTimeText()}` : `已生成 ${generateCount} 次 · ${getCurrentTimeText()}`;
 
+      const tocHTML = `
+        <nav class="instruction-toc" aria-label="方案目录">
+          <h4>📑 快速导航</h4>
+          <a href="#sec-overview">项目概述</a>
+          <a href="#sec-flow">交互流程</a>
+          <a href="#sec-materials">材料清单</a>
+          <a href="#sec-steps">制作步骤</a>
+          <a href="#sec-knowledge">知识点讲解</a>
+          <a href="#sec-mastery">融会贯通训练</a>
+          <a href="#sec-code">代码思路</a>
+          <a href="#sec-extensions">进阶方向</a>
+          <a href="#sec-faq">常见问题</a>
+        </nav>
+      `;
+
       projectCards.innerHTML = `
-        <article class="instruction-doc">
+        <div class="instruction-with-toc">
+          ${tocHTML}
+          <article class="instruction-doc">
           <header class="instruction-hero">
             <div>
-              <div class="demo-badge">示例方案 · 基于真实AI生成</div>
+              <div class="demo-badge" style="${isRealGeneration ? 'background:rgba(0,212,170,0.12);color:#0f766e;' : ''}">${isRealGeneration ? '✅ AI 实时生成' : '📋 示例方案 · 基于真实AI生成'}</div>
               <p class="instruction-kicker">STEAM 项目指导</p>
               <h2>${safeText(instruction.projectName)}</h2>
               <p>${safeText(instruction.subtitle)}</p>
               <div class="instruction-meta">
-                <span>状态：${safeText(instruction.meta?.studentLevel)}</span>
-                <span>知识点：${safeText(instruction.meta?.knowledgePoint)}</span>
-                <span>时长：${safeText(instruction.meta?.timeRequired)}</span>
-                <span>硬件：${safeText(instruction.meta?.hardware)}</span>
+                <span>${safeText(instruction.meta?.studentLevel)}</span>
+                <span>📚 ${safeText(instruction.meta?.knowledgePoint)}</span>
+                <span>⏱ ${safeText(instruction.meta?.timeRequired)}</span>
+                <span>🔧 ${safeText(instruction.meta?.hardware)}</span>
               </div>
             </div>
           </header>
@@ -1050,60 +1143,63 @@
 
           <!-- Action bar -->
           <div class="action-bar">
-            <button type="button" class="btn primary small" id="saveBtn">收藏此方案</button>
+            <button type="button" class="btn primary small" id="saveBtn">⭐ 收藏此方案</button>
+            <button type="button" class="btn ghost small" id="regenerateBtn">🔄 重新生成</button>
             ${instruction._assignedStudentId ? `<a class="btn primary small" href="teacher.html#student-${encodeURIComponent(instruction._assignedStudentId)}">已布置，回教师端</a>` : ""}
-            ${instruction._assignedStudentId ? `<a class="btn ghost small" href="session.html?studentId=${encodeURIComponent(instruction._assignedStudentId)}&studentProjectId=${encodeURIComponent(instruction._studentProjectId || "")}">录入本项目课堂</a>` : ""}
-            <button type="button" class="btn ghost small" id="exportBtn">导出文本</button>
-            <button type="button" class="btn ghost small" id="shareBtn">分享链接</button>
-            <button type="button" class="btn ghost small" id="printBtn">打印</button>
+            ${instruction._assignedStudentId ? `<a class="btn ghost small" href="session.html?studentId=${encodeURIComponent(instruction._assignedStudentId)}&studentProjectId=${encodeURIComponent(instruction._studentProjectId || "")}">📝 录入课堂</a>` : ""}
+            <button type="button" class="btn ghost small" id="exportBtn">📄 导出文本</button>
+            <button type="button" class="btn ghost small" id="shareBtn">🔗 分享链接</button>
+            <button type="button" class="btn ghost small" id="printBtn">🖨️ 打印</button>
           </div>
 
-          <section class="instruction-section">
-            <h3>项目概述</h3>
+          <section class="instruction-section" id="sec-overview">
+            <h3>📋 项目概述</h3>
             <div class="highlight-box">
-              <strong>核心目标：</strong>${safeText(instruction.overview?.coreGoal)}
+              <strong>🎯 核心目标：</strong>${safeText(instruction.overview?.coreGoal)}
             </div>
-            ${instruction.overview?.teacherHook ? `<p><strong>老师开场白：</strong>${safeText(instruction.overview.teacherHook)}</p>` : ""}
-            <p><strong>项目简介：</strong>${safeText(instruction.overview?.projectIntro)}</p>
-            <p><strong>为什么学生会想玩：</strong>${safeText(instruction.overview?.whyFun)}</p>
-            ${renderList("为什么这个项目能帮助学习", instruction.overview?.learningReasons)}
+            ${instruction.overview?.teacherHook ? `<div class="tips-box"><strong>💬 老师开场白：</strong>${safeText(instruction.overview.teacherHook)}</div>` : ""}
+            <p><strong>📖 项目简介：</strong>${safeText(instruction.overview?.projectIntro)}</p>
+            <p><strong>🎮 为什么学生会想玩：</strong>${safeText(instruction.overview?.whyFun)}</p>
+            ${renderList("💡 为什么这个项目能帮助学习", instruction.overview?.learningReasons)}
           </section>
 
-          <section class="instruction-section">
-            <h3>交互流程预览</h3>
+          <section class="instruction-section" id="sec-flow">
+            <h3>🔄 交互流程预览</h3>
             <div class="flow-grid">
-              <div><span>触发</span><strong>${safeText(instruction.interactionFlow?.trigger)}</strong></div>
-              <div><span>计算</span><strong>${safeText(instruction.interactionFlow?.calculation)}</strong></div>
-              <div><span>等级</span><strong>${safeText(instruction.interactionFlow?.level)}</strong></div>
+              <div><span>🎯 触发</span><strong>${safeText(instruction.interactionFlow?.trigger)}</strong></div>
+              <div><span>⚙️ 计算</span><strong>${safeText(instruction.interactionFlow?.calculation)}</strong></div>
+              <div><span>📊 等级</span><strong>${safeText(instruction.interactionFlow?.level)}</strong></div>
             </div>
-            ${renderList("反馈方式", instruction.interactionFlow?.feedback)}
+            ${renderList("📢 反馈方式", instruction.interactionFlow?.feedback)}
             <div class="tips-box">${safeText(instruction.interactionFlow?.levelReason)}</div>
           </section>
 
-          <section class="instruction-section">
-            <h3>材料清单</h3>
-            ${renderMaterialsTable(instruction.materials)}
+          <section class="instruction-section" id="sec-materials">
+            <h3>📦 材料清单</h3>
+            <div class="table-responsive">
+              ${renderMaterialsTable(instruction.materials)}
+            </div>
           </section>
 
-          <section class="instruction-section">
-            <h3>制作步骤</h3>
+          <section class="instruction-section" id="sec-steps">
+            <h3>🔨 制作步骤</h3>
             ${renderSteps(instruction.steps)}
           </section>
 
-          <section class="instruction-section">
-            <h3>知识点讲解</h3>
+          <section class="instruction-section" id="sec-knowledge">
+            <h3>🧠 知识点讲解</h3>
             ${renderKnowledge(instruction.knowledgeExplanation)}
           </section>
 
-          <section class="instruction-section mastery-block">
-            <h3>融会贯通训练</h3>
+          <section class="instruction-section mastery-block" id="sec-mastery">
+            <h3>🏋️ 融会贯通训练</h3>
             ${renderMastery(instruction.masteryTraining)}
           </section>
 
-          <section class="instruction-section code-thought-section">
+          <section class="instruction-section code-thought-section" id="sec-code">
             <div class="code-section-title">
               <div>
-                <h3>代码思路</h3>
+                <h3>💻 代码思路</h3>
                 <p>同一个硬件逻辑提供两种写法：C++ / Arduino 与 MicroPython / K10。</p>
               </div>
             </div>
@@ -1115,7 +1211,7 @@
                   <span class="code-dot green"></span>
                   <strong>C++ / Arduino</strong>
                   <button class="copy-code-btn compact" type="button" data-copy-code aria-label="复制 C++ 代码">
-                    <svg viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="2"></rect><rect x="5" y="3" width="10" height="12" rx="2"></rect></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                     <span>复制</span>
                   </button>
                 </div>
@@ -1128,7 +1224,7 @@
                   <span class="code-dot green"></span>
                   <strong>MicroPython / K10</strong>
                   <button class="copy-code-btn compact" type="button" data-copy-code aria-label="复制 MicroPython 代码">
-                    <svg viewBox="0 0 24 24"><rect x="9" y="7" width="10" height="12" rx="2"></rect><rect x="5" y="3" width="10" height="12" rx="2"></rect></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                     <span>复制</span>
                   </button>
                 </div>
@@ -1137,20 +1233,88 @@
             </div>
           </section>
 
-          <section class="instruction-section">
-            <h3>进阶方向</h3>
+          <section class="instruction-section" id="sec-extensions">
+            <h3>🚀 进阶方向</h3>
             ${renderList("", instruction.extensions)}
           </section>
 
-          <section class="instruction-section">
-            <h3>常见问题</h3>
+          <section class="instruction-section" id="sec-faq">
+            <h3>❓ 常见问题</h3>
             ${renderFaq(instruction.faq)}
           </section>
         </article>
+        </div>
       `;
 
       bindActionButtons(instruction);
       bindCopyButtons();
+      bindTocScrollSpy();
+      initReadingProgress();
+      // Smooth scroll for TOC links
+      document.querySelectorAll(".instruction-toc a").forEach(function (link) {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          var target = document.querySelector(link.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+    }
+
+    function initReadingProgress() {
+      // Remove existing progress bar
+      var old = document.getElementById("readingProgressBar");
+      if (old) old.remove();
+
+      var bar = document.createElement("div");
+      bar.id = "readingProgressBar";
+      bar.className = "reading-progress";
+      document.body.appendChild(bar);
+
+      var ticking = false;
+      window.addEventListener("scroll", function () {
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            var doc = document.querySelector(".instruction-doc");
+            if (!doc) { bar.style.width = "0"; ticking = false; return; }
+            var docTop = doc.getBoundingClientRect().top;
+            var docHeight = doc.offsetHeight;
+            var viewHeight = window.innerHeight;
+            var scrolled = -docTop + viewHeight;
+            var total = docHeight + viewHeight;
+            var progress = Math.min(100, Math.max(0, (scrolled / total) * 100));
+            bar.style.width = progress + "%";
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+
+    function bindTocScrollSpy() {
+      var tocLinks = document.querySelectorAll(".instruction-toc a");
+      var sections = [];
+      tocLinks.forEach(function (link) {
+        var id = link.getAttribute("href");
+        if (id) {
+          var el = document.querySelector(id);
+          if (el) sections.push({ el: el, link: link });
+        }
+      });
+      if (!sections.length) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(function (l) { l.classList.remove("active"); });
+            var match = sections.find(function (s) { return s.el === entry.target; });
+            if (match) match.link.classList.add("active");
+          }
+        });
+      }, { rootMargin: "-80px 0px -70% 0px", threshold: 0 });
+
+      sections.forEach(function (s) { observer.observe(s.el); });
     }
 
     function renderDegradedNotice(instruction) {
@@ -1240,6 +1404,20 @@
       const exportBtn = document.getElementById("exportBtn");
       const shareBtn = document.getElementById("shareBtn");
       const printBtn = document.getElementById("printBtn");
+      const regenBtn = document.getElementById("regenerateBtn");
+
+      if (regenBtn) {
+        regenBtn.addEventListener("click", function () {
+          if (confirm("确定要重新生成吗？当前方案会保留在历史记录中。")) {
+            clearGenerationDraft(activeDraftKey);
+            activeDraftInfo = null;
+            // Scroll to top to see generation progress
+            var resultPanel = document.querySelector(".generator-result-panel");
+            if (resultPanel) resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+            generate();
+          }
+        });
+      }
 
       if (saveBtn) {
         saveBtn.addEventListener("click", () => {
@@ -1645,7 +1823,8 @@
 
     /* ===== Init ===== */
     pruneGenerationDrafts();
-    appendDialogueMessage("assistant", "你好，我会像和你一起备课一样了解需求。请直接告诉我：学生最近喜欢什么？你想用什么硬件或材料？这节课最想让学生学会哪个知识点？");
+    setupChatKeyboard();
+    appendDialogueMessage("assistant", "你好！我会像和你一起备课一样了解需求。请直接告诉我：学生最近喜欢什么？你想用什么硬件或材料？这节课最想让学生学会哪个知识点？");
     renderBriefStatus();
     loadFromUrlParams();
     loadStudentsForGeneration();

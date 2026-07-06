@@ -32,6 +32,37 @@
     </section>
   </main>
 
+  <!-- Work Submit Modal -->
+  <div class="modal-overlay inline-form-modal" id="workSubmitModal" style="display:none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>提交作品</h3>
+        <button type="button" class="modal-close" onclick="hideWorkModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>作品名称 *</label>
+          <input type="text" id="workNameInput" placeholder="给你的作品起个名字" />
+        </div>
+        <div class="form-group">
+          <label>作品链接（可选）</label>
+          <input type="url" id="workUrlInput" placeholder="https://... 作品的文件链接或在线地址" />
+        </div>
+        <div class="form-group">
+          <label>想对老师说的话（可选）</label>
+          <textarea id="workReflectionInput" rows="3" placeholder="这次你最想让老师看哪一点？遇到了什么困难？学到了什么？"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn ghost small" onclick="hideWorkModal()">取消</button>
+        <button type="button" class="btn primary small" id="workSubmitBtn" onclick="submitWorkFromModal()">提交作品</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <script src="auth.js"></script>
   <script>
     if (window.MMAuth.requireAuth("student.html")) {
@@ -43,15 +74,49 @@
       const feedbackLoop=document.getElementById('feedbackLoop');
       let currentStudent=null;
       function esc(t){const d=document.createElement('div');d.textContent=String(t||'');return d.innerHTML;}
-      function progressBar(n){return '<div class="role-progress student-progress"><span style="width:'+Math.max(0,Math.min(100,n||0))+'%"></span></div>';}
+      function progressBar(n){var pct=Math.max(0,Math.min(100,n||0));var cls=pct<30?'low':pct<70?'medium':'high';return '<div class="role-progress '+cls+'"><span style="width:'+pct+'%"></span></div>';}
       function short(t,n){t=String(t||'');return t.length>n?t.slice(0,n)+'…':t;}
-      async function submitWork(studentId, project){
-        const name=prompt('作品名称', project ? (project.title + '作品') : '我的项目作品');
-        if(!name) return;
-        const url=prompt('作品链接或文件路径（可选）')||'';
-        const reflection=prompt('这次你最想让老师看哪一点？（可选）')||'';
-        const res=await window.MMAuth.authFetch('/api/students/'+studentId+'/works',{method:'POST',body:JSON.stringify({workName:name,workType:'project',sourceType:url?'url':'manual',sourceUrl:url,description:reflection,status:'submitted'})});
-        if(!res.ok) alert('提交失败'); else load();
+      // ===== Modal-based work submission (replaces prompt()) =====
+      var workSubmitState = { studentId: '', project: null };
+      function showWorkModal(studentId, project) {
+        workSubmitState = { studentId, project };
+        document.getElementById('workNameInput').value = project ? (project.title + ' 作品') : '我的项目作品';
+        document.getElementById('workUrlInput').value = '';
+        document.getElementById('workReflectionInput').value = '';
+        document.getElementById('workSubmitModal').style.display = 'grid';
+        document.getElementById('workNameInput').focus();
+      }
+      function hideWorkModal() {
+        document.getElementById('workSubmitModal').style.display = 'none';
+      }
+      async function submitWorkFromModal() {
+        var name = document.getElementById('workNameInput').value.trim();
+        if (!name) { showToast('请填写作品名称', 'error'); return; }
+        var url = document.getElementById('workUrlInput').value.trim();
+        var reflection = document.getElementById('workReflectionInput').value.trim();
+        var submitBtn = document.getElementById('workSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '提交中…';
+        try {
+          var res = await window.MMAuth.authFetch('/api/students/' + workSubmitState.studentId + '/works', {
+            method: 'POST',
+            body: JSON.stringify({ workName: name, workType: 'project', sourceType: url ? 'url' : 'manual', sourceUrl: url, description: reflection, status: 'submitted' })
+          });
+          if (!res.ok) { showToast('提交失败，请重试', 'error'); }
+          else { hideWorkModal(); showToast('作品已提交，老师会看到你的作品', 'success'); load(); }
+        } catch (e) {
+          showToast('网络错误，请检查连接', 'error');
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = '提交作品';
+      }
+      function showToast(msg, type) {
+        var container = document.getElementById('toastContainer');
+        var toast = document.createElement('div');
+        toast.className = 'toast ' + (type || 'info');
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(function () { toast.remove(); }, 3200);
       }
       function focus(projects, feedbacks, sessions){
         const current=projects.find(p=>p.status!=='COMPLETED')||projects[0];
@@ -64,7 +129,7 @@
         const next=current.progressPercent>=80?'整理作品并提交给老师':current.progressPercent>=40?'继续完成制作步骤，并记录遇到的问题':'先打开项目方案，完成第一个小步骤';
         focusBox.innerHTML='<article class="mission-hero-card"><div><span>当前主线任务</span><h2>'+esc(current.title||'未命名项目')+'</h2><p>'+esc(next)+'</p>'+progressBar(current.progressPercent)+'<strong>'+esc(current.progressPercent||0)+'%</strong></div><div class="mission-side"><p><b>老师最近说：</b>'+esc(short(latestFeedback?latestFeedback.content:'完成作品后老师会在这里给你反馈。',88))+'</p><p><b>课堂总结：</b>'+esc(short(latestSession?latestSession.structuredSummary:'课堂记录保存后，会自动同步到这里。',88))+'</p><div class="project-card-actions"><a class="pc-btn primary" href="generator.html?project='+encodeURIComponent(current.projectId)+'&studentId='+encodeURIComponent(currentStudent.studentId)+'">打开项目方案</a><button class="pc-btn" id="focusSubmit">提交作品</button></div></div></article>';
         const btn=document.getElementById('focusSubmit');
-        if(btn) btn.onclick=()=>submitWork(currentStudent.studentId,current);
+        if(btn) btn.onclick=()=>showWorkModal(currentStudent.studentId,current);
       }
       function card(p, feedbacks, works){
         const mine=works.filter(w=>!w.projectId || w.projectId===p.projectId || String(w.description||'').includes(p.title));
@@ -101,10 +166,10 @@
         stats.innerHTML='<div class="dash-stat"><strong>'+projects.length+'</strong><span>任务</span></div><div class="dash-stat"><strong>'+works.length+'</strong><span>作品</span></div><div class="dash-stat"><strong>'+feedbacks.length+'</strong><span>老师反馈</span></div><div class="dash-stat"><strong>'+sessions.length+'</strong><span>课堂记录</span></div>';
         focus(projects,feedbacks,sessions);
         list.innerHTML=projects.length?projects.map(x=>card(x,feedbacks,works)).join(''):'<div class="empty-state"><h3>暂无项目任务</h3><p>老师布置项目后会出现在这里。</p></div>';
-        list.querySelectorAll('[data-work]').forEach(b=>b.onclick=()=>submitWork(currentStudent.studentId,projects.find(p=>p.id===b.dataset.work)));
+        list.querySelectorAll('[data-work]').forEach(b=>b.onclick=()=>showWorkModal(currentStudent.studentId,projects.find(p=>p.id===b.dataset.work)));
         renderFeedback(feedbacks,sessions,works);
       }
-      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';focusBox.innerHTML='';});
+      load().catch(function(){list.innerHTML='<div class="error-state"><div class="error-icon">⚠️</div><h3>加载失败</h3><p>可能是网络问题或服务暂不可用</p><button class="btn ghost small" onclick="location.reload()">重新加载</button></div>';focusBox.innerHTML='';});
     }
   </script>
 </body>

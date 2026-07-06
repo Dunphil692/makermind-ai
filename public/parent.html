@@ -38,7 +38,7 @@
       const stats = document.getElementById("stats");
       function esc(t){const d=document.createElement("div");d.textContent=String(t||"");return d.innerHTML;}
       function text(v, fallback){return Array.isArray(v)?v.join("、"):(v||fallback||"");}
-      function progressBar(n){return '<div class="role-progress parent-progress"><span style="width:'+Math.max(0,Math.min(100,n||0))+'%"></span></div>';}
+      function progressBar(n){var pct=Math.max(0,Math.min(100,n||0));var cls=pct<30?'low':pct<70?'medium':'high';return '<div class="role-progress '+cls+'"><span style="width:'+pct+'%"></span></div>';}
       function short(t,n){t=String(t||'');return t.length>n?t.slice(0,n)+'…':t;}
       async function loadChild(s){
         const [pRes,seRes,fRes,wRes]=await Promise.all([
@@ -78,7 +78,7 @@
         stats.innerHTML='<div class="dash-stat"><strong>'+children.length+'</strong><span>孩子</span></div><div class="dash-stat"><strong>'+avg+'%</strong><span>平均进度</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.sessions.length,0)+'</strong><span>课堂记录</span></div><div class="dash-stat"><strong>'+children.reduce((a,s)=>a+s.works.length,0)+'</strong><span>作品</span></div>';
         list.innerHTML=children.length?children.map(card).join(''):'<div class="empty-state"><h3>暂无孩子档案</h3><p>请联系老师绑定家长账号。</p></div>';
       }
-      load().catch(()=>{list.innerHTML='<div class="empty-state"><h3>加载失败</h3><p>请刷新重试</p></div>';});
+      load().catch(function(){list.innerHTML='<div class="error-state"><div class="error-icon">⚠️</div><h3>加载失败</h3><p>可能是网络问题或服务暂时不可用</p><button class="btn ghost small" onclick="location.reload()">重新加载</button></div>';});
     }
   </script>
 </body>
