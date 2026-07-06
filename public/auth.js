@@ -134,8 +134,201 @@
 
   // 自动注入导航状态
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", updateNavAuth);
+    document.addEventListener("DOMContentLoaded", function () { updateNavAuth(); injectMobileNav(); injectBackToTop(); injectSkipLink(); });
   } else {
     updateNavAuth();
+    injectMobileNav();
+    injectBackToTop();
+    injectSkipLink();
   }
+
+  /* ===== Mobile hamburger navigation ===== */
+  function injectMobileNav() {
+    if (document.getElementById("mm-hamburger-btn")) return;
+
+    // Hamburger button
+    const hamburger = document.createElement("button");
+    hamburger.id = "mm-hamburger-btn";
+    hamburger.className = "hamburger-btn";
+    hamburger.setAttribute("aria-label", "菜单");
+    hamburger.innerHTML = "<span></span><span></span><span></span>";
+
+    // Mobile drawer
+    const drawer = document.createElement("div");
+    drawer.id = "mm-mobile-drawer";
+    drawer.className = "mobile-nav-drawer";
+
+    // Clone nav links into drawer
+    const navLinks = document.querySelector(".nav-links");
+    const links = navLinks ? navLinks.querySelectorAll("a") : [];
+    const currentPath = location.pathname.split("/").pop() || "index.html";
+
+    let drawerHTML = '<div class="drawer-panel">';
+    links.forEach(function (a) {
+      const href = a.getAttribute("href");
+      const isActive = href === currentPath || a.classList.contains("active");
+      drawerHTML += '<a href="' + href + '" class="' + (isActive ? "active" : "") + '">' + a.textContent + '</a>';
+    });
+    // Add auth links
+    const user = getCurrentUser();
+    if (user) {
+      const roleHome = user.role === "teacher" ? "teacher.html" : user.role === "parent" ? "parent.html" : user.role === "student" ? "student.html" : "dashboard.html";
+      drawerHTML += '<div class="drawer-divider"></div>';
+      drawerHTML += '<a href="' + roleHome + '">👤 ' + escapeHtml(user.displayName || "我") + '</a>';
+      drawerHTML += '<a href="#" id="mmDrawerLogout">退出登录</a>';
+    } else {
+      drawerHTML += '<div class="drawer-divider"></div>';
+      drawerHTML += '<a href="login.html">登录</a>';
+      drawerHTML += '<a href="login.html?mode=register">注册</a>';
+    }
+    drawerHTML += '</div>';
+    drawer.innerHTML = drawerHTML;
+
+    // Toggle
+    hamburger.addEventListener("click", function () {
+      const isOpen = hamburger.classList.toggle("open");
+      drawer.classList.toggle("open");
+      document.body.style.overflow = isOpen ? "hidden" : "";
+    });
+
+    drawer.addEventListener("click", function (e) {
+      if (e.target === drawer || e.target.classList.contains("drawer-panel")) return;
+      if (e.target.id === "mmDrawerLogout") { e.preventDefault(); logout(); }
+      hamburger.classList.remove("open");
+      drawer.classList.remove("open");
+      document.body.style.overflow = "";
+    });
+
+    const topbar = document.querySelector(".topbar");
+    if (topbar) {
+      topbar.appendChild(hamburger);
+      document.body.appendChild(drawer);
+    }
+  }
+
+  /* ===== Back to top button ===== */
+  function injectBackToTop() {
+    if (document.getElementById("mm-back-to-top")) return;
+    const btn = document.createElement("button");
+    btn.id = "mm-back-to-top";
+    btn.className = "back-to-top";
+    btn.setAttribute("aria-label", "返回顶部");
+    btn.innerHTML = "↑";
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    document.body.appendChild(btn);
+
+    let scrollTicking = false;
+    window.addEventListener("scroll", function () {
+      if (!scrollTicking) {
+        requestAnimationFrame(function () {
+          if (window.scrollY > 400) {
+            btn.classList.add("visible");
+          } else {
+            btn.classList.remove("visible");
+          }
+          scrollTicking = false;
+        });
+        scrollTicking = true;
+      }
+    }, { passive: true });
+  }
+
+  /* ===== Preload critical above-fold images ===== */
+  (function () {
+    var criticalImages = document.querySelectorAll(".instruction-visual img, .project-card-img");
+    criticalImages.forEach(function (img) {
+      if (img.loading === "lazy") img.loading = "eager";
+    });
+  })();
+
+  /* ===== Image lazy load observer ===== */
+  (function () {
+    if (!("IntersectionObserver" in window)) return;
+    var imgObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            delete img.dataset.src;
+          }
+          img.addEventListener("load", function () { img.classList.add("loaded"); });
+          if (img.complete) img.classList.add("loaded");
+          imgObserver.unobserve(img);
+        }
+      });
+    }, { rootMargin: "200px" });
+    document.querySelectorAll("img[loading='lazy']").forEach(function (img) {
+      imgObserver.observe(img);
+    });
+    // Also observe dynamically added images
+    if (window.MutationObserver) {
+      new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          m.addedNodes.forEach(function (node) {
+            if (node.tagName === "IMG" && node.loading === "lazy") {
+              imgObserver.observe(node);
+            }
+            if (node.querySelectorAll) {
+              node.querySelectorAll("img[loading='lazy']").forEach(function (img) {
+                imgObserver.observe(img);
+              });
+            }
+          });
+        });
+      }).observe(document.body, { childList: true, subtree: true });
+    }
+  })();
+
+  /* ===== Global image error fallback ===== */
+  document.addEventListener("error", function (e) {
+    var img = e.target;
+    if (img && img.tagName === "IMG" && !img.dataset.fallbackTried) {
+      img.dataset.fallbackTried = "1";
+      var fallback = "/assets/reaction-trainer.jpg";
+      if (img.src !== fallback) img.src = fallback;
+    }
+  }, true);
+
+  /* ===== Skip to content (accessibility) ===== */
+  function injectSkipLink() {
+    if (document.getElementById("mm-skip-link")) return;
+    var skipLink = document.createElement("a");
+    skipLink.id = "mm-skip-link";
+    skipLink.href = "#main-content";
+    skipLink.textContent = "跳转到主要内容";
+    skipLink.setAttribute("style", "position:absolute;top:-100px;left:16px;z-index:100;padding:12px 20px;background:#ff6b35;color:#fff;font-weight:700;border-radius:0 0 12px 12px;transition:top 0.2s;");
+    skipLink.addEventListener("focus", function () { skipLink.style.top = "0"; });
+    skipLink.addEventListener("blur", function () { skipLink.style.top = "-100px"; });
+    document.body.insertBefore(skipLink, document.body.firstChild);
+
+    // Ensure main content has an id for skip link
+    var mainEl = document.querySelector("main");
+    if (mainEl && !mainEl.id) mainEl.id = "main-content";
+  }
+
+  /* ===== Global Escape key handler ===== */
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+
+    // Close mobile nav drawer
+    var hamburger = document.getElementById("mm-hamburger-btn");
+    var drawer = document.getElementById("mm-mobile-drawer");
+    if (hamburger && hamburger.classList.contains("open")) {
+      hamburger.classList.remove("open");
+      if (drawer) drawer.classList.remove("open");
+      document.body.style.overflow = "";
+      return;
+    }
+
+    // Close any visible modal overlays
+    var modals = document.querySelectorAll(".modal-overlay");
+    modals.forEach(function (modal) {
+      if (modal.style.display !== "none" && getComputedStyle(modal).display !== "none") {
+        modal.style.display = "none";
+      }
+    });
+  });
 })();

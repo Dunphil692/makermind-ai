@@ -95,7 +95,7 @@
       function setupSpeech(){
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-          document.getElementById('speechHint').textContent = '当前浏览器不支持原生语音识别，请手动输入课堂记录文本。';
+          document.getElementById('speechHint').innerHTML = '⚠️ 当前浏览器不支持语音识别（Chrome 和 Edge 支持），请手动输入课堂记录。';
           startBtn.disabled = true;
           return;
         }
@@ -112,7 +112,22 @@
           }
           transcriptInput.value = finalText + interim;
         };
-        recognition.onend = function(){ startBtn.disabled = false; stopBtn.disabled = true; };
+        recognition.onstart = function () {
+          startBtn.classList.add('recording-pulse');
+          startBtn.innerHTML = '<span class="recording-dot"></span>录音中…';
+        };
+        recognition.onend = function () {
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+          startBtn.classList.remove('recording-pulse');
+          startBtn.textContent = '开始录音';
+        };
+        recognition.onerror = function (e) {
+          startBtn.classList.remove('recording-pulse');
+          startBtn.textContent = '开始录音';
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+        };
       }
 
       startBtn.onclick = function(){ if (!recognition) return; startBtn.disabled = true; stopBtn.disabled = false; recognition.start(); };
@@ -121,19 +136,35 @@
 
       structureBtn.onclick = async function(){
         const rawTranscript = transcriptInput.value.trim();
-        if (!rawTranscript) return alert('请先输入或录入课堂文本');
+        if (!rawTranscript) { alert('请先输入或录入课堂文本'); return; }
         structureBtn.disabled = true;
-        resultBox.textContent = 'AI 正在结构化…';
-        const res = await window.MMAuth.authFetch('/api/sessions/structure', { method:'POST', body: JSON.stringify({ studentId: selectedStudentId(), rawTranscript }) });
-        const data = await res.json();
-        structureBtn.disabled = false;
-        if (!res.ok) { resultBox.textContent = JSON.stringify(data, null, 2); return; }
-        structured = data.structured;
-        resultBox.textContent = JSON.stringify(structured, null, 2);
-        saveBtn.disabled = !selectedProjectId();
-        if (structured.suggestedNextProject) {
-          nextProjectBox.style.display = 'block';
-          nextProjectBox.innerHTML = '<h3>建议下个项目</h3><p>'+esc(structured.suggestedNextProject)+'</p><a href="generator.html?studentId='+encodeURIComponent(selectedStudentId())+'&prefill='+encodeURIComponent(structured.suggestedNextProject)+'">去生成</a>';
+        structureBtn.textContent = 'AI 分析中…';
+        resultBox.textContent = 'AI 正在分析课堂记录，提取关键信息…';
+        try {
+          const res = await window.MMAuth.authFetch('/api/sessions/structure', { method:'POST', body: JSON.stringify({ studentId: selectedStudentId(), rawTranscript }) });
+          const data = await res.json();
+          structureBtn.disabled = false;
+          structureBtn.textContent = 'AI 结构化';
+          if (!res.ok) { resultBox.textContent = '结构化失败：' + (data.error || JSON.stringify(data, null, 2)); return; }
+          structured = data.structured;
+          // Render as readable summary + raw JSON
+          var summary = [];
+          if (structured.topicsCovered) summary.push('<strong>📚 涉及知识点：</strong>' + esc(Array.isArray(structured.topicsCovered) ? structured.topicsCovered.join('、') : structured.topicsCovered));
+          if (structured.skillsDemonstrated) summary.push('<strong>🛠️ 展示的技能：</strong>' + esc(Array.isArray(structured.skillsDemonstrated) ? structured.skillsDemonstrated.join('、') : structured.skillsDemonstrated));
+          if (structured.progressDelta) summary.push('<strong>📈 进度变化：</strong>+' + esc(String(structured.progressDelta)) + '%');
+          if (structured.understandingScore) summary.push('<strong>🧠 理解度评分：</strong>' + esc(String(structured.understandingScore)) + '/5');
+          if (structured.teacherNotes) summary.push('<strong>📝 教师备注：</strong>' + esc(structured.teacherNotes));
+          if (structured.parentFeedback) summary.push('<strong>👨‍👩‍👧 家长反馈：</strong>' + esc(structured.parentFeedback));
+          resultBox.innerHTML = (summary.length ? '<div style="margin-bottom:16px;line-height:2;">' + summary.join('<br>') + '</div><hr style="border-color:rgba(255,255,255,0.1);margin:14px 0;">' : '') + '<details style="color:#94a3b8;font-size:13px;"><summary style="cursor:pointer;color:#64748b;">查看原始 JSON</summary><pre style="margin-top:8px;white-space:pre-wrap;">' + esc(JSON.stringify(structured, null, 2)) + '</pre></details>';
+          saveBtn.disabled = !selectedProjectId();
+          if (structured.suggestedNextProject) {
+            nextProjectBox.style.display = 'block';
+            nextProjectBox.innerHTML = '<h3>建议下个项目</h3><p>'+esc(structured.suggestedNextProject)+'</p><a href="generator.html?studentId='+encodeURIComponent(selectedStudentId())+'&prefill='+encodeURIComponent(structured.suggestedNextProject)+'">去生成</a>';
+          }
+        } catch (e) {
+          structureBtn.disabled = false;
+          structureBtn.textContent = 'AI 结构化';
+          resultBox.textContent = '结构化失败：网络错误，请检查连接后重试。';
         }
       };
 
