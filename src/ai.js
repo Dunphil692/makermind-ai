@@ -95,9 +95,7 @@ export async function handleGenerateInstructionPart(request, env) {
     const part = normalizePartName(body.part || body.section || "overview");
     const prompt = buildPartPrompt(input, part, profileResult.profile);
     let parsed;
-    let degraded = false;
     let source = mockMode ? "mock" : "ai";
-    let warning = "";
 
     if (mockMode) {
       parsed = mockInstructionPart(part, input, profileResult.profile);
@@ -105,11 +103,16 @@ export async function handleGenerateInstructionPart(request, env) {
       try {
         parsed = await generateParsedPartWithRetry(env, prompt, part);
       } catch (error) {
-        degraded = true;
-        source = "fallback";
-        warning = "AI 服务暂时不稳定，本段已使用基础模板生成，可稍后重新生成优化。";
-        console.warn(`[${part}] AI 多次失败，启用基础模板兜底：`, error?.message || error);
-        parsed = fallbackInstructionPart(part, input, profileResult.profile, error);
+        console.warn(`[${part}] AI 生成失败：`, error?.message || error);
+        return json(
+          {
+            error: "AI 生成失败，请重试",
+            detail: error.message,
+            part,
+            elapsedMs: Date.now() - startedAt
+          },
+          502
+        );
       }
     }
 
@@ -130,9 +133,7 @@ export async function handleGenerateInstructionPart(request, env) {
     return json({
       part,
       data: normalized,
-      degraded,
       source,
-      warning,
       elapsedMs: Date.now() - startedAt
     });
   } catch (error) {
@@ -326,6 +327,11 @@ ${input.studentProfileBlock || "无指定学生画像"}
 - 避免把画像当作永久标签，用“本次更适合”来设计。
 
 核心设计理念：
+核心理念：不是展示知识，而是用传感器+执行器让学生体验知识点。
+错误做法：屏幕+按钮=电子试卷（无聊）。
+正确做法：传感器+执行器=知识实体化（有趣）。
+不要"看"知识点的公式，要"摸"知识点的变化，"听"知识点的反馈，"玩"知识点的应用。
+
 1. 让知识"活"起来，而不是"展示"知识。
 2. 不要生成电子试卷式项目。
 3. 不要只是屏幕显示公式、按钮输入答案、传感器显示数字。
@@ -358,6 +364,41 @@ Level 5：物理实体，控制舵机、电机、水泵、灯带等真实物体�
 - 光敏传感器：光照变化、追光、护眼、昼夜变化
 - 加速度传感器：倾斜、摇晃、姿态控制、平衡、身体参与
 - RGB LED：状态提示、成功失败、等级变化、警戒强度、情绪反馈
+
+K10 代码 API 规则（绝对禁止编造 API，必须严格按以下规则写代码）：
+MicroPython 正确 API：
+- 屏幕显示文本：screen.draw_text(text="...", x=, y=, font_size=, color=0xFF0000) 然后 screen.show_draw()，不存在 screen.text()
+- 按钮初始化：bt_a = button(button.a)，button 是类不是实例，用 bt_a.event_pressed = callback 设置回调
+- 屏幕初始化：screen.init(dir=2)，清屏 screen.clear()，背景色 screen.show_bg(color=0x000000)
+- 温湿度：temp_humi.read_temp() / temp_humi.read_humi()，光敏：light.read()
+- 加速度：acce.read_x() / acce.read_y() / acce.read_z()
+- RGB LED：rgb.write(num=0, color=0xFF0000)，rgb.brightness(9)，rgb.clear()
+- 扬声器：speaker.play_sys_music("a.wav") / speaker.play_tf_music("a.wav")
+- 舵机：s1 = servo(1) 然后 s1.angle(value=170)
+- 入口文件必须是 main.py，否则不会自动运行
+
+Arduino C++ 正确 API：
+- 三步初始化缺一不可：k10.begin(); k10.initScreen(2); k10.creatCanvas();
+- 显示文本：k10.canvas->canvasText(text, row, color) 然后 k10.canvas->updateCanvas()，用 canvas 指针不是 screen
+- 清空画布：k10.canvas->canvasClear()
+- 按钮检测：k10.buttonA->isPressed() / k10.buttonB->isPressed()，必须用 -> 指针语法
+- 温湿度：k10.getData(AHT20::eAHT20TempC) / k10.getData(AHT20::eAHT20Humi)
+- 光敏：k10.readALS()
+- 加速度：k10.getAccelerometerX() / k10.getAccelerometerY() / k10.getAccelerometerZ()
+- RGB LED：k10.write(index, r, g, b)，k10.setRangeColor(start, end, color)，k10.brightness(b)
+- 音调：k10.playTone(freq, beat)，k10.stopPlayTone()
+- .ino 文件必须放在同名目录中
+
+如果可用套件不是 K10，按对应平台标准 API 生成，同样禁止编造 API。
+
+知识点分类与硬件映射：
+- 数学（函数、方程、比例、几何）：用加速度传感器控制参数，RGB 表示状态，扬声器语音反馈
+- 物理（浮力、电路、杠杆、光学）：用水泵控制浮沉，舵机模拟杠杆，光敏追踪光源
+- 化学（酸碱反应、分子结构）：RGB LED 变色指示，扬声器警报，自动记录曲线
+- 生物（光合作用、人体结构）：温湿度+光照→植物生长，心率监测→健康指导
+- 科创（编程、传感器应用）：多传感器协同，控制真实物体（舵机、电机、水泵）
+- 人文艺术（语言、音乐、美术）：麦克风节奏检测→RGB 律动，扬声器语音反馈
+- 思维（逻辑、批判性思维）：按钮交互游戏，RGB 成功/失败指示，扬声器音效
 
 固定参考图 imageKey 只能从下面选择一个：
 reaction-trainer,
@@ -500,12 +541,14 @@ ${baseDesignRules(input)}
 - 这部分一定要体现"学习"，不能只是做项目。
 - 制作步骤要具体，适合老师照着讲，每一步都要写学生做什么、老师提醒什么、如何判断成功。
 - 知识讲解要适合中小学生，不要太学术，但必须讲清楚为什么。
-- 代码可以比以前更完整，至少要体现变量、输入、计算规则、反馈输出和一个可修改参数。
-- C++ 版本适合 Arduino / ESP32。
+- 代码必须完整可运行，体现变量、输入、计算规则、反馈输出，包含至少 2 个可调参数（如阈值、系数等），并用注释标明。
+- C++ 版本适合 Arduino / ESP32 / K10。
 - MicroPython 版本适合 UNIHIKER K10 / micro:bit / Python 风格硬件。
 - 两种代码都必须体现：读取传感器输入 → 根据知识点计算或判断 → 输出屏幕、灯光、声音反馈。
 - 代码应该尽量像标准代码，而不是全部靠左的说明文字。
-- 不要只给代码骨架；每段代码至少要有 12 行，包含注释、变量和主循环。
+- 不要只给代码骨架；每段代码至少要有 20 行，包含注释、变量定义、主循环和反馈输出。
+- K10 代码必须使用正确的 API（参考上面的 K10 代码 API 规则），绝对禁止编造 API。
+- 代码要能直接上传运行，不要留未实现的函数占位。
 
 非常重要：
 为了避免 JSON 出错，不要把代码写成一个大字符串。
@@ -538,32 +581,60 @@ starterCodeCppLines 和 starterCodePythonLines 必须都是字符串数组。
       "commonMisunderstanding": ""
     },
     "starterCodeCppLines": [
-      "#include <Servo.h>",
-      "Servo myServo;",
-      "const int trigPin = 5;",
-      "const int echoPin = 6;",
+      "#include <unihiker_k10.h>",
+      "UNIHIKER_K10 k10;",
+      "int threshold = 50;  // 可调参数1：触发阈值",
+      "float factor = 1.5;  // 可调参数2：计算系数",
       "void setup() {",
-      "  myServo.attach(9);",
+      "  k10.begin();",
+      "  k10.initScreen(2);",
+      "  k10.creatCanvas();",
+      "  k10.brightness(9);",
+      "}",
+      "float calculate(int x) {",
+      "  return factor * x + 10;",
+      "}",
+      "void showFeedback(float y) {",
+      "  if (y > threshold) { k10.write(0, 255, 0, 0); }",
+      "  else { k10.write(0, 0, 255, 0); }",
+      "  k10.canvas->canvasText(String(y), 1, 0xFFFFFF);",
+      "  k10.canvas->updateCanvas();",
       "}",
       "void loop() {",
-      "  float x = readSensor();",
-      "  float y = 1.5 * x + 10;",
-      "  outputFeedback(y);",
+      "  int x = 0;  // 读取传感器输入",
+      "  float y = calculate(x);",
+      "  showFeedback(y);",
+      "  delay(100);",
       "}"
     ],
     "starterCodePythonLines": [
-      "k = 1.5",
-      "b = 10",
+      "from unihiker_k10 import screen, button, rgb",
+      "import time",
+      "screen.init(dir=2)",
+      "bt_a = button(button.a)",
+      "rgb.brightness(9)",
+      "threshold = 50  # 可调参数1：触发阈值",
+      "factor = 1.5  # 可调参数2：计算系数",
+      "def calculate(x):",
+      "  return factor * x + 10",
+      "def show_feedback(y):",
+      "  if y > threshold:",
+      "    rgb.write(num=0, color=0xFF0000)",
+      "  else:",
+      "    rgb.write(num=0, color=0x00FF00)",
+      "  screen.draw_text(text=str(y), x=10, y=10, font_size=20, color=0xFFFFFF)",
+      "  screen.show_draw()",
       "while True:",
-      "  x = read_sensor()",
-      "  y = k * x + b",
-      "  show_feedback(y)"
+      "  x = 0  # 读取传感器输入",
+      "  y = calculate(x)",
+      "  show_feedback(y)",
+      "  time.sleep(0.1)"
     ]
   }
 }
 
 字段要求：
-- steps：6 到 8 步。
+- steps：8 到 10 步。
 - 步骤顺序必须体现：
   理解知识点 → 搭建原型 → 设置输入 → 建立知识规则 → 设置反馈 → 测试挑战 → 调参优化 → 总结知识。
 - 每一步 content 至少 70 字，必须包含学生动作、教师提问或引导、成功检查方式。
@@ -574,8 +645,8 @@ starterCodeCppLines 和 starterCodePythonLines 必须都是字符串数组。
 - inProject：解释项目如何体现知识点，必须对应输入、计算、输出三环节。
 - deepUnderstanding：帮助学生从现象理解本质，说明为什么输入变化会导致反馈变化。
 - commonMisunderstanding：指出学生容易误解的地方，并给教师纠正话术。
-- starterCodeCppLines：C++ / Arduino 风格，每一项是一行代码，至少 12 行。
-- starterCodePythonLines：MicroPython / K10 风格，每一项是一行代码，至少 12 行。
+- starterCodeCppLines：C++ / Arduino 风格，每一项是一行代码，至少 20 行，含 2 个可调参数。
+- starterCodePythonLines：MicroPython / K10 风格，每一项是一行代码，至少 20 行，含 2 个可调参数。
 `;
 }
 
@@ -657,102 +728,6 @@ answer 要包含判断标准，让老师知道学生答到什么程度算理解�
 - extensions：5 到 7 条，必须兼顾基础学生、进阶学生、展示作品、家庭延伸和下一节课继续深化。
 - faq：5 到 7 条，包含硬件问题、学习问题、课堂时间问题、学生答不出来怎么办、项目太简单/太难怎么办。
 `;
-}
-
-function fallbackInstructionPart(part, input, profile, error) {
-  const profileHint = profile?.student?.interest_direction || input.interest;
-  const reason = cleanString(error?.message, "上游 AI 暂时不可用").slice(0, 160);
-  if (part === "overview") {
-    return {
-      overview: {
-        projectName: `${input.interest}中的${input.concept}挑战`,
-        subtitle: `用${input.kit}把${input.concept}变成可观察的互动任务`,
-        imageKey: chooseFallbackImageKey(input),
-        meta: {
-          studentLevel: input.level,
-          knowledgePoint: input.concept,
-          subject: input.subject,
-          interest: input.interest,
-          hardware: input.kit,
-          timeRequired: input.duration,
-          projectType: "STEAM 基础兜底项目"
-        },
-        overview: {
-          coreGoal: `让学生通过${input.interest}场景，观察输入变化如何影响${input.concept}相关结果。`,
-          projectIntro: `学生制作一个${input.interest}主题互动装置，用${input.kit}采集一个动作或环境输入，再把${input.concept}转化为屏幕、灯光或声音反馈。`,
-          whyFun: "它保留任务挑战、即时反馈和可展示成果，即使 AI 服务波动也能先用于课堂。",
-          learningReasons: [
-            `把${input.concept}从纸面公式变成可操作变量。`,
-            "学生能通过多次尝试观察输入、规则和输出。",
-            "硬件反馈能及时暴露理解是否正确。",
-            "后续 AI 恢复后还可以重新生成更精细版本。"
-          ]
-        },
-        interactionFlow: {
-          trigger: "学生按键、倾斜、拍手或改变环境数据作为输入。",
-          calculation: `把输入数值代入${input.concept}的规则，计算等级、得分或状态。`,
-          feedback: ["屏幕显示当前数值和任务状态", "RGB LED 用颜色提示成功/失败/等级", "扬声器或提示文字给出下一步建议"],
-          level: "Level 3 感知驱动",
-          levelReason: "它具备输入感知、知识规则计算和即时行动反馈三段闭环。"
-        },
-        materials: [
-          { name: input.kit, quantity: "1套", usage: "采集输入并输出反馈", note: "按现有课堂材料替换也可以" },
-          { name: "USB 数据线", quantity: "1根", usage: "供电和程序上传", note: "保持设备稳定供电" },
-          { name: "纸板/卡纸", quantity: "若干", usage: "制作任务场景和展示板", note: "用于增强代入感" },
-          { name: "记录表", quantity: "1张/人", usage: "记录输入、计算和输出", note: "帮助学生解释知识点" }
-        ]
-      }
-    };
-  }
-  if (part === "build") {
-    return {
-      build: {
-        steps: [
-          { title: `拆解${input.concept}规则`, duration: "8分钟", content: `老师先和学生一起找出${input.concept}里的输入变量、变化规则和输出结果。`, tips: "让学生先用自己的话解释规则。", warning: "注意先完成基础版，不要一开始做太复杂。" },
-          { title: "搭建最小互动原型", duration: "10分钟", content: `用${input.kit}完成一个输入和一个反馈，例如按键/倾斜/声音输入对应屏幕或灯光变化。`, tips: "先确认每个硬件模块能独立工作。", warning: "避免同时接入太多模块。" },
-          { title: "写入知识点计算", duration: "15分钟", content: `把输入值作为变量，按照${input.concept}规则计算得分、等级或状态。`, tips: "每改一次参数都让学生预测结果。", warning: "保留一个成功版本，方便回滚。" },
-          { title: "设计即时反馈", duration: "10分钟", content: "把计算结果变成屏幕文字、LED 颜色或声音提示，让学生立刻知道操作效果。", tips: "反馈语言要和任务目标对应。", warning: "反馈太多会干扰学生关注知识点。" },
-          { title: "挑战与讲解", duration: "12分钟", content: "学生完成三次挑战，记录输入和输出，并向同伴解释为什么结果会变化。", tips: "用展示讲解检验是否真正理解。", warning: "如果时间不足，只保留一次完整挑战。" }
-        ],
-        knowledgeExplanation: {
-          coreConcept: `${input.concept}关注的是变量之间的关系，以及规则变化如何影响结果。`,
-          keyFormula: `基础规则：输入 x → 根据${input.concept}处理 → 输出 y 或状态。`,
-          inProject: "项目中的传感器读数就是输入变量，程序规则就是知识点，屏幕/灯光/声音就是输出结果。",
-          deepUnderstanding: "学生通过改变输入和参数，能看到同一规则在不同情况下的结果变化。",
-          commonMisunderstanding: "学生容易只记住项目效果，而没有解释输入、规则、输出之间的因果关系。"
-        },
-        starterCodeCppLines: ["int inputValue = 0;", "float result = 0;", "void setup() {", "  Serial.begin(115200);", "}", "void loop() {", "  inputValue = readSensor();", "  result = inputValue * 1.0;", "  showFeedback(result);", "  delay(100);", "}"],
-        starterCodePythonLines: ["while True:", "  x = read_sensor()", "  y = x", "  show_feedback(y)", "  sleep(0.1)"]
-      }
-    };
-  }
-  return {
-    practice: {
-      masteryTraining: {
-        basicPractice: { task: `记录 3 组输入和输出，说明它们如何体现${input.concept}。`, hint: "先找输入变量，再看输出变化。", answer: "能说出输入、规则、输出的对应关系即可。" },
-        variationChallenge: { task: "改变一个参数，让结果更容易或更难达到目标。", hint: "一次只改一个参数。", answer: "参数变化会改变输出结果或达标难度。" },
-        reverseThinking: { task: "给定一个目标输出，反推输入应该大约是多少。", hint: "从目标结果倒推规则。", answer: "能给出合理输入范围，并用项目验证。" },
-        comprehensiveApplication: { task: `把${input.concept}应用到另一个${input.interest}相关场景中。`, hint: "保留规则，替换故事和任务。", answer: "能说明新场景中的输入、规则、输出。" },
-        transferQuestion: { task: "设计下一版项目，要求多一个反馈方式。", hint: "可以增加灯光、声音、分数或时间限制。", answer: "提出一个可实现拓展，并说明它如何帮助理解知识点。" }
-      },
-      extensions: ["加入计时挑战，比较不同策略的结果", "增加数据记录表，画出输入和输出关系", "让学生自己设计关卡参数", "AI 服务恢复后重新生成精细版并对比差异"],
-      faq: [
-        { question: "为什么这部分看起来像基础模板？", answer: `因为 AI 服务暂时不稳定，系统先用可上课的兜底方案保证不中断。原因：${reason}` },
-        { question: "后续还能优化吗？", answer: "可以。AI 恢复后重新生成同一知识点和兴趣场景，就能得到更个性化版本。" },
-        { question: "课堂时间不够怎么办？", answer: "先完成一个输入、一个规则、一个反馈，再做拓展。" }
-      ]
-    }
-  };
-}
-
-function chooseFallbackImageKey(input) {
-  const text = `${input.interest} ${input.concept}`;
-  if (/篮球|投篮/.test(text)) return "basketball-scoreboard";
-  if (/音乐|节奏|声音/.test(text)) return "rhythm-wall";
-  if (/宠物|喂食/.test(text)) return "pet-feeder";
-  if (/距离|雷达/.test(text)) return "distance-radar";
-  if (/直播|数据/.test(text)) return "livestream-dashboard";
-  return "reaction-trainer";
 }
 
 function mockInstructionPart(part, input, profile) {
@@ -935,7 +910,12 @@ function systemPrompt() {
 - 不在 JSON 外写任何解释文字。
 - JSON 字符串内不要出现未转义的英文双引号。
 - 所有字符串是单行的，不要真实换行，需要多行请用数组。
-- 如果你不确定某个字段怎么写，按照要求合理生成，不要留空。`;
+- 如果你不确定某个字段怎么写，按照要求合理生成，不要留空。
+
+K10 代码规则：
+- 生成 K10 代码时必须使用正确 API，绝对禁止编造 API。
+- MicroPython：screen.draw_text() + screen.show_draw()，button(button.a) 实例化。
+- Arduino C++：k10.canvas->canvasText() + k10.canvas->updateCanvas()，按钮用 -> 指针语法。`;
 }
 
 async function callTextModel(env, prompt, part) {
@@ -976,7 +956,7 @@ async function callTextModel(env, prompt, part) {
             content: prompt
           }
         ],
-        temperature: 0.58,
+        temperature: 0.65,
         max_tokens: tokenByPart[part] || 4000
       })
     });

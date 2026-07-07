@@ -41,7 +41,25 @@ export async function serveStatic(request, env) {
     url.pathname = `${url.pathname}.html`;
   }
 
-  return env.ASSETS.fetch(new Request(url.toString(), request));
+  const response = await env.ASSETS.fetch(new Request(url.toString(), request));
+
+  // 为静态资源添加缓存头，加速页面切换
+  const isHtml = url.pathname.endsWith(".html") || url.pathname === "/";
+  const headers = new Headers(response.headers);
+
+  if (isHtml) {
+    // HTML 页面：短缓存，确保更新及时生效
+    headers.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+  } else {
+    // CSS/JS/图片：长缓存，浏览器复用已下载文件
+    headers.set("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  });
 }
 
 // 输入校验：邮箱格式
