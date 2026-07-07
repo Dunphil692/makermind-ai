@@ -4192,7 +4192,8 @@ button:disabled {
 
 /* Reduce motion: disable all animations */
 /* ===== Dark mode (system preference) ===== */
-@media (prefers-color-scheme: dark) {
+/* 已禁用：暗色模式覆盖不完整导致文字不可见，强制使用亮色模式 */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --bg: #080e1a;
     --bg-elevated: #162032;
@@ -4855,7 +4856,7 @@ button:disabled {
     background: rgba(15, 28, 45, 0.95);
     border-color: var(--primary);
   }
-}
+} */
 
 @media (prefers-reduced-motion: reduce) {
   *,
