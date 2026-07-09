@@ -4,7 +4,8 @@
   "compatibility_date": "2026-06-13",
   "keep_vars": true,
   "vars": {
-    "AI_MODEL": "deepseek-flash"
+    "AI_BASE_URL": "https://api.deepseek.com",
+    "AI_MODEL": "deepseek-v4-pro"
   },
   "assets": {
     "directory": "./public",
