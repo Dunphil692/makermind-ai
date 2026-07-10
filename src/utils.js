@@ -67,6 +67,19 @@ export function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
 }
 
+// 账号：2–32 位，字母数字下划线中文；兼容旧邮箱登录
+export function isValidUsername(value) {
+  const text = String(value || "").trim();
+  if (text.length < 2 || text.length > 32) return false;
+  if (isValidEmail(text)) return true;
+  return /^[\w\u4e00-\u9fa5-]+$/.test(text);
+}
+
+export function resolveLoginId(body) {
+  const raw = String(body.username || body.email || "").trim().toLowerCase();
+  return raw;
+}
+
 // 输入校验：密码强度（至少 6 位）
 export function isValidPassword(password) {
   return typeof password === "string" && password.length >= 6;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
   <title>教师端｜MakerMind AI</title>
-  <link rel="stylesheet" href="styles.css?v=20260707" />
+  <link rel="stylesheet" href="styles.css?v=20260711" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
 <body>
@@ -35,71 +35,27 @@
       <div class="insight-grid" id="actionQueue"><div class="loading-spin">加载中…</div></div>
     </section>
 
-    <section class="role-section">
-      <div class="section-heading"><div><span>STUDENTS</span><h2>学生画像与项目进度</h2></div><p>每张卡片都连到生成器、课堂记录、反馈和学生/家长可见的数据。</p></div>
-      <div class="project-grid" id="students"><div class="loading-spin">加载中…</div></div>
-    </section>
   </main>
-
-  <!-- Inline Form Modal (replaces prompt()) -->
-  <div class="modal-overlay inline-form-modal" id="inlineFormModal" style="display:none">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="inlineFormTitle">写反馈</h3>
-        <button type="button" class="modal-close" onclick="document.getElementById('inlineFormModal').style.display='none'">&times;</button>
-      </div>
-      <div class="modal-body">
-        <textarea id="inlineFormTextarea" rows="6" placeholder="请输入内容..."></textarea>
-        <p class="form-hint" id="inlineFormHint" style="margin-top:8px;color:var(--muted);font-size:12px;"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn ghost small" onclick="document.getElementById('inlineFormModal').style.display='none'">取消</button>
-        <button type="button" class="btn primary small" id="inlineFormSubmit" onclick="submitInlineForm()">保存</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Container -->
-  <div class="toast-container" id="toastContainer"></div>
 
   <script src="auth.js"></script>
   <script>
     if (window.MMAuth.requireAuth("teacher.html")) {
       const user = window.MMAuth.getCurrentUser();
       if (user.role !== "teacher") location.href = user.role === "parent" ? "parent.html" : "student.html";
-      const list = document.getElementById("students");
       const stats = document.getElementById("stats");
       const queue = document.getElementById("actionQueue");
       function esc(t){const d=document.createElement("div");d.textContent=String(t||"");return d.innerHTML;}
       function text(v, fallback){return Array.isArray(v)?v.join("、"):(v||fallback||"");}
-      function progressBar(n){var pct=Math.max(0,Math.min(100,n||0));var cls=pct<30?'low':pct<70?'medium':'high';return '<div class="role-progress '+cls+'"><span style="width:'+pct+'%"></span></div>';}
-      function short(t,n){t=String(t||'');return t.length>n?t.slice(0,n)+'…':t;}
       async function loadStudent(s){
-        const [pRes,fRes,wRes,cRes,seRes] = await Promise.all([
+        const [pRes,fRes,wRes,seRes] = await Promise.all([
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/progress'),
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/feedbacks'),
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/works'),
-          window.MMAuth.authFetch('/api/students/'+s.studentId+'/courses'),
           window.MMAuth.authFetch('/api/students/'+s.studentId+'/sessions')
         ]);
-        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json(), c=await cRes.json(), se=await seRes.json();
+        const p=await pRes.json(), f=await fRes.json(), w=await wRes.json(), se=await seRes.json();
         const progress=p.progress||[];
-        return Object.assign({}, s, { progress, summary:p.summary||{}, feedbacks:f.feedbacks||[], works:w.works||[], courses:c.courses||[], sessions:se.sessions||[], current:progress[0] });
-      }
-      function card(s){
-        const pct=s.current?s.current.progressPercent:0;
-        const latestWork=s.works[0];
-        const latestSession=s.sessions[0];
-        const latestFeedback=s.feedbacks[0];
-        const prefill='请基于'+s.name+'的画像，生成一个适合下一节课的项目：兴趣 '+text(s.interestDirection,'待观察')+'，能力 '+text(s.skillLevel,'待评估')+'，目标 '+text(s.learningGoal,'待设置');
-        return '<article class="project-card connected-card" id="student-'+esc(s.studentId)+'"><div class="project-card-body">'+
-          '<div class="card-topline"><span>学生画像</span><strong>'+esc(s.name)+'</strong></div>'+
-          '<div class="project-card-tags"><span class="project-tag">'+esc(s.grade||'未填写年级')+'</span><span class="project-tag concept">'+esc(text(s.interestDirection,'暂无兴趣画像'))+'</span></div>'+
-          '<div class="profile-strip"><div><span>能力</span><strong>'+esc(text(s.skillLevel,'待评估'))+'</strong></div><div><span>性格</span><strong>'+esc(text(s.personalityTraits,'课堂后自动提取'))+'</strong></div><div><span>风格</span><strong>'+esc(s.learningStyle||'待观察')+'</strong></div></div>'+
-          '<p class="project-card-meta"><strong>当前任务：</strong>'+esc(s.current?s.current.title:'还没有布置项目')+'</p>'+progressBar(pct)+'<p class="project-card-meta">进度 '+pct+'% · 课堂 '+s.sessions.length+' · 反馈 '+s.feedbacks.length+' · 作品 '+s.works.length+'</p>'+
-          '<div class="teacher-visual-grid"><div><span>最近课堂</span><p>'+esc(short(latestSession?latestSession.structuredSummary:'还没有课堂记录',72))+'</p></div><div><span>学生作品</span><p>'+esc(latestWork?(latestWork.workName||'未命名作品'):'暂无提交')+'</p></div><div><span>上次反馈</span><p>'+esc(short(latestFeedback?latestFeedback.content:'还没有给反馈',72))+'</p></div></div>'+
-          '<div class="project-card-actions"><a class="pc-btn primary" href="generator.html?studentId='+encodeURIComponent(s.studentId)+'&prefill='+encodeURIComponent(prefill)+'">按画像生成</a><a class="pc-btn" href="session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current?s.current.id:'')+'">录课堂</a><button class="pc-btn" data-feedback="'+esc(s.studentId)+'">写可视化反馈</button><button class="pc-btn" data-course="'+esc(s.studentId)+'">记课程</button></div>'+
-          '</div></article>';
+        return Object.assign({}, s, { progress, summary:p.summary||{}, feedbacks:f.feedbacks||[], works:w.works||[], sessions:se.sessions||[], current:progress[0] });
       }
       function queueItem(type,s,msg,href){
         return '<article class="insight-card"><span>'+esc(type)+'</span><h3>'+esc(s.name)+'</h3><p>'+esc(msg)+'</p><a class="pc-btn primary" href="'+href+'">处理</a></article>';
@@ -108,83 +64,21 @@
         const items=[];
         students.forEach(s=>{
           const pct=s.current?s.current.progressPercent:0;
-          if(!s.current) items.push(queueItem('待布置',s,'还没有项目任务，先用画像生成并布置。','generator.html?studentId='+encodeURIComponent(s.studentId)));
-          if(s.current && pct<40) items.push(queueItem('进度预警',s,'当前项目只有 '+pct+'%，建议录入课堂记录定位卡点。','session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current.id)));
-          if(s.works.length && !s.feedbacks.length) items.push(queueItem('待反馈',s,'学生已提交作品，但还没有教师反馈。','#student-'+encodeURIComponent(s.studentId)));
+          if(!s.current) items.push(queueItem('待布置',s,'还没有项目任务，先去生成器按画像生成。','generator.html?studentId='+encodeURIComponent(s.studentId)));
+          if(s.current && pct<40) items.push(queueItem('进度预警',s,'当前项目只有 '+pct+'%，建议录入课堂记录。','session.html?studentId='+encodeURIComponent(s.studentId)+'&studentProjectId='+encodeURIComponent(s.current.id)));
+          if(s.works.length && !s.feedbacks.length) items.push(queueItem('待反馈',s,'学生已提交作品，请写反馈。','session.html?studentId='+encodeURIComponent(s.studentId)));
         });
         queue.innerHTML=items.length?items.slice(0,6).join(''):'<div class="empty-state"><h3>目前没有紧急待办</h3><p>学生提交作品、进度偏低或缺少反馈时，会自动出现在这里。</p></div>';
       }
-      // ===== Modal-based feedback/course input (replaces prompt()) =====
-      let modalState = { kind: '', studentId: '', studentName: '' };
-      function showInlineFormModal(kind, studentId, studentName) {
-        modalState = { kind, studentId, studentName };
-        const overlay = document.getElementById('inlineFormModal');
-        const title = document.getElementById('inlineFormTitle');
-        const textarea = document.getElementById('inlineFormTextarea');
-        const hint = document.getElementById('inlineFormHint');
-        if (kind === 'feedback') {
-          title.textContent = '写可视化反馈 — ' + studentName;
-          textarea.placeholder = '建议包含：\n• 亮点：学生在项目中做得好的地方\n• 卡点：目前遇到的主要困难\n• 下一步：建议学生接下来做什么\n\n例如：小明在点球计分台项目中很投入，力度映射部分完成得很好。目前在代码调试方面需要更多练习。下一步建议完成融会贯通训练的第一题。';
-          hint.textContent = '反馈会同时同步给学生和家长端';
-        } else {
-          title.textContent = '记录课程 — ' + studentName;
-          textarea.placeholder = '记录本次课堂的主要内容：\n• 今天完成了哪些步骤\n• 学生遇到了什么问题\n• 老师提供了什么帮助\n• 下次课的计划\n\n例如：今天完成了点球计分台的搭建和基础程序编写。学生在力度映射部分理解较快，但对 k 值变化的影响还需要更多练习。下次课计划完成数据记录和函数图像绘制。';
-          hint.textContent = '课程记录帮助你追踪每个学生的学习历程';
-        }
-        textarea.value = '';
-        overlay.style.display = 'grid';
-        textarea.focus();
-      }
-      function hideInlineFormModal() {
-        document.getElementById('inlineFormModal').style.display = 'none';
-        modalState = { kind: '', studentId: '', studentName: '' };
-      }
-      async function submitInlineForm() {
-        const text = document.getElementById('inlineFormTextarea').value.trim();
-        if (!text) return;
-        const { kind, studentId } = modalState;
-        const submitBtn = document.getElementById('inlineFormSubmit');
-        submitBtn.disabled = true;
-        submitBtn.textContent = '保存中…';
-        const url = kind === 'feedback' ? '/api/students/' + studentId + '/feedbacks' : '/api/students/' + studentId + '/courses';
-        const body = kind === 'feedback' ? { content: text, courseName: '项目反馈' } : { content: text, courseName: '课堂记录' };
-        try {
-          const res = await window.MMAuth.authFetch(url, { method: 'POST', body: JSON.stringify(body) });
-          if (!res.ok) { showToast('保存失败，请重试', 'error'); }
-          else { hideInlineFormModal(); showToast(kind === 'feedback' ? '反馈已保存，学生和家长可以看到了' : '课程记录已保存', 'success'); load(); }
-        } catch (e) {
-          showToast('网络错误，请检查连接', 'error');
-        }
-        submitBtn.disabled = false;
-        submitBtn.textContent = '保存';
-      }
-      // Toast helper
-      function showToast(msg, type) {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = 'toast ' + (type || 'info');
-        toast.textContent = msg;
-        container.appendChild(toast);
-        setTimeout(function () { toast.remove(); }, 3200);
-      }
-      var allStudents = [];
       async function load(){
         const res=await window.MMAuth.authFetch('/api/students');
         const data=await res.json();
         var students=await Promise.all((data.students||[]).map(loadStudent));
-        allStudents = students;
         const avg=students.length?Math.round(students.reduce((a,s)=>a+(s.summary.averageProgress||0),0)/students.length):0;
         stats.innerHTML='<div class="dash-stat"><strong>'+students.length+'</strong><span>学员</span></div><div class="dash-stat"><strong>'+avg+'%</strong><span>平均进度</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.works.length,0)+'</strong><span>学生作品</span></div><div class="dash-stat"><strong>'+students.reduce((a,s)=>a+s.sessions.length,0)+'</strong><span>课堂记录</span></div>';
         renderQueue(students);
-        list.innerHTML=students.length?students.map(card).join(''):'<div class="empty-state"><h3>暂无学员</h3><p>先创建学生档案，再从生成器给学生布置项目。</p></div>';
-        list.querySelectorAll('[data-feedback]').forEach(function (b) {
-          b.onclick = function () { var s = allStudents.find(function (x) { return x.studentId === b.dataset.feedback; }); showInlineFormModal('feedback', b.dataset.feedback, s ? s.name : ''); };
-        });
-        list.querySelectorAll('[data-course]').forEach(function (b) {
-          b.onclick = function () { var s = allStudents.find(function (x) { return x.studentId === b.dataset.course; }); showInlineFormModal('course', b.dataset.course, s ? s.name : ''); };
-        });
       }
-      load().catch(function(){list.innerHTML='<div class="error-state"><div class="error-icon">⚠️</div><h3>加载失败</h3><p>可能是网络问题或服务暂不可用</p><button class="btn ghost small" onclick="location.reload()">重新加载</button></div>'; queue.innerHTML='';});
+      load().catch(function(){queue.innerHTML='<div class="error-state"><div class="error-icon">⚠️</div><h3>加载失败</h3><p>可能是网络问题或服务暂不可用</p><button class="btn ghost small" onclick="location.reload()">重新加载</button></div>';});
     }
   </script>
 </body>
