@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light only" />
   <title>登录 / 注册｜MakerMind AI</title>
-  <link rel="stylesheet" href="styles.css?v=20260709" />
+  <link rel="stylesheet" href="styles.css?v=20260711" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
 <body>
@@ -27,7 +27,7 @@
   <main class="auth-wrap">
     <div class="auth-card" id="authCard">
       <h1 id="authTitle">欢迎回来</h1>
-      <p class="auth-subtitle" id="authSubtitle">登录后即可保存和管理你的项目方案</p>
+      <p class="auth-subtitle" id="authSubtitle">账号 + 密码即可登录，无需邮箱</p>
 
       <div class="auth-tabs">
         <button class="auth-tab active" data-mode="login" id="tabLogin">登录</button>
@@ -37,18 +37,13 @@
       <div class="auth-error" id="authError"></div>
 
       <form id="authForm">
-        <div class="auth-field register-only">
-          <label>昵称</label>
-          <input type="text" id="displayName" placeholder="例如：李老师" autocomplete="name" />
+        <div class="auth-field">
+          <label for="username">账号</label>
+          <input type="text" id="username" placeholder="例如：lilaoshi" autocomplete="username" maxlength="32" />
         </div>
 
         <div class="auth-field">
-          <label>邮箱</label>
-          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
-        </div>
-
-        <div class="auth-field">
-          <label>密码</label>
+          <label for="password">密码</label>
           <div class="password-field">
             <input type="password" id="password" placeholder="至少 6 位" autocomplete="current-password" style="padding-right:44px;" />
             <button type="button" class="password-toggle" id="passwordToggle" title="显示密码" aria-label="切换密码可见性">👁️</button>
@@ -56,7 +51,7 @@
         </div>
 
         <div class="auth-field register-only">
-          <label>角色</label>
+          <label>身份（可选）</label>
           <div class="auth-role-group">
             <label><input type="radio" name="role" value="teacher" checked /> 教师</label>
             <label><input type="radio" name="role" value="parent" /> 家长</label>
@@ -105,14 +100,14 @@
       if (m === "register") {
         card.classList.add("is-register");
         title.textContent = "创建账号";
-        subtitle.textContent = "注册后即可保存项目方案到云端";
+        subtitle.textContent = "设一个账号和密码就能用，30 秒完成";
         submitBtn.textContent = "注册";
         tabLogin.classList.remove("active");
         tabRegister.classList.add("active");
       } else {
         card.classList.remove("is-register");
         title.textContent = "欢迎回来";
-        subtitle.textContent = "登录后即可保存和管理你的项目方案";
+        subtitle.textContent = "账号 + 密码即可登录";
         submitBtn.textContent = "登录";
         tabLogin.classList.add("active");
         tabRegister.classList.remove("active");
@@ -124,7 +119,6 @@
     document.getElementById("toRegister").addEventListener("click", function (e) { e.preventDefault(); setMode("register"); });
     document.getElementById("toLogin").addEventListener("click", function (e) { e.preventDefault(); setMode("login"); });
 
-    // 已登录则直接跳转
     if (window.MMAuth && window.MMAuth.isLoggedIn()) {
       location.href = redirect;
     }
@@ -133,24 +127,19 @@
       e.preventDefault();
       clearError();
 
-      const email = document.getElementById("email").value.trim();
+      const username = document.getElementById("username").value.trim().toLowerCase();
       const password = document.getElementById("password").value;
 
-      if (!email || !password) {
-        showError("请填写邮箱和密码");
+      if (!username || !password) {
+        showError("请填写账号和密码");
         return;
       }
 
-      const payload = { email: email.toLowerCase(), password };
+      const payload = { username, password };
 
       if (mode === "register") {
-        const displayName = document.getElementById("displayName").value.trim();
-        if (!displayName) {
-          showError("请填写昵称");
-          return;
-        }
-        payload.displayName = displayName;
         payload.role = document.querySelector('input[name="role"]:checked').value;
+        payload.displayName = username;
       }
 
       submitBtn.disabled = true;
@@ -183,7 +172,6 @@
 
     setMode(mode);
 
-    // Password visibility toggle
     (function () {
       var btn = document.getElementById("passwordToggle");
       var input = document.getElementById("password");
@@ -192,7 +180,6 @@
           var isPassword = input.type === "password";
           input.type = isPassword ? "text" : "password";
           btn.textContent = isPassword ? "🙈" : "👁️";
-          btn.title = isPassword ? "隐藏密码" : "显示密码";
         });
       }
     })();

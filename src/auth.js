@@ -1,7 +1,7 @@
 // 认证模块：密码哈希（PBKDF2）、JWT 签发/验证、注册/登录 handler
 // 全部使用 Web Crypto API，零依赖，原生支持 Cloudflare Workers
 
-import { json, nowISO, generateId, isValidEmail, isValidPassword, truncate } from "./utils.js";
+import { json, nowISO, generateId, isValidUsername, isValidPassword, truncate, resolveLoginId } from "./utils.js";
 
 const PBKDF2_ITERATIONS = 100000;
 const SALT_LENGTH = 16;
@@ -172,28 +172,25 @@ function publicUser(row) {
 export async function handleRegister(request, env) {
   try {
     const body = await request.json();
-    const email = String(body.email || "").trim().toLowerCase();
+    const loginId = resolveLoginId(body);
     const password = String(body.password || "");
-    const displayName = String(body.displayName || "").trim();
+    const displayName = String(body.displayName || loginId).trim();
     const allowedRoles = new Set(["teacher", "student", "parent"]);
     const role = allowedRoles.has(body.role) ? body.role : "teacher";
 
-    if (!isValidEmail(email)) {
-      return json({ error: "邮箱格式不正确" }, 400);
+    if (!isValidUsername(loginId)) {
+      return json({ error: "账号需 2–32 位，可用字母、数字、下划线或中文" }, 400);
     }
     if (!isValidPassword(password)) {
       return json({ error: "密码至少需要 6 位" }, 400);
     }
-    if (!displayName) {
-      return json({ error: "请填写昵称" }, 400);
-    }
 
     const existing = await env.DB.prepare("SELECT id FROM users WHERE email = ?")
-      .bind(email)
+      .bind(loginId)
       .first();
 
     if (existing) {
-      return json({ error: "该邮箱已注册" }, 409);
+      return json({ error: "该账号已被注册" }, 409);
     }
 
     const saltBytes = generateSalt();
@@ -202,21 +199,22 @@ export async function handleRegister(request, env) {
     const id = generateId();
     const ts = nowISO();
 
+    // ponytail: loginId 存在 email 列，避免 D1 迁移；列名历史遗留
     await env.DB.prepare(
       `INSERT INTO users (id, email, password_hash, password_salt, role, display_name, avatar, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?)`
     )
-      .bind(id, email, passwordHash, saltHex, role, truncate(displayName, 40), ts, ts)
+      .bind(id, loginId, passwordHash, saltHex, role, truncate(displayName, 40), ts, ts)
       .run();
 
     const token = await signJWT(
-      { sub: id, email, role, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS },
+      { sub: id, email: loginId, role, iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS },
       env.JWT_SECRET
     );
 
     return json({
       token,
-      user: { id, email, role, displayName: truncate(displayName, 40), avatar: null }
+      user: { id, email: loginId, username: loginId, role, displayName: truncate(displayName, 40), avatar: null }
     });
   } catch (error) {
     return json({ error: "注册失败", detail: error.message }, 500);
@@ -226,26 +224,26 @@ export async function handleRegister(request, env) {
 export async function handleLogin(request, env) {
   try {
     const body = await request.json();
-    const email = String(body.email || "").trim().toLowerCase();
+    const loginId = resolveLoginId(body);
     const password = String(body.password || "");
 
-    if (!email || !password) {
-      return json({ error: "请输入邮箱和密码" }, 400);
+    if (!loginId || !password) {
+      return json({ error: "请输入账号和密码" }, 400);
     }
 
     const row = await env.DB.prepare(
       "SELECT id, email, password_hash, password_salt, role, display_name, avatar FROM users WHERE email = ?"
     )
-      .bind(email)
+      .bind(loginId)
       .first();
 
     if (!row) {
-      return json({ error: "邮箱或密码不正确" }, 401);
+      return json({ error: "账号或密码不正确" }, 401);
     }
 
     const ok = await verifyPassword(password, row.password_hash, row.password_salt);
     if (!ok) {
-      return json({ error: "邮箱或密码不正确" }, 401);
+      return json({ error: "账号或密码不正确" }, 401);
     }
 
     const token = await signJWT(
@@ -255,7 +253,7 @@ export async function handleLogin(request, env) {
 
     return json({
       token,
-      user: publicUser(row)
+      user: Object.assign(publicUser(row), { username: row.email })
     });
   } catch (error) {
     return json({ error: "登录失败", detail: error.message }, 500);

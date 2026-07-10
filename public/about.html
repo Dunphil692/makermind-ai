@@ -7,16 +7,13 @@
   <title>关于我们｜MakerMind AI</title>
   <meta property="og:type" content="website" />
   <meta property="og:title" content="关于 MakerMind AI — 互动项目课生成工作台" />
-  <meta property="og:description" content="MakerMind AI 由教育工作者和 AI 技术团队打造，帮助老师在 15 分钟内设计出高质量的互动项目课。" />
+  <meta property="og:description" content="60 秒把知识点变成可上课的 STEAM 项目任务包。TRAE AI 创造力大赛参赛项目。" />
   <meta property="og:url" content="https://makermind.cloud/about.html" />
-  <meta property="og:image" content="https://makermind.cloud/assets/soccer-penalty.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="description" content="了解 MakerMind AI 的团队、愿景、技术架构和社会价值——让每位老师都能快速设计互动项目课。" />
-  <link rel="stylesheet" href="styles.css?v=20260709" />
+  <meta name="description" content="MakerMind AI：面向老师的 AI 项目课生成工具，TRAE 参赛项目，DeepSeek + Cloudflare 全栈部署。" />
+  <link rel="stylesheet" href="styles.css?v=20260711" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
 </head>
 <body>
-  <!-- TRAE AI 创造力大赛参赛标识 -->
   <div class="contest-banner">
     <span>🏆 参赛项目</span>
     <strong>TRAE AI 创造力大赛 · 学习工作赛道</strong>
@@ -41,393 +38,95 @@
   </header>
 
   <main class="about-page">
-    <section class="about-hero">
-      <span class="eyebrow">About MakerMind AI</span>
-      <h1>千人千面的知识项目设计引擎</h1>
+    <section class="about-hero about-hero-compact">
+      <span class="eyebrow">About · TRAE 参赛项目</span>
+      <h1>60 秒，把知识点变成能上课的项目任务</h1>
       <p>
-        同一个知识点，不同学生拿到的是完全不同的项目。MakerMind AI 会读懂每个孩子的年级、学习状态、兴趣偏好和硬件条件，生成最适合他的动手学习 instruction。
+        MakerMind AI 不是「再生成一份教案」，而是输出<strong>学生任务卡、材料清单、课堂流程、代码思路与融会贯通训练</strong>——老师拿到就能进教室。
       </p>
       <div class="about-tag-row">
-        <span>AI + STEAM</span>
+        <span>DeepSeek AI</span>
+        <span>Cloudflare 全栈</span>
         <span>项目式学习</span>
-        <span>个性化学习</span>
-        <span>动手做工具</span>
-        <span>融会贯通训练</span>
+        <span>UNIHIKER K10</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn primary" href="generator.html">免费试生成</a>
+        <a class="btn ghost" href="https://github.com/Dunphil692/makermind-ai" target="_blank" rel="noopener">查看开源仓库</a>
       </div>
     </section>
 
-    <section class="about-shell about-grid">
+    <section class="about-shell about-stack">
       <article class="about-card">
-        <h2>为什么动手做，比听讲、记笔记、刷题更有效？</h2>
-        <p>
-          传统课堂经常是：老师讲，学生记，背公式，刷题，考完就忘。问题在于，公式只是符号，孩子的大脑没有“钩子”把它挂住。
-        </p>
-        <div class="quote-box">
-          当孩子亲手做一个工具来解决一个知识点时，每个零件、每行代码、每一次反馈，都会变成知识的抓手。
-        </div>
-        <table class="compare-table">
+        <h2>我们解决什么问题？</h2>
+        <p>很多老师认同项目式学习，但备课成本高：要把知识点、学生兴趣、硬件条件和课堂时长拼成一套可执行方案，往往要花一整个下午。</p>
+        <ul class="about-bullets">
+          <li><strong>输入</strong>：知识点 + 兴趣场景 + 硬件/时长</li>
+          <li><strong>输出</strong>：完整 STEAM 项目任务包，不是泛泛的教案文字</li>
+          <li><strong>闭环</strong>：生成 → 布置 → 课堂记录 → 反馈（教师端工作台）</li>
+        </ul>
+      </article>
+
+      <article class="about-card">
+        <h2>和普通 AI 备课工具有什么不同？</h2>
+        <table class="compare-table compare-table-light">
           <thead>
             <tr>
-              <th>传统方式</th>
-              <th>动手做工具</th>
+              <th>维度</th>
+              <th>普通 AI 教案</th>
+              <th>MakerMind AI</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>背公式 V = ¹⁄₃πr²h</td>
-              <td>3D 打印一个圆锥，装满水倒进圆柱，亲眼看到“正好倒三次”。</td>
+              <td>输出形态</td>
+              <td>文字教案、习题建议</td>
+              <td>任务卡 + 材料清单 + 步骤 + 代码 + 融会贯通</td>
             </tr>
             <tr>
-              <td>记住“浮力 = 排开液体重量”</td>
-              <td>做一个潜水艇，按钮控制注水下沉、排水上浮，用手感记住浮力变化。</td>
+              <td>课堂可执行性</td>
+              <td>老师还要自己拆任务、估时间</td>
+              <td>按 15 / 45 / 60 分钟档位直接可用</td>
             </tr>
             <tr>
-              <td>背诵二元一次方程求解步骤</td>
-              <td>倾斜板子改变参数，RGB 灯告诉你“有解”“无解”“无穷解”。</td>
+              <td>硬件整合</td>
+              <td>很少涉及具体套件</td>
+              <td>K10 / Arduino / micro:bit / 纯软件多档匹配</td>
+            </tr>
+            <tr>
+              <td>稳定性</td>
+              <td>一次长生成，易失败</td>
+              <td>overview / build / practice 三段生成 + 失败重试</td>
             </tr>
           </tbody>
         </table>
       </article>
 
       <article class="about-card">
-        <h2>动手过程中，孩子自然学会推演</h2>
-        <p>
-          真正重要的不是把答案告诉学生，而是让学生在做项目时自己产生问题、自己建立关联、自己推导规律。
-        </p>
-        <h3>比如圆锥体积项目里，学生会自然追问：</h3>
-        <ul>
-          <li>如果半径变大，体积会怎么变？</li>
-          <li>如果高度翻倍，结果会怎么变化？</li>
-          <li>为什么是 ¹⁄₃，不是 ¹⁄₂？</li>
-          <li>如果我要设计一个 100ml 的冰淇淋甜筒，半径和高度怎么选？</li>
-        </ul>
-        <div class="quote-box">
-          会背公式的孩子，遇到新题型容易卡住；会推演的孩子，能从原理出发自己找到解决方案。
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>真正的“玩中学”，不是把题包装成游戏</h2>
-        <p>
-          很多教育产品把“玩中学”做成了“给题目加一个动画皮肤”。本质还是做题，只是答对以后多了音效和奖励。
-        </p>
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th>知识点</th>
-              <th>假“玩中学”</th>
-              <th>真“玩中学”</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>分数</td>
-              <td>屏幕上切披萨动画，答对有音效。</td>
-              <td>舵机真的切纸板“披萨”，RGB 灯验证切得对不对，扬声器说“你切了 ¼，还剩 ¾”。</td>
-            </tr>
-            <tr>
-              <td>浮力</td>
-              <td>小游戏控制小鱼游泳，答对加分。</td>
-              <td>水泵控制真实潜水艇模型，按钮让它上浮下沉，超声波测深度。</td>
-            </tr>
-            <tr>
-              <td>加速度</td>
-              <td>屏幕显示数字，答对有奖励。</td>
-              <td>手持 K10 站在平衡木上，倾斜身体控制屏幕小球，RGB 灯显示绿区或红区。</td>
-            </tr>
-          </tbody>
-        </table>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card">
-        <h2>男孩女孩都爱动手，只是需要不同项目入口</h2>
-        <p>
-          一个常见误区是：女孩不喜欢硬件、编程、机械。真相是，很多学生不喜欢的是“为技术而技术”的项目。
-        </p>
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th>男孩偏好</th>
-              <th>女孩偏好</th>
-              <th>共同点</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>竞赛、挑战、排名</td>
-              <td>创作、表达、美学</td>
-              <td>都爱动手，都爱创造。</td>
-            </tr>
-            <tr>
-              <td>避障小车、机器人对战</td>
-              <td>音乐可视化灯带、智能温室</td>
-              <td>都是有目标的项目。</td>
-            </tr>
-          </tbody>
-        </table>
-      </article>
-
-      <article class="about-card">
-        <h2>同一个知识点，也可以生成不同项目</h2>
-        <p>
-          例如同样是“分数”，系统可以根据兴趣偏好自动调整项目形式。
-        </p>
-        <div class="feature-list">
+        <h2>评委可能关心的技术点</h2>
+        <div class="feature-list feature-list-tight">
           <div class="feature-item">
-            <strong>偏挑战型学生</strong>
-            <p>生成舵机控制的“分数切割器”，RGB 灯显示切割是否正确，扬声器播放成功音效。</p>
+            <strong>三段式 AI 生成</strong>
+            <p>拆成概述、制作实践、融会贯通三段独立请求，降低 token 压力，单段失败可重试。</p>
           </div>
           <div class="feature-item">
-            <strong>偏创作型学生</strong>
-            <p>生成“分数音乐创作器”，按钮选择分数，扬声器播放对应节奏旋律，屏幕显示音符。</p>
+            <strong>教育向 Prompt</strong>
+            <p>约束输出为 STEAM 项目结构（任务层次、硬件等级、家长可读反馈），不是自由发挥散文。</p>
           </div>
-        </div>
-        <div class="quote-box">
-          核心原则：让每个孩子都在自己感兴趣的领域，用最顺手的方式，把知识“玩”进去。
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>AI 驱动的“千人千面”</h2>
-        <p>
-          同一个知识点，不同学生拿到的项目可以完全不同。AI 会从学生档案中提取年级、学习 Level、兴趣偏好和已掌握知识点，再生成最匹配的项目 instruction。
-        </p>
-
-        <div class="student-grid">
-          <div class="student-card">
-            <strong>小学 4 年级</strong>
-            <p>喜欢动物，Lv.1 探索者。生成纯软件小鱼浮力游戏，15 分钟上手。</p>
+          <div class="feature-item">
+            <strong>Serverless 全栈</strong>
+            <p>Cloudflare Workers + D1 数据库 + 静态资源同域部署；密钥不进前端。</p>
           </div>
-          <div class="student-card">
-            <strong>小学 6 年级</strong>
-            <p>喜欢手工，Lv.2 学习者。生成 K10 + 纸板潜水艇，1 小时完成。</p>
+          <div class="feature-item">
+            <strong>TRAE 开发链路</strong>
+            <p>本项目使用 TRAE IDE / Work 迭代，从生成器到教师闭环工作台完整可演示。</p>
           </div>
-          <div class="student-card">
-            <strong>初中 2 年级</strong>
-            <p>物理竞赛，Lv.3 实践者。生成 K10 + 水泵 + 超声波真实浮沉系统。</p>
-          </div>
-          <div class="student-card">
-            <strong>高中 1 年级</strong>
-            <p>科研方向，Lv.4 研究者。生成多传感器数据采集和实验报告项目。</p>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>适配维度不只是难度，而是六个维度同时决策</h2>
-        <div class="dimension-grid">
-          <div class="dimension-card">
-            <strong>知识深度</strong>
-            <p>概念、公式、应用、创新，判断学生现在应该理解到哪一层。</p>
-          </div>
-          <div class="dimension-card">
-            <strong>硬件选择</strong>
-            <p>纯软件、K10 内置传感器、外接执行器、3D 打印，根据动手能力匹配。</p>
-          </div>
-          <div class="dimension-card">
-            <strong>项目形式</strong>
-            <p>游戏化、实验装置、艺术作品、工程系统，根据兴趣偏好匹配。</p>
-          </div>
-          <div class="dimension-card">
-            <strong>时间预算</strong>
-            <p>15 分钟快速体验、1 小时标准项目、2-3 小时深度项目。</p>
-          </div>
-          <div class="dimension-card">
-            <strong>编程语言</strong>
-            <p>MicroPython、Arduino C++ 或纯软件方案，根据技能水平匹配。</p>
-          </div>
-          <div class="dimension-card">
-            <strong>融会贯通深度</strong>
-            <p>理解、应用、创新，每一层都有对应的挑战设计。</p>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card">
-        <h2>硬件是手段，不是目的</h2>
-        <p>
-          K10 是我们的推荐方案，但不是唯一方案。AI 会根据项目需求和学生水平，自动选择最合适的硬件组合。
-        </p>
-        <ul>
-          <li>低年级、零基础：可以从纯软件交互游戏开始。</li>
-          <li>1 小时课堂项目：优先使用 K10 内置传感器，减少接线成本。</li>
-          <li>深度项目：加入舵机、水泵、超声波等执行器和传感器。</li>
-          <li>空间思维项目：结合 3D 建模与打印验证。</li>
-          <li>竞赛或科研方向：使用多传感器工程系统。</li>
-        </ul>
-        <div class="quote-box">
-          原则：不让学生迁就硬件，而是让硬件适配学生。
         </div>
       </article>
 
       <article class="about-card">
-        <h2>知识为什么不再“考完就忘”？</h2>
-        <p>
-          背下来的公式，考完很容易忘；亲手做过的工具，五年后仍然可能记得。
-        </p>
-        <div class="memory-grid">
-          <div class="memory-pill">视觉记忆</div>
-          <div class="memory-pill">听觉记忆</div>
-          <div class="memory-pill">触觉记忆</div>
-          <div class="memory-pill">空间记忆</div>
-          <div class="memory-pill">情绪记忆</div>
-        </div>
-        <div class="quote-box">
-          一个动手项目，等于给知识打了五个“记忆桩”，想忘都难。
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>融会贯通：不只是“做完了”，而是“真会了”</h2>
-        <p>
-          每个项目 instruction 都会内嵌三层训练，确保学生不是只完成作品，而是真的理解知识，并能迁移到新问题。
-        </p>
-        <div class="feature-list">
-          <div class="feature-item">
-            <strong>理解层</strong>
-            <p>动手做，直观感受，形成概念。</p>
-          </div>
-          <div class="feature-item">
-            <strong>应用层</strong>
-            <p>通过参数变化、场景转换、逆向思维进行练习。</p>
-          </div>
-          <div class="feature-item">
-            <strong>创新层</strong>
-            <p>综合应用、举一反三、延伸探索，让学生从项目走向真正的能力。</p>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell">
-      <div class="summary-banner">
-        <h2>一句话总结</h2>
-        <p>
-          动手做工具，让知识变成孩子能摸到、能玩到、能改变的东西。MakerMind AI 读懂每个孩子，生成最适合他的项目，真正实现"玩中学"。
-        </p>
-      </div>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card">
-        <h2>项目愿景</h2>
-        <p>让每一位老师都能在 15 分钟内设计出一节高质量的互动项目课，让每一个学生都能通过动手实践真正理解知识。</p>
-        <div class="quote-box">
-          我们相信，教育不应该是"把知识灌给学生"，而是"让学生在创造中发现知识"。MakerMind AI 是实现这一理念的工具。
-        </div>
-      </article>
-      <article class="about-card">
-        <h2>社会价值</h2>
-        <ul>
-          <li><strong>降低 STEAM 教育门槛：</strong>不需要专业的硬件知识，老师输入知识点就能获得可执行的方案</li>
-          <li><strong>促进教育公平：</strong>偏远地区的老师也能获得和城市学校同等质量的备课资源</li>
-          <li><strong>推动项目式学习落地：</strong>解决"理念好但难执行"的核心痛点，让 PBL 真正走进课堂</li>
-          <li><strong>培养创新思维：</strong>通过动手做项目，培养学生的创造力、批判性思维和问题解决能力</li>
-        </ul>
-        <div class="quote-box compact-quote">
-          <strong>一位乡村教师的故事：</strong>
-          "我们学校只有一块 UNIHIKER K10，以前我不知道怎么用它上好一节课。用 MakerMind AI 生成了'光照与条件判断'的方案后，学生用 K10 的光敏传感器做了教室光线监测器。虽然只有一个设备，但学生分组轮流使用，整节课没有一个走神的。"
-          <span class="quote-source">—— 来自云南某乡村小学的科学老师</span>
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>团队介绍</h2>
-        <p>MakerMind AI 由一线教育工作者和 AI 技术团队共同打造。团队成员拥有丰富的 STEAM 教育实践经验和 AI 产品开发能力。</p>
-        <div class="feature-list">
-          <div class="feature-item">
-            <strong>教育产品设计</strong>
-            <p>团队成员曾参与多个 STEAM 教育产品的设计和落地，深入理解教师和学生的真实需求。</p>
-          </div>
-          <div class="feature-item">
-            <strong>AI 技术研发</strong>
-            <p>基于 DeepSeek 大语言模型，通过精心设计的 Prompt Engineering，确保生成内容的教育专业性和实用性。</p>
-          </div>
-          <div class="feature-item">
-            <strong>硬件生态整合</strong>
-            <p>与 UNIHIKER K10、Arduino、micro:bit 等主流教育硬件平台深度整合，提供精确的材料清单和代码方案。</p>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>技术实现与架构</h2>
-        <p>MakerMind AI 采用纯前端 + Cloudflare Workers Serverless 后端架构，核心技术创新在于<strong>三段式结构化 AI 生成</strong>和<strong>教育级 Prompt Engineering</strong>。</p>
-        <div class="feature-list">
-          <div class="feature-item">
-            <strong>三段式分段生成</strong>
-            <p>将一次 AI 生成拆分为 overview（项目概述+材料清单）、build（制作步骤+知识讲解+代码）、practice（融会贯通训练+FAQ）三个独立请求。每段使用独立的 Prompt 和 JSON Schema，降低单次生成的 token 消耗，提高输出质量和稳定性。如果某段生成失败，只需重试该段，不影响其他部分。</p>
-          </div>
-          <div class="feature-item">
-            <strong>教育级 Prompt Engineering</strong>
-            <p>Prompt 中内嵌了 STEAM 教育设计理念（硬件交互 Level 1-5 等级体系）、知识点锚定规则、学生兴趣映射逻辑和输出格式约束。AI 不是"自由发挥"，而是在教育专家定义的框架内生成方案，确保输出内容的教学专业性。</p>
-          </div>
-          <div class="feature-item">
-            <strong>双语言代码生成</strong>
-            <p>每个项目方案同时生成 C++/Arduino 和 MicroPython/K10 两种语言的代码，代码以数组形式逐行存储，避免 JSON 转义问题。代码逻辑统一遵循"读取传感器 → 知识点计算 → 输出反馈"的闭环结构。</p>
-          </div>
-          <div class="feature-item">
-            <strong>错误处理与自动重试</strong>
-            <p>后端内置 2 次自动重试机制，前端根据错误类型（网络失败/API 密钥/频率限制/服务器错误/超时）分类展示不同的解决建议，并提供"重新生成"按钮，确保用户体验不中断。</p>
-          </div>
-          <div class="feature-item">
-            <strong>Serverless 部署</strong>
-            <p>基于 Cloudflare Workers 全球边缘网络部署，前端静态资源通过 Workers Assets 分发，API 请求在最近的边缘节点处理。无需维护服务器，API 密钥通过 Workers Secret 安全存储，不暴露在前端代码中。</p>
-          </div>
-        </div>
-        <div class="quote-box">
-          技术架构：用户浏览器 (HTML/CSS/JS) → Cloudflare Workers (src/index.js) → DeepSeek AI API → 分段 JSON 渲染（overview → build → practice）
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell about-grid">
-      <article class="about-card wide">
-        <h2>发展路线图</h2>
-        <div class="feature-list">
-          <div class="feature-item">
-            <strong>Phase 1 — 核心生成引擎（已完成）</strong>
-            <p>基于 DeepSeek AI 的分段式项目方案生成，支持多种硬件套件和学科方向。输出包含项目概述、制作步骤、知识讲解、代码思路和融会贯通训练。</p>
-          </div>
-          <div class="feature-item">
-            <strong>Phase 2 — 教师协作与分享（进行中）</strong>
-            <p>支持方案保存、收藏、导出和分享。教师可以沉淀自己的优质方案，形成校本资源库。</p>
-          </div>
-          <div class="feature-item">
-            <strong>Phase 3 — 学生个性化适配（规划中）</strong>
-            <p>根据学生画像（年级、学习水平、兴趣偏好）自动调整项目难度和形式，实现真正的千人千面。</p>
-          </div>
-          <div class="feature-item">
-            <strong>Phase 4 — 课堂数据闭环（规划中）</strong>
-            <p>收集课堂使用数据，分析学生知识掌握情况，为老师提供教学决策支持，形成"生成-使用-反馈-优化"的完整闭环。</p>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="about-shell">
-      <div class="summary-banner">
-        <h2>联系我们</h2>
-        <p>
-          如果你是老师、学校或教育机构，对 MakerMind AI 感兴趣，欢迎联系我们。
-          我们提供免费试用和定制化服务，帮助你在课堂中落地项目式学习。
-        </p>
+        <h2>愿景与联系</h2>
+        <p>让每一位老师都能在 15 分钟内设计出一节「能体验、能动手、能展示」的项目课。</p>
         <div class="contact-methods">
           <a href="mailto:hello@makermind.ai" class="contact-item">
             <span>📧</span>
@@ -438,7 +137,7 @@
             <strong>GitHub 开源仓库</strong>
           </a>
         </div>
-      </div>
+      </article>
     </section>
   </main>
 
@@ -455,95 +154,6 @@
     </div>
   </footer>
 
-<script>
-  /* ===== Scroll Reveal Animation ===== */
-  (function() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-
-    document.querySelectorAll('.about-card, .summary-banner, .student-card, .dimension-card, .feature-item').forEach(el => {
-      el.classList.add('reveal-on-scroll');
-      observer.observe(el);
-    });
-  })();
-
-  /* ===== Particle Background ===== */
-  (function() {
-    const canvas = document.createElement('canvas');
-    canvas.id = 'particleCanvas';
-    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.08;';
-    document.body.insertBefore(canvas, document.body.firstChild);
-
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const PARTICLE_COUNT = 40;
-
-    function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    class Particle {
-      constructor() { this.reset(); }
-      reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.3;
-        this.speedY = (Math.random() - 0.5) * 0.3;
-        this.opacity = Math.random() * 0.5 + 0.2;
-        this.hue = Math.random() > 0.5 ? 20 : 220;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.opacity})`;
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
-
-    function drawLines() {
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(100, 120, 160, ${0.1 * (1 - dist / 150)})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.update(); p.draw(); });
-      drawLines();
-      requestAnimationFrame(animate);
-    }
-    animate();
-  })();
-</script>
   <script src="auth.js"></script>
 </body>
 </html>
