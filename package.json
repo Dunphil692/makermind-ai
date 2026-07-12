@@ -4,8 +4,8 @@
   "description": "> 输入知识点，AI 在 60 秒内生成完整的 STEAM 项目方案。",
   "main": "index.js",
   "scripts": {
-    "dev": "wrangler dev --local",
-    "deploy": "wrangler deploy"
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public --project-name=makermind-ai"
   },
   "keywords": [],
   "author": "",

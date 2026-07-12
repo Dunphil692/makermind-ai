@@ -1,15 +1,11 @@
 {
   "name": "makermind-ai",
-  "main": "src/index.js",
-  "compatibility_date": "2026-06-13",
+  "compatibility_date": "2025-04-01",
+  "pages_build_output_dir": "public",
   "keep_vars": true,
   "vars": {
     "AI_BASE_URL": "https://api.deepseek.com",
     "AI_MODEL": "deepseek-v4-pro"
-  },
-  "assets": {
-    "directory": "./public",
-    "binding": "ASSETS"
   },
   "d1_databases": [
     {
