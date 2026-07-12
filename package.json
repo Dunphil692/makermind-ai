@@ -2,14 +2,13 @@
   "name": "makermind-ai",
   "version": "1.0.0",
   "description": "> 输入知识点，AI 在 60 秒内生成完整的 STEAM 项目方案。",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "dev": "wrangler pages dev public",
-    "deploy": "wrangler pages deploy public --project-name=makermind-ai"
+    "dev:web": "npm --prefix client run dev",
+    "build:web": "npm --prefix client install && npm --prefix client run build",
+    "dev": "npm run build:web && wrangler pages dev client/dist",
+    "deploy": "npm run build:web && wrangler pages deploy client/dist --project-name=makermind-ai --branch=main"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "wrangler": "^4.86.0"
   }

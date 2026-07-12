@@ -1,7 +1,7 @@
 {
   "name": "makermind-ai",
   "compatibility_date": "2025-04-01",
-  "pages_build_output_dir": "public",
+  "pages_build_output_dir": "client/dist",
   "vars": {
     "AI_BASE_URL": "https://api.deepseek.com",
     "AI_MODEL": "deepseek-v4-pro"

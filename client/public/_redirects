@@ -1,0 +1,12 @@
+/generator.html    /generator    301
+/index.html        /             301
+/login.html        /login        301
+/dashboard.html    /dashboard    301
+/teacher.html      /teacher      301
+/student.html      /student      301
+/parent.html       /parent       301
+/session.html      /session      301
+/students.html     /students     301
+/faq.html          /faq          301
+/about.html        /about        301
+/*    /index.html   200

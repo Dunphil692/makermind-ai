@@ -1,0 +1,13 @@
+# CSS/JS/图片：长缓存，加速页面切换
+/*.css
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*.js
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/assets/*
+  Cache-Control: public, max-age=604800
+
+# HTML 页面：短缓存，确保更新及时
+/*.html
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
