@@ -1,4 +1,5 @@
 import { kitLabels, PART_LABELS } from "../constants";
+import { AI_FEATURES_PAUSED } from "../../../config";
 import { parseGenerationError } from "../helpers";
 import type { ResultView } from "../types";
 import { InstructionView } from "./InstructionView";
@@ -125,11 +126,17 @@ function ErrorCard({
           已保留成功生成的 {view.retainedParts}/3 段，点击重试会从失败段继续，不会浪费前面已生成内容。
         </div>
       ) : null}
-      <button type="button" className="btn primary" style={{ marginTop: 16 }} onClick={onRetry}>
-        {view.retainedParts > 0 ? "继续生成剩余部分" : "重新生成"}
+      <button type="button" className="btn primary" style={{ marginTop: 16 }} onClick={onRetry} disabled={AI_FEATURES_PAUSED}>
+        {AI_FEATURES_PAUSED ? "AI 生成功能暂时暂停" : view.retainedParts > 0 ? "继续生成剩余部分" : "重新生成"}
       </button>
       {view.retainedParts > 0 ? (
-        <button type="button" className="btn ghost" style={{ marginTop: 16, marginLeft: 8 }} onClick={onRestart}>
+        <button
+          type="button"
+          className="btn ghost"
+          style={{ marginTop: 16, marginLeft: 8 }}
+          onClick={onRestart}
+          disabled={AI_FEATURES_PAUSED}
+        >
           清空草稿重新开始
         </button>
       ) : null}
@@ -193,6 +200,7 @@ export function ResultPanel({ api }: ResultPanelProps) {
             concept={form.concept}
             onSave={() => handleSave(resultView.instruction)}
             onRegenerate={handleRegenerate}
+            regenerateDisabled={AI_FEATURES_PAUSED}
             onExport={() => handleExport(resultView.instruction)}
             onShare={handleShare}
             saveLabel={saveFlash ? "已收藏" : "⭐ 收藏此方案"}

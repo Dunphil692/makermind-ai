@@ -12,7 +12,13 @@ import {
   handleRemoveFavorite,
   handleListFavorites
 } from "./projects.js";
-import { handleDialogueTaskBrief, handleGenerateInstructionPart, handleStructureSession } from "./ai.js";
+import {
+  aiFeaturesPausedResponse,
+  areAiFeaturesPaused,
+  handleDialogueTaskBrief,
+  handleGenerateInstructionPart,
+  handleStructureSession
+} from "./ai.js";
 import {
   handleCreateStudent,
   handleListStudents,
@@ -46,6 +52,14 @@ function methodNotAllowed() {
   return json({ error: "Method not allowed" }, 405);
 }
 
+const AI_API_PATHS = new Set([
+  "/api/dialogue-task-brief",
+  "/api/generate-instruction-part",
+  "/api/sessions/structure",
+  "/api/generate-projects",
+  "/api/generate-instruction"
+]);
+
 export async function handleApiRequest(request, env) {
   const url = new URL(request.url);
   const { pathname } = url;
@@ -60,6 +74,10 @@ export async function handleApiRequest(request, env) {
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
       }
     });
+  }
+
+  if (AI_API_PATHS.has(pathname) && areAiFeaturesPaused(env)) {
+    return aiFeaturesPausedResponse();
   }
 
   if (pathname === "/api/auth/register") {
@@ -81,6 +99,7 @@ export async function handleApiRequest(request, env) {
       platform: "pages",
       service: "makermind-ai",
       ai: {
+        paused: areAiFeaturesPaused(env),
         hasApiKey: Boolean(env.AI_API_KEY),
         hasBaseUrl: Boolean(env.AI_BASE_URL),
         hasModel: Boolean(env.AI_MODEL),

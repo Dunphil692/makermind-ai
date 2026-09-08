@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "../components/Layout";
 import { authFetch } from "../lib/auth";
+import { AI_FEATURES_PAUSED } from "../config";
 
 export function SessionPage() {
   const [params] = useSearchParams();
@@ -65,6 +66,7 @@ export function SessionPage() {
   }, [recognitionRef]);
 
   async function onStructure() {
+    if (AI_FEATURES_PAUSED) return;
     if (!transcript.trim()) return alert("请先输入或录入课堂文本");
     setBusy(true);
     setResultHtml("AI 正在分析课堂记录…");
@@ -156,6 +158,12 @@ export function SessionPage() {
             <h2>课堂转写</h2>
             <p>{speechHint}</p>
           </div>
+          {AI_FEATURES_PAUSED ? (
+            <div className="tips-box" role="status" style={{ marginBottom: 16 }}>
+              <strong>AI 结构化功能暂时暂停</strong>
+              <p>课堂记录的录入和普通数据接口不受影响，但当前不会调用模型分析课堂文本。</p>
+            </div>
+          ) : null}
           <textarea
             className="dialogue-input"
             rows={8}
@@ -176,8 +184,8 @@ export function SessionPage() {
             <button type="button" className="pc-btn" onClick={() => recognitionRef.current?.stop()}>
               停止录音
             </button>
-            <button type="button" className="pc-btn primary" onClick={onStructure} disabled={busy}>
-              {busy ? "AI 分析中…" : "AI 结构化"}
+            <button type="button" className="pc-btn primary" onClick={onStructure} disabled={AI_FEATURES_PAUSED || busy}>
+              {AI_FEATURES_PAUSED ? "AI 结构化已暂停" : busy ? "AI 分析中…" : "AI 结构化"}
             </button>
           </div>
         </section>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { AI_FEATURES_PAUSED } from "../../config";
 import { authFetch, getCurrentUser, isLoggedIn } from "../../lib/auth";
 import { requestDialogueTurn, requestPart } from "./api";
 import { canGenerateFromBrief, createEmptyBrief, fieldLabel, inferKitValue, normalizeClientBrief } from "./brief";
@@ -180,7 +181,7 @@ export function useGenerator() {
   }, [generateCount]);
 
   const generate = useCallback(async () => {
-    if (isGenerating || !canGenerateFromBrief(taskBrief)) return;
+    if (AI_FEATURES_PAUSED || isGenerating || !canGenerateFromBrief(taskBrief)) return;
     setIsGenerating(true);
     setGenerateBtnLabel("正在生成...");
 
@@ -303,6 +304,7 @@ export function useGenerator() {
   }, [activeDraftInfo, form, isGenerating, selectedStudentId, showInstruction, taskBrief]);
 
   const sendDialogueMessage = useCallback(async () => {
+    if (AI_FEATURES_PAUSED) return;
     const text = dialogueInput.trim();
     if (!text || isDialogueThinking) return;
     setDialogueInput("");
@@ -411,6 +413,7 @@ export function useGenerator() {
   }, [form.kit, payload]);
 
   const handleRegenerate = useCallback(() => {
+    if (AI_FEATURES_PAUSED) return;
     if (!window.confirm("确定要重新生成吗？当前方案会保留在历史记录中。")) return;
     clearGenerationDraft(activeDraftKey);
     setActiveDraftInfo(null);
@@ -553,8 +556,10 @@ export function useGenerator() {
     [taskBrief]
   );
 
-  const generateDisabled = isGenerating || !canGenerateFromBrief(taskBrief);
-  const generateLabel = isGenerating
+  const generateDisabled = AI_FEATURES_PAUSED || isGenerating || !canGenerateFromBrief(taskBrief);
+  const generateLabel = AI_FEATURES_PAUSED
+    ? "AI 生成功能暂时暂停"
+    : isGenerating
     ? generateBtnLabel
     : canGenerateFromBrief(taskBrief)
       ? "生成 STEAM 项目方案"
@@ -607,6 +612,7 @@ export function useGenerator() {
     saveFlash,
     retryGenerate: generate,
     restartGenerate: () => {
+      if (AI_FEATURES_PAUSED) return;
       clearGenerationDraft(activeDraftKey);
       setActiveDraftInfo(null);
       void generate();

@@ -56,13 +56,17 @@ npx wrangler deploy
 - `AI_API_KEY`：模型服务 API 密钥
 - `AI_BASE_URL`：模型服务基础地址，例如 `https://api.deepseek.com` 或完整 `/chat/completions` 地址
 - `AI_MODEL`：模型名称，例如 `deepseek-chat`
+- `AI_FEATURES_PAUSED`：AI 总开关；未设置时默认暂停，只有显式设为 `false` 才允许后端调用模型
+- `VITE_AI_FEATURES_PAUSED`：前端构建开关；未设置时默认暂停，只有显式设为 `false` 才恢复生成入口
 - `JWT_SECRET`：登录态签名密钥
+
+恢复 AI 功能时必须同时将 `AI_FEATURES_PAUSED` 和 `VITE_AI_FEATURES_PAUSED` 设为 `false` 并重新部署。只恢复前端开关不会绕过后端保护。
 
 可选本地测试变量：
 
 - `AI_MOCK=1`：本地冒烟测试时跳过真实 AI 调用，生产环境不要开启。
 
-线上排查：打开同源地址 `/api/health`。如果不是 JSON，说明当前页面不是由 Worker 同源服务；如果 JSON 中 `ai.hasApiKey / hasBaseUrl / hasModel` 为 `false`，说明 Cloudflare 预览或生产环境缺少 AI 配置。
+线上排查：打开同源地址 `/api/health`。`ai.paused` 表示当前后端暂停状态；如果不是 JSON，说明当前页面不是由 Worker 同源服务；如果 JSON 中 `ai.hasApiKey / hasBaseUrl / hasModel` 为 `false`，说明 Cloudflare 预览或生产环境缺少 AI 配置。
 
 ## 任务生成器故障排查
 

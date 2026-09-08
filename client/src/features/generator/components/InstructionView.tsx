@@ -251,6 +251,7 @@ export interface InstructionViewProps {
   concept: string;
   onSave: () => void;
   onRegenerate: () => void;
+  regenerateDisabled?: boolean;
   onExport: () => void;
   onShare: () => void;
   saveLabel?: string;
@@ -265,6 +266,7 @@ export function InstructionView({
   concept,
   onSave,
   onRegenerate,
+  regenerateDisabled = false,
   onExport,
   onShare,
   saveLabel = "⭐ 收藏此方案",
@@ -355,8 +357,8 @@ export function InstructionView({
           <button type="button" className="btn primary small" onClick={onSave} disabled={saveDisabled}>
             {saveLabel}
           </button>
-          <button type="button" className="btn ghost small" onClick={onRegenerate}>
-            🔄 重新生成
+          <button type="button" className="btn ghost small" onClick={onRegenerate} disabled={regenerateDisabled}>
+            {regenerateDisabled ? "AI 生成已暂停" : "🔄 重新生成"}
           </button>
           {instruction._assignedStudentId ? (
             <Link className="btn primary small" to={`/teacher#student-${encodeURIComponent(instruction._assignedStudentId)}`}>

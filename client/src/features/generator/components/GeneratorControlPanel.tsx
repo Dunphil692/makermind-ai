@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useRef } from "react";
+import { AI_FEATURES_PAUSED, AI_FEATURES_PAUSED_MESSAGE } from "../../../config";
 import { conceptSuggestions, interestChips, presetChips, quickReplies } from "../constants";
 import type { DialogueMessage } from "../types";
 import type { useGenerator } from "../useGenerator";
@@ -92,7 +93,7 @@ export function GeneratorControlPanel({ api }: GeneratorControlPanelProps) {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!generateDisabled) void generate();
+    if (!AI_FEATURES_PAUSED && !generateDisabled) void generate();
   }
 
   return (
@@ -102,6 +103,13 @@ export function GeneratorControlPanel({ api }: GeneratorControlPanelProps) {
         <h2>和 AI 一起备课</h2>
         <p>像聊天一样告诉 AI 课堂想法，系统会先了解学生兴趣、硬件条件和学习目标，再生成完整项目方案。</p>
       </div>
+
+      {AI_FEATURES_PAUSED ? (
+        <div className="tips-box" role="status">
+          <strong>{AI_FEATURES_PAUSED_MESSAGE}</strong>
+          <p>MakerMind AI 的模型调用目前已暂停。已有方案、历史记录和收藏仍可正常查看。</p>
+        </div>
+      ) : null}
 
       <div className="chat-generator-panel">
         {students.length > 0 ? (
@@ -144,6 +152,7 @@ export function GeneratorControlPanel({ api }: GeneratorControlPanelProps) {
             rows={3}
             placeholder="例如：我们班学生喜欢足球点球，我想用 K10，让他们学一次函数。"
             value={dialogueInput}
+            disabled={AI_FEATURES_PAUSED}
             onChange={(e) => setDialogueInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -152,8 +161,8 @@ export function GeneratorControlPanel({ api }: GeneratorControlPanelProps) {
               }
             }}
           />
-          <button type="button" className="btn primary small" disabled={isDialogueThinking} onClick={() => void sendDialogueMessage()}>
-            发送
+          <button type="button" className="btn primary small" disabled={AI_FEATURES_PAUSED || isDialogueThinking} onClick={() => void sendDialogueMessage()}>
+            {AI_FEATURES_PAUSED ? "已暂停" : "发送"}
           </button>
         </div>
 

@@ -4,7 +4,23 @@
 import { json } from "./utils.js";
 import { requireUser, requireRole, assertStudentAccess } from "./rbac.js";
 
+export function areAiFeaturesPaused(env) {
+  return String(env?.AI_FEATURES_PAUSED ?? "true").toLowerCase() !== "false";
+}
+
+export function aiFeaturesPausedResponse() {
+  return json(
+    {
+      error: "AI 功能已暂停",
+      code: "AI_FEATURES_PAUSED",
+      detail: "MakerMind AI 的模型调用目前已暂停。"
+    },
+    503
+  );
+}
+
 export async function handleDialogueTaskBrief(request, env) {
+  if (areAiFeaturesPaused(env)) return aiFeaturesPausedResponse();
   const startedAt = Date.now();
 
   try {
@@ -45,6 +61,7 @@ export async function handleDialogueTaskBrief(request, env) {
 }
 
 export async function handleStructureSession(request, env) {
+  if (areAiFeaturesPaused(env)) return aiFeaturesPausedResponse();
   const startedAt = Date.now();
 
   try {
@@ -71,6 +88,7 @@ export async function handleStructureSession(request, env) {
 }
 
 export async function handleGenerateInstructionPart(request, env) {
+  if (areAiFeaturesPaused(env)) return aiFeaturesPausedResponse();
   const startedAt = Date.now();
 
   try {
@@ -919,6 +937,12 @@ K10 代码规则：
 }
 
 async function callTextModel(env, prompt, part) {
+  if (areAiFeaturesPaused(env)) {
+    const error = new Error("AI features are paused");
+    error.nonRetryable = true;
+    throw error;
+  }
+
   const base = env.AI_BASE_URL.replace(/\/$/, "");
   const endpoint = base.endsWith("/chat/completions")
     ? base

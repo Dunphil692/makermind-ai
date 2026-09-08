@@ -1,4 +1,5 @@
 import { getToken } from "../../lib/auth";
+import { AI_FEATURES_PAUSED, AI_FEATURES_PAUSED_MESSAGE } from "../../config";
 import type { DialogueMessage, GenerationPayload, TaskBrief } from "./types";
 import { formatFetchError } from "./helpers";
 
@@ -20,6 +21,7 @@ function clientRetryDelay(attempt: number) {
 }
 
 export async function requestPart(payload: GenerationPayload, part: "overview" | "build" | "practice") {
+  if (AI_FEATURES_PAUSED) throw new Error(AI_FEATURES_PAUSED_MESSAGE);
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
@@ -64,6 +66,7 @@ export async function requestPart(payload: GenerationPayload, part: "overview" |
 }
 
 export async function requestDialogueTurn(messages: DialogueMessage[], brief: TaskBrief, studentId?: string) {
+  if (AI_FEATURES_PAUSED) throw new Error(AI_FEATURES_PAUSED_MESSAGE);
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   const token = getToken();
   if (token) headers.Authorization = `Bearer ${token}`;
